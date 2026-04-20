@@ -1,18 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'core/themes/app_theme.dart';
 
 void main() {
-  runApp(const MainApp());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  runApp(const ProviderScope(child: AbsciseApp()));
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class AbsciseApp extends StatelessWidget {
+  const AbsciseApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      title: 'Abscise',
+      debugShowCheckedModeBanner: false,
+      themeMode: ThemeMode.dark,
+      darkTheme: AppTheme.darkTheme,
       home: Scaffold(
         body: Center(
-          child: Text('Hello World!'),
+          child: Text(
+            'Hello World',
+            style: Theme.of(context).textTheme.displayLarge,
+          ),
         ),
       ),
     );
