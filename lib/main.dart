@@ -22,7 +22,7 @@ class AbsciseApp extends StatelessWidget {
         body: Center(
           child: Text(
             'Hello World',
-            style: Theme.of(context).textTheme.displayLarge,
+            style: AppTheme.darkTheme.textTheme.displayMedium,
           ),
         ),
       ),
