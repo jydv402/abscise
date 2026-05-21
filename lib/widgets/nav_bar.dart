@@ -5,39 +5,80 @@ class CustomNavBar extends StatelessWidget {
   /// The navigation shell provided by GoRouter's StatefulShellRoute
   final StatefulNavigationShell navigationShell;
 
-  const CustomNavBar({
-    super.key,
-    required this.navigationShell,
-  });
+  const CustomNavBar({super.key, required this.navigationShell});
 
   /// Helper method to safely switch branches when an item is tapped
   void _onTabSelected(int index) {
     navigationShell.goBranch(
       index,
-      // A common production practice: if the user taps the active tab again,
-      // it resets that tab's navigation stack back to its root screen.
       initialLocation: index == navigationShell.currentIndex,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    // We will build the visual floating action button layout right here next.
-    // For now, we will return a minimal structural placeholder.
-    return BottomNavigationBar(
-      backgroundColor: Colors.white,
-      fixedColor: Colors.white,
-      useLegacyColorScheme: false,
-      unselectedItemColor: Colors.red,
-      currentIndex: navigationShell.currentIndex,
-      onTap: _onTabSelected,
-      items: const [
-        BottomNavigationBarItem(
-            icon: Icon(Icons.phone_android), label: 'Local'),
-        BottomNavigationBarItem(icon: Icon(Icons.cloud), label: 'Cloud'),
-        BottomNavigationBarItem(icon: Icon(Icons.delete), label: 'Bin'),
-        BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Stats'),
-      ],
+    return Container(
+      padding: .fromLTRB(8, 24, 8, 24),
+      width: MediaQuery.of(context).size.width * 0.8,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(36),
+        boxShadow: [BoxShadow(color: Colors.white54, blurRadius: 10)],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _NavBarItem(
+            icon: Icons.photo_library,
+            label: 'Local',
+            isSelected: navigationShell.currentIndex == 0,
+            onTap: () => _onTabSelected(0),
+          ),
+          _NavBarItem(
+            icon: Icons.cloud,
+            label: 'Cloud',
+            isSelected: navigationShell.currentIndex == 1,
+            onTap: () => _onTabSelected(1),
+          ),
+          _NavBarItem(
+            icon: Icons.delete,
+            label: 'Bin',
+            isSelected: navigationShell.currentIndex == 2,
+            onTap: () => _onTabSelected(2),
+          ),
+          _NavBarItem(
+            icon: Icons.settings,
+            label: 'Stats',
+            isSelected: navigationShell.currentIndex == 3,
+            onTap: () => _onTabSelected(3),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NavBarItem extends StatelessWidget {
+  const _NavBarItem({
+    required this.icon,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [Icon(icon, color: isSelected ? Colors.blue : Colors.grey)],
+      ),
     );
   }
 }

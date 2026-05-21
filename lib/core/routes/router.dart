@@ -22,7 +22,9 @@ final appRouter = GoRouter(
       builder: (context, state, navigationShell) {
         return Scaffold(
           body: navigationShell,
-          bottomNavigationBar: CustomNavBar(navigationShell: navigationShell),
+          floatingActionButton: CustomNavBar(navigationShell: navigationShell),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
         );
       },
       branches: [
