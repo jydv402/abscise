@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'core/routes/router.dart';
 import 'core/themes/app_theme.dart';
 
 void main() {
@@ -13,19 +14,12 @@ class AbsciseApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Abscise',
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.dark,
       darkTheme: AppTheme.darkTheme,
-      home: Scaffold(
-        body: Center(
-          child: Text(
-            'Hello World',
-            style: AppTheme.darkTheme.textTheme.displayMedium,
-          ),
-        ),
-      ),
+      routerConfig: appRouter,
     );
   }
 }
