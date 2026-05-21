@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:iconify_flutter/iconify_flutter.dart';
+import 'package:iconify_flutter/icons/ph.dart';
 
 import '../core/themes/app_theme.dart';
 
@@ -64,18 +66,18 @@ class _NavBarItem extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  static const List<IconData> _activeIcons = [
-    Icons.photo_library,
-    Icons.cloud,
-    Icons.delete,
-    Icons.settings,
+  static const List<String> _activeIcons = [
+    Ph.file_image_duotone,
+    Ph.google_photos_logo_duotone,
+    Ph.trash_duotone,
+    Ph.graph_duotone,
   ];
 
-  static const List<IconData> _inactiveIcons = [
-    Icons.photo_library_outlined,
-    Icons.cloud_outlined,
-    Icons.delete_outline,
-    Icons.settings_outlined,
+  static const List<String> _inactiveIcons = [
+    Ph.file_image_bold,
+    Ph.google_photos_logo_bold,
+    Ph.trash_bold,
+    Ph.graph_bold,
   ];
 
   @override
@@ -89,7 +91,7 @@ class _NavBarItem extends StatelessWidget {
           color: isSelected ? AppTheme.darkBackground : Colors.transparent,
           shape: .circle,
         ),
-        child: Icon(
+        child: Iconify(
           isSelected ? _activeIcons[index] : _inactiveIcons[index],
           color: isSelected ? AppTheme.tertiaryLime : AppTheme.darkBackground,
         ),
