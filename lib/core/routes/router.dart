@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../features/onboarding/presentation/sign_in_with_google.dart';
+import '../../features/onboarding/presentation/local_perms.dart';
+
 import '../../features/local_mode/presentation/local_screen.dart';
 import '../../features/cloud_mode/presentation/cloud_screen.dart';
 import '../../features/bin/presentation/bin_screen.dart';
 import '../../features/stats/presentation/stats_screen.dart';
+
 import '../../widgets/nav_bar.dart';
 
 // Private navigator keys for each parallel branch
@@ -14,10 +19,18 @@ final _binNavigatorKey = GlobalKey<NavigatorState>();
 final _statsNavigatorKey = GlobalKey<NavigatorState>();
 
 final appRouter = GoRouter(
-  initialLocation: '/local',
+  initialLocation: '/google-sign',
   navigatorKey: _rootNavigatorKey,
   debugLogDiagnostics: true,
   routes: [
+    GoRoute(
+      path: '/google-sign',
+      builder: (context, state) => const SignInWithGoogleScreen(),
+    ),
+    GoRoute(
+      path: '/local-perms',
+      builder: (context, state) => const LocalPermsScreen(),
+    ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return Scaffold(

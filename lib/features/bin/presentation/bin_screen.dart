@@ -6,10 +6,7 @@ class BinScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text(
-        'The Bin',
-        style: Theme.of(context).textTheme.headlineLarge,
-      ),
+      child: Text('The Bin', style: Theme.of(context).textTheme.headlineLarge),
     );
   }
 }

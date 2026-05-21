@@ -23,7 +23,7 @@ class AppTheme {
         tertiary: tertiaryLime,
         surface: surfaceColor,
         error: deleteRed,
-        onPrimary: textWhite,
+        onPrimary: darkBackground,
         onSecondary: textWhite,
         onTertiary: textBlack,
         onSurface: textWhite,
