@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/themes/app_theme.dart';
+
 class CustomNavBar extends StatelessWidget {
   /// The navigation shell provided by GoRouter's StatefulShellRoute
   final StatefulNavigationShell navigationShell;
@@ -18,37 +20,31 @@ class CustomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: .fromLTRB(8, 24, 8, 24),
-      width: MediaQuery.of(context).size.width * 0.8,
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(36),
-        boxShadow: [BoxShadow(color: Colors.white54, blurRadius: 10)],
+        color: AppTheme.primaryPurple,
+        borderRadius: BorderRadius.circular(56),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           _NavBarItem(
-            icon: Icons.photo_library,
-            label: 'Local',
+            index: 0,
             isSelected: navigationShell.currentIndex == 0,
             onTap: () => _onTabSelected(0),
           ),
           _NavBarItem(
-            icon: Icons.cloud,
-            label: 'Cloud',
+            index: 1,
             isSelected: navigationShell.currentIndex == 1,
             onTap: () => _onTabSelected(1),
           ),
           _NavBarItem(
-            icon: Icons.delete,
-            label: 'Bin',
+            index: 2,
             isSelected: navigationShell.currentIndex == 2,
             onTap: () => _onTabSelected(2),
           ),
           _NavBarItem(
-            icon: Icons.settings,
-            label: 'Stats',
+            index: 3,
             isSelected: navigationShell.currentIndex == 3,
             onTap: () => _onTabSelected(3),
           ),
@@ -60,24 +56,43 @@ class CustomNavBar extends StatelessWidget {
 
 class _NavBarItem extends StatelessWidget {
   const _NavBarItem({
-    required this.icon,
-    required this.label,
+    required this.index,
     required this.isSelected,
     required this.onTap,
   });
-
-  final IconData icon;
-  final String label;
+  final int index;
   final bool isSelected;
   final VoidCallback onTap;
+
+  static const List<IconData> _activeIcons = [
+    Icons.photo_library,
+    Icons.cloud,
+    Icons.delete,
+    Icons.settings,
+  ];
+
+  static const List<IconData> _inactiveIcons = [
+    Icons.photo_library_outlined,
+    Icons.cloud_outlined,
+    Icons.delete_outline,
+    Icons.settings_outlined,
+  ];
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [Icon(icon, color: isSelected ? Colors.blue : Colors.grey)],
+      child: Container(
+        padding: .all(24),
+        margin: index == 0 || index == 3 ? .all(4) : .zero,
+        decoration: BoxDecoration(
+          color: isSelected ? AppTheme.darkBackground : Colors.transparent,
+          shape: .circle,
+        ),
+        child: Icon(
+          isSelected ? _activeIcons[index] : _inactiveIcons[index],
+          color: isSelected ? AppTheme.tertiaryLime : AppTheme.darkBackground,
+        ),
       ),
     );
   }
