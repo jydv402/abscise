@@ -35,7 +35,7 @@ class SignInWithGoogleScreen extends StatelessWidget {
           SecondaryButton(
             label: 'Skip for now',
             iconifyIcon: Ph.arrow_arc_right,
-            onPressed: () => context.go('/local-perms'),
+            onPressed: () => context.go('/local'),
           ),
           PrimaryButton(
             label: 'Continue with Google',

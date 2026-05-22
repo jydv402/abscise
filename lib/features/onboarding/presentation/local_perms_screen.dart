@@ -20,7 +20,7 @@ class LocalPermsScreen extends ConsumerWidget {
     // Navigate to the next screen if permission is granted
     ref.listen<LocalPermsState>(permsControllerProvider, (previous, next) {
       if (next.status == PermStatus.granted) {
-        context.go('/local');
+        context.go('/google-sign');
       } else if (next.status == PermStatus.denied && next.errorMsg != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -58,9 +58,9 @@ class LocalPermsScreen extends ConsumerWidget {
         spacing: 12,
         children: [
           SecondaryButton(
-            label: "Go back",
-            iconifyIcon: Ph.arrow_arc_left,
-            onPressed: () => context.go('/google-sign'),
+            label: "See privacy policy",
+            iconifyIcon: Ph.arrow_bend_double_up_right,
+            onPressed: () {},
           ),
           PrimaryButton(
             label: isProcessing ? "Allowing..." : "Allow Everything",

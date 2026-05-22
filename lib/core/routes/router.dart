@@ -19,17 +19,17 @@ final _binNavigatorKey = GlobalKey<NavigatorState>();
 final _statsNavigatorKey = GlobalKey<NavigatorState>();
 
 final appRouter = GoRouter(
-  initialLocation: '/google-sign',
+  initialLocation: '/local-perms',
   navigatorKey: _rootNavigatorKey,
   debugLogDiagnostics: true,
   routes: [
     GoRoute(
-      path: '/google-sign',
-      builder: (context, state) => const SignInWithGoogleScreen(),
-    ),
-    GoRoute(
       path: '/local-perms',
       builder: (context, state) => const LocalPermsScreen(),
+    ),
+    GoRoute(
+      path: '/google-sign',
+      builder: (context, state) => const SignInWithGoogleScreen(),
     ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
