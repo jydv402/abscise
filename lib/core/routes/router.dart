@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/onboarding/presentation/sign_in_with_google.dart';
-import '../../features/onboarding/presentation/local_perms.dart';
+import '../../features/onboarding/presentation/local_perms_screen.dart';
 
 import '../../features/local_mode/presentation/local_screen.dart';
 import '../../features/cloud_mode/presentation/cloud_screen.dart';

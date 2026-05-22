@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconify_flutter/icons/ph.dart';
 
+import '../../../widgets/message_container.dart';
 import '../../../widgets/primary_button.dart';
 import '../../../widgets/secondary_button.dart';
 
@@ -12,17 +13,17 @@ class SignInWithGoogleScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListView(
-        padding: .fromLTRB(16, 100, 16, 16),
-        shrinkWrap: true,
+        padding: const .fromLTRB(16, 100, 16, 16),
         children: [
           Text(
             'Sign in with Google',
             style: Theme.of(context).textTheme.headlineLarge,
           ),
-          const SizedBox(height: 28),
-          Text(
-            'To get the best experience, please sign in with your Google account.',
-            style: Theme.of(context).textTheme.bodyMedium,
+          MessageContainer(
+            child: Text(
+              'To get the best experience, please sign in with your Google account.',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
           ),
         ],
       ),
@@ -33,7 +34,7 @@ class SignInWithGoogleScreen extends StatelessWidget {
         children: [
           SecondaryButton(
             label: 'Skip for now',
-            iconifyIcon: Ph.sign_out,
+            iconifyIcon: Ph.arrow_arc_right,
             onPressed: () => context.go('/local-perms'),
           ),
           PrimaryButton(

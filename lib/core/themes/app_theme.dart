@@ -91,7 +91,7 @@ class AppTheme {
           fontFamily: 'Outfit',
         ),
         bodyMedium: TextStyle(
-          fontSize: 16,
+          fontSize: 18,
           fontWeight: FontWeight.w400,
           color: textWhite,
           fontFamily: 'Outfit',
