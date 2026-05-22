@@ -39,7 +39,7 @@ class LocalPermsScreen extends ConsumerWidget {
 
     return Scaffold(
       body: ListView(
-        padding: const .fromLTRB(16, 100, 16, 16),
+        padding: AppTheme.topPadding,
         children: [
           Text(
             'Grant Permissions',

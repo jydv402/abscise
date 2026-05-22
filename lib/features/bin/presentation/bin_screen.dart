@@ -1,3 +1,4 @@
+import 'package:abscise/core/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class BinScreen extends StatelessWidget {
@@ -5,8 +6,9 @@ class BinScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('The Bin', style: Theme.of(context).textTheme.headlineLarge),
+    return ListView(
+      padding: AppTheme.topPadding,
+      children: [Text('Bin', style: Theme.of(context).textTheme.headlineLarge)],
     );
   }
 }

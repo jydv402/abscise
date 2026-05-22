@@ -12,6 +12,9 @@ class AppTheme {
   static const Color textBlack = Color(0xFF000000);
   static const Color textSecondary = Color(0xFFA1A1AA);
 
+  static const EdgeInsets topPadding = .fromLTRB(16, 100, 16, 50);
+  static const double borderRadius = 32;
+
   static ThemeData get darkTheme {
     return ThemeData(
       brightness: Brightness.dark,
@@ -124,7 +127,9 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: surfaceColor,
         elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(borderRadius),
+        ),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: Colors.transparent,

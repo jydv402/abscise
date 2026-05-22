@@ -10,11 +10,12 @@ class MessageContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      alignment: .centerStart,
       margin: const .only(top: 16),
       padding: const .all(24),
       decoration: BoxDecoration(
         color: AppTheme.secondaryPurple,
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: BorderRadius.circular(AppTheme.borderRadius),
       ),
       child: child,
     );
