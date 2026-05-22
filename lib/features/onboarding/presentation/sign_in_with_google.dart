@@ -29,7 +29,7 @@ class SignInWithGoogleScreen extends StatelessWidget {
 
       floatingActionButton: Column(
         mainAxisSize: .min,
-        spacing: 16,
+        spacing: 12,
         children: [
           SecondaryButton(
             label: 'Skip for now',

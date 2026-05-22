@@ -24,7 +24,7 @@ class SecondaryButton extends StatelessWidget {
           Container(
             alignment: .center,
             width: MediaQuery.of(context).size.width * 0.85,
-            height: 85,
+            height: 75,
             padding: const .symmetric(horizontal: 24),
             decoration: BoxDecoration(
               color: Colors.transparent,
@@ -40,7 +40,7 @@ class SecondaryButton extends StatelessWidget {
           ),
           Positioned(
             left: 28,
-            top: 28.5,
+            top: 23.5,
             child: Iconify(iconifyIcon, color: AppTheme.tertiaryLime, size: 28),
           ),
         ],
