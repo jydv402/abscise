@@ -20,7 +20,7 @@ class LocalPermsScreen extends ConsumerWidget {
     // Navigate to the next screen if permission is granted
     ref.listen<LocalPermsState>(permsControllerProvider, (previous, next) {
       if (next.status == PermStatus.granted) {
-        context.go('/google-sign');
+        context.go('/google-auth');
       } else if (next.status == PermStatus.denied && next.errorMsg != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

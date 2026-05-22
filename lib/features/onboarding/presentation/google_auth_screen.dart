@@ -7,8 +7,8 @@ import '../../../widgets/message_container.dart';
 import '../../../widgets/primary_button.dart';
 import '../../../widgets/secondary_button.dart';
 
-class SignInWithGoogleScreen extends StatelessWidget {
-  const SignInWithGoogleScreen({super.key});
+class GoogleAuthScreen extends StatelessWidget {
+  const GoogleAuthScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +39,7 @@ class SignInWithGoogleScreen extends StatelessWidget {
             onPressed: () => context.go('/local'),
           ),
           PrimaryButton(
-            label: 'Continue with Google',
+            label: 'Login with Google',
             iconifyIcon: Ph.google_logo_bold,
             onPressed: () {}, // TODO: Implement Google Sign-In
           ),

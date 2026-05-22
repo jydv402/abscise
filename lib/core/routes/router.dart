@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/onboarding/presentation/sign_in_with_google.dart';
+import '../../features/onboarding/presentation/google_auth_screen.dart';
 import '../../features/onboarding/presentation/local_perms_screen.dart';
 
 import '../../features/local_mode/presentation/local_screen.dart';
@@ -28,8 +28,8 @@ final appRouter = GoRouter(
       builder: (context, state) => const LocalPermsScreen(),
     ),
     GoRoute(
-      path: '/google-sign',
-      builder: (context, state) => const SignInWithGoogleScreen(),
+      path: '/google-auth',
+      builder: (context, state) => const GoogleAuthScreen(),
     ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
