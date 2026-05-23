@@ -1,14 +1,16 @@
 import 'package:abscise/widgets/message_container.dart';
-import 'package:abscise/widgets/primary_button.dart';
-import 'package:abscise/widgets/secondary_button.dart';
+import 'package:abscise/widgets/stack_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/ph.dart';
 
+import '../../../core/providers/shared_prefs_provider.dart';
 import '../../../core/themes/app_theme.dart';
+import '../controllers/google_auth_controller.dart';
 import '../controllers/local_perms_controller.dart';
+import '../state/google_auth_state.dart';
 import '../state/local_perms_state.dart';
 
 class LocalPermsScreen extends ConsumerStatefulWidget {
@@ -46,7 +48,17 @@ class _LocalPermsScreenState extends ConsumerState<LocalPermsScreen>
     // Navigate to the next screen if permission is granted
     ref.listen<LocalPermsState>(permsControllerProvider, (previous, next) {
       if (next.status == PermStatus.granted) {
-        context.go('/google-auth');
+        final prefs = ref.read(appPreferencesProvider);
+        final alreadySkipped = prefs.getGoogleAuthSkipped();
+        final googleAuthState = ref.read(googleAuthControllerProvider);
+        final alreadyAuthenticated =
+            googleAuthState.status == AuthStatus.authenticated;
+
+        if (alreadySkipped || alreadyAuthenticated) {
+          context.go('/local');
+        } else {
+          context.go('/google-auth');
+        }
       } else if (next.status == PermStatus.denied && next.errorMsg != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -158,12 +170,13 @@ class _LocalPermsScreenState extends ConsumerState<LocalPermsScreen>
         mainAxisSize: .min,
         spacing: 12,
         children: [
-          SecondaryButton(
+          StackButton(
             label: "See privacy policy",
             iconifyIcon: Ph.arrow_bend_double_up_right,
             onPressed: () {},
+            variant: ButtonVariant.secondary,
           ),
-          PrimaryButton(
+          StackButton(
             label: isProcessing ? "Allowing..." : "Allow Everything",
             iconifyIcon: Ph.check_bold,
             onPressed: isProcessing
@@ -171,6 +184,7 @@ class _LocalPermsScreenState extends ConsumerState<LocalPermsScreen>
                 : () => ref
                       .read(permsControllerProvider.notifier)
                       .requestPermissions(),
+            variant: ButtonVariant.primary,
           ),
         ],
       ),

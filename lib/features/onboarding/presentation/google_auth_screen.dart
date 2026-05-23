@@ -5,8 +5,7 @@ import 'package:iconify_flutter/icons/ph.dart';
 
 import '../../../core/themes/app_theme.dart';
 import '../../../widgets/message_container.dart';
-import '../../../widgets/primary_button.dart';
-import '../../../widgets/secondary_button.dart';
+import '../../../widgets/stack_button.dart';
 import '../controllers/google_auth_controller.dart';
 import '../state/google_auth_state.dart';
 
@@ -58,7 +57,7 @@ class GoogleAuthScreen extends ConsumerWidget {
         mainAxisSize: .min,
         spacing: 12,
         children: [
-          SecondaryButton(
+          StackButton(
             label: 'Skip for now',
             iconifyIcon: Ph.arrow_arc_right,
             onPressed: isProcessing
@@ -66,8 +65,9 @@ class GoogleAuthScreen extends ConsumerWidget {
                 : () {
                     ref.read(googleAuthControllerProvider.notifier).skip();
                   },
+            variant: ButtonVariant.secondary,
           ),
-          PrimaryButton(
+          StackButton(
             label: isProcessing ? 'Logging in...' : 'Login with Google',
             iconifyIcon: Ph.google_logo_bold,
             onPressed: isProcessing
@@ -75,6 +75,7 @@ class GoogleAuthScreen extends ConsumerWidget {
                 : () {
                     ref.read(googleAuthControllerProvider.notifier).login();
                   },
+            variant: ButtonVariant.primary,
           ),
         ],
       ),

@@ -25,8 +25,8 @@ class LocalPermsController extends Notifier<LocalPermsState> {
       if (status.isAuth) {
         state = state.copyWith(status: PermStatus.granted);
       } else {
-        final prefs = ref.read(sharedPreferencesProvider);
-        final hasRequestedBefore = prefs.getBool('has_requested_perms') ?? false;
+        final prefs = ref.read(appPreferencesProvider);
+        final hasRequestedBefore = prefs.getHasRequestedPerms();
         if (hasRequestedBefore) {
           state = state.copyWith(status: PermStatus.denied, errorMsg: null);
         }
@@ -38,8 +38,8 @@ class LocalPermsController extends Notifier<LocalPermsState> {
 
   // Execute the request flow and update the state accordingly
   Future<void> requestPermissions() async {
-    final prefs = ref.read(sharedPreferencesProvider);
-    final hasRequestedBefore = prefs.getBool('has_requested_perms') ?? false;
+    final prefs = ref.read(appPreferencesProvider);
+    final hasRequestedBefore = prefs.getHasRequestedPerms();
 
     // The normal allow everything button now only works for the first time.
     // If already denied previously, it only shows the error snackbar.
@@ -57,7 +57,7 @@ class LocalPermsController extends Notifier<LocalPermsState> {
     try {
       // Request access explicitly for the first time
       final accessResult = await _permState.requestExternalStorageAccess();
-      await prefs.setBool('has_requested_perms', true);
+      await prefs.setHasRequestedPerms(true);
 
       if (accessResult.isAuth) {
         state = state.copyWith(status: PermStatus.granted);

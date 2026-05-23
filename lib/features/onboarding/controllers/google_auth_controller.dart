@@ -12,8 +12,8 @@ class GoogleAuthController extends Notifier<GoogleAuthState> {
   GoogleAuthState build() {
     _authService = GoogleAuthService();
 
-    final prefs = ref.read(sharedPreferencesProvider);
-    final alreadySkipped = prefs.getBool('google_auth_skipped') ?? false;
+    final prefs = ref.read(appPreferencesProvider);
+    final alreadySkipped = prefs.getGoogleAuthSkipped();
 
     if (alreadySkipped) {
       // Synchronously bypass onboarding screen to Home, while starting silent auth asynchronously in background
@@ -101,9 +101,25 @@ class GoogleAuthController extends Notifier<GoogleAuthState> {
   }
 
   Future<void> skip() async {
-    final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setBool('google_auth_skipped', true);
+    final prefs = ref.read(appPreferencesProvider);
+    await prefs.setGoogleAuthSkipped(true);
     state = const GoogleAuthState(status: AuthStatus.skipped);
+  }
+
+  Future<void> logout() async {
+    state = state.copyWith(status: AuthStatus.checking);
+    try {
+      await _authService.logOut();
+      // Reset the skipped flag so they can authenticate afresh if they choose to
+      final prefs = ref.read(appPreferencesProvider);
+      await prefs.setGoogleAuthSkipped(false);
+      state = const GoogleAuthState(status: AuthStatus.unauthenticated);
+    } catch (e) {
+      state = GoogleAuthState(
+        status: AuthStatus.unauthenticated,
+        errorMsg: "Logout failed: $e",
+      );
+    }
   }
 }
 

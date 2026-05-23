@@ -2,38 +2,49 @@ import 'package:abscise/core/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 
-class PrimaryButton extends StatelessWidget {
+enum ButtonVariant { primary, secondary }
+
+class StackButton extends StatelessWidget {
   final String label;
   final String iconifyIcon;
   final VoidCallback onPressed;
+  final ButtonVariant variant;
 
-  const PrimaryButton({
+  const StackButton({
     super.key,
     required this.label,
     required this.iconifyIcon,
     required this.onPressed,
+    this.variant = ButtonVariant.primary,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isPrimary = variant == ButtonVariant.primary;
+
     return InkWell(
       onTap: onPressed,
       borderRadius: BorderRadius.circular(50),
       child: Stack(
         children: [
           Container(
-            alignment: .center,
+            alignment: Alignment.center,
             width: MediaQuery.of(context).size.width * 0.85,
             height: 75,
-            padding: const .symmetric(horizontal: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             decoration: BoxDecoration(
-              color: AppTheme.primaryPurple,
+              color: isPrimary ? AppTheme.primaryPurple : Colors.transparent,
+              border: isPrimary
+                  ? null
+                  : Border.all(color: AppTheme.tertiaryLime, width: 2),
               borderRadius: BorderRadius.circular(50),
             ),
             child: Text(
               label,
               style: AppTheme.darkTheme.textTheme.bodyLarge!.copyWith(
-                color: AppTheme.darkBackground,
+                color: isPrimary
+                    ? AppTheme.darkBackground
+                    : AppTheme.tertiaryLime,
               ),
             ),
           ),
@@ -42,7 +53,9 @@ class PrimaryButton extends StatelessWidget {
             top: 23.5,
             child: Iconify(
               iconifyIcon,
-              color: AppTheme.darkBackground,
+              color: isPrimary
+                  ? AppTheme.darkBackground
+                  : AppTheme.tertiaryLime,
               size: 28,
             ),
           ),
