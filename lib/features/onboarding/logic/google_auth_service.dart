@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class GoogleAuthService {
@@ -12,8 +13,36 @@ class GoogleAuthService {
   Future<void> initialize({
     required Function(GoogleSignInAuthenticationEvent) onEvent,
     required Function(Object) onError,
+    String? clientId,
+    String? serverClientId,
   }) async {
-    await _authInstance.initialize();
+    final String? defaultClientId = dotenv.env['GOOGLE_CLIENT_ID'];
+    final String? defaultServerClientId = dotenv.env['GOOGLE_SERVER_CLIENT_ID'];
+
+    final String? activeClientId = (clientId != null && clientId.isNotEmpty)
+        ? clientId
+        : (defaultClientId != null && defaultClientId.isNotEmpty ? defaultClientId : null);
+
+    final String? activeServerClientId = (serverClientId != null && serverClientId.isNotEmpty)
+        ? serverClientId
+        : (defaultServerClientId != null && defaultServerClientId.isNotEmpty ? defaultServerClientId : null);
+
+    try {
+      await _authInstance.initialize(
+        clientId: activeClientId,
+        serverClientId: activeServerClientId,
+      );
+    } catch (e) {
+      if (activeServerClientId == null) {
+        // ignore: avoid_print
+        print(
+          'WARNING: [GoogleAuthService] Initialization failed or might fail because no serverClientId was provided. '
+          'Android Credential Manager requires a Web Client ID as the serverClientId. '
+          'Please ensure GOOGLE_SERVER_CLIENT_ID is defined in your .env file and loaded via dotenv.',
+        );
+      }
+      rethrow;
+    }
 
     _authInstance.authenticationEvents.listen(onEvent).onError(onError);
   }

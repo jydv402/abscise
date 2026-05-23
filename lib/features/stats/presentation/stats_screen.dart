@@ -28,7 +28,10 @@ class StatsScreen extends ConsumerWidget {
 
     final isStorageGranted = localPermState.status == PermStatus.granted;
 
-    final memorySaved = ref.watch(appPreferencesProvider).getMemorySaved();
+    final prefs = ref.watch(appPreferencesProvider);
+    final memorySaved = prefs.getMemorySaved();
+    final cachedName = prefs.getGoogleUserName();
+    final cachedEmail = prefs.getGoogleUserEmail();
 
     return ListView(
       padding: AppTheme.topPadding,
@@ -91,12 +94,14 @@ class StatsScreen extends ConsumerWidget {
         StatusCard(
           title: 'Google Photos Sync',
           subtitle: isGoogleAuthenticated
-              ? 'Connected: ${googleUser?.email ?? "Account linked"}'
+              ? 'Connected: ${googleUser?.email ?? cachedEmail ?? "Account linked"}'
               : 'Not Connected (Onboarding Skipped)',
           iconifyIcon: isGoogleAuthenticated
               ? Ph.google_photos_logo_duotone
               : Ph.google_photos_logo_bold,
-          iconColor: isGoogleAuthenticated ? AppTheme.primaryPurple : AppTheme.textSecondary,
+          iconColor: isGoogleAuthenticated
+              ? AppTheme.primaryPurple
+              : AppTheme.textSecondary,
         ),
 
         const SizedBox(height: 36),
@@ -164,11 +169,13 @@ class StatsScreen extends ConsumerWidget {
                   spacing: 4,
                   children: [
                     Text(
-                      googleUser?.displayName ?? 'Authenticated User',
+                      googleUser?.displayName ??
+                          cachedName ??
+                          'Authenticated User',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     Text(
-                      googleUser?.email ?? '',
+                      googleUser?.email ?? cachedEmail ?? '',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: AppTheme.textSecondary,
                       ),
@@ -196,7 +203,7 @@ class StatsScreen extends ConsumerWidget {
                     StackButton(
                       label: 'Switch Account',
                       iconifyIcon: Ph.arrow_arc_right,
-                      variant: ButtonVariant.secondary,
+                      variant: ButtonVariant.primary,
                       onPressed: () async {
                         // Logout and navigate to the google sign-in screen
                         await ref

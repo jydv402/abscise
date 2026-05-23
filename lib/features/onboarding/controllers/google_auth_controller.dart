@@ -13,32 +13,24 @@ class GoogleAuthController extends Notifier<GoogleAuthState> {
     _authService = GoogleAuthService();
 
     final prefs = ref.read(appPreferencesProvider);
-    final alreadySkipped = prefs.getGoogleAuthSkipped();
+    final alreadyAuthenticated = prefs.getGoogleAuthenticated();
 
-    if (alreadySkipped) {
-      // Synchronously bypass onboarding screen to Home, while starting silent auth asynchronously in background
+    if (alreadyAuthenticated) {
+      // Just initialize listeners, DO NOT run lightweight re-auth silently on app launch to prevent popups
       _authService.initialize(
         onEvent: _handleAuthEvent,
         onError: _handleAuthError,
-      ).then((_) {
-        _checkSilentAuth();
-      });
-      return const GoogleAuthState(status: AuthStatus.skipped);
+      );
+      return const GoogleAuthState(status: AuthStatus.authenticated);
     }
 
-    // Sequence silent check AFTER native initialization resolves to prevent race conditions
+    // Sequence native initialization, bypass silent checks on start to prevent popups
     _authService.initialize(
       onEvent: _handleAuthEvent,
       onError: _handleAuthError,
-    ).then((_) {
-      _checkSilentAuth();
-    });
+    );
 
-    return const GoogleAuthState(status: AuthStatus.checking);
-  }
-
-  void _checkSilentAuth() {
-    _authService.backgroundAuth();
+    return const GoogleAuthState(status: AuthStatus.unauthenticated);
   }
 
   void _handleAuthEvent(GoogleSignInAuthenticationEvent event) async {
@@ -49,16 +41,45 @@ class GoogleAuthController extends Notifier<GoogleAuthState> {
       final hasScopes = await _authService.checkScopeAuthorization(user);
 
       if (hasScopes) {
+        // Cache authenticated session in SharedPreferences
+        final prefs = ref.read(appPreferencesProvider);
+        await prefs.setGoogleAuthenticated(true);
+        await prefs.setGoogleUserName(user.displayName);
+        await prefs.setGoogleUserEmail(user.email);
+
         state = GoogleAuthState(status: AuthStatus.authenticated, user: user);
+      } else if (_isManualLogin) {
+        // Automatically request photos scopes during manual login if not already authorized
+        final success = await _authService.requestPhotosScopes(user);
+        if (success) {
+          // Cache authenticated session in SharedPreferences
+          final prefs = ref.read(appPreferencesProvider);
+          await prefs.setGoogleAuthenticated(true);
+          await prefs.setGoogleUserName(user.displayName);
+          await prefs.setGoogleUserEmail(user.email);
+
+          state = GoogleAuthState(status: AuthStatus.authenticated, user: user);
+        } else {
+          state = GoogleAuthState(
+            status: AuthStatus.unauthenticated,
+            user: user,
+            errorMsg: 'Photos access authorization needed.',
+          );
+        }
       } else {
-        // Logged in, but hasn't authorized photos yet
+        // Background silent check failed or scopes missing
         state = GoogleAuthState(
           status: AuthStatus.unauthenticated,
           user: user,
-          errorMsg: _isManualLogin ? 'Photos access authorization needed.' : null,
         );
       }
     } else if (event is GoogleSignInAuthenticationEventSignOut) {
+      // Clear cached session on logout
+      final prefs = ref.read(appPreferencesProvider);
+      await prefs.setGoogleAuthenticated(false);
+      await prefs.setGoogleUserName(null);
+      await prefs.setGoogleUserEmail(null);
+
       state = const GoogleAuthState(status: AuthStatus.unauthenticated);
     }
     _isManualLogin = false; // Reset after handling event
@@ -84,6 +105,26 @@ class GoogleAuthController extends Notifier<GoogleAuthState> {
       );
       _isManualLogin = false;
     }
+  }
+
+  /// Attempts to silently re-authenticate the user if the native session is not initialized.
+  /// This is called lazily before performing cloud-based REST API calls.
+  Future<GoogleSignInAccount?> getAuthenticatedUser() async {
+    final currentUser = state.user;
+    if (currentUser != null) {
+      return currentUser;
+    }
+
+    try {
+      await _authService.backgroundAuth();
+      // Wait briefly for the event listener to catch and set the state
+      if (state.user != null) {
+        return state.user;
+      }
+    } catch (e) {
+      // Fail silently
+    }
+    return null;
   }
 
   // If the user already has a user account linked but needs to prompt the permission modal
@@ -113,6 +154,9 @@ class GoogleAuthController extends Notifier<GoogleAuthState> {
       // Reset the skipped flag so they can authenticate afresh if they choose to
       final prefs = ref.read(appPreferencesProvider);
       await prefs.setGoogleAuthSkipped(false);
+      await prefs.setGoogleAuthenticated(false);
+      await prefs.setGoogleUserName(null);
+      await prefs.setGoogleUserEmail(null);
       state = const GoogleAuthState(status: AuthStatus.unauthenticated);
     } catch (e) {
       state = GoogleAuthState(

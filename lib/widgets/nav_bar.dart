@@ -24,6 +24,7 @@ class CustomNavBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.primaryPurple,
+        border: Border.all(color: AppTheme.darkBackground, width: 3),
         borderRadius: BorderRadius.circular(56),
       ),
       child: Row(

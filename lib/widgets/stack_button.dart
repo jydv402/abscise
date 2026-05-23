@@ -33,7 +33,9 @@ class StackButton extends StatelessWidget {
             height: 75,
             padding: const EdgeInsets.symmetric(horizontal: 24),
             decoration: BoxDecoration(
-              color: isPrimary ? AppTheme.primaryPurple : Colors.transparent,
+              color: isPrimary
+                  ? AppTheme.primaryPurple
+                  : AppTheme.darkBackground,
               border: isPrimary
                   ? null
                   : Border.all(color: AppTheme.tertiaryLime, width: 2),
