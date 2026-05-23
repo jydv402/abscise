@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:photo_manager/photo_manager.dart';
 
 import '../../features/onboarding/presentation/google_auth_screen.dart';
 import '../../features/onboarding/presentation/local_perms_screen.dart';
@@ -33,11 +34,13 @@ final appRouter = GoRouter(
     ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
-        return Scaffold(
-          body: navigationShell,
-          floatingActionButton: CustomNavBar(navigationShell: navigationShell),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
+        return ShellLifecycleObserver(
+          child: Scaffold(
+            body: navigationShell,
+            floatingActionButton: CustomNavBar(navigationShell: navigationShell),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+          ),
         );
       },
       branches: [
@@ -85,3 +88,48 @@ final appRouter = GoRouter(
     ),
   ],
 );
+
+class ShellLifecycleObserver extends StatefulWidget {
+  final Widget child;
+
+  const ShellLifecycleObserver({super.key, required this.child});
+
+  @override
+  State<ShellLifecycleObserver> createState() => _ShellLifecycleObserverState();
+}
+
+class _ShellLifecycleObserverState extends State<ShellLifecycleObserver>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _checkPermissions();
+    }
+  }
+
+  Future<void> _checkPermissions() async {
+    final status = await PhotoManager.getPermissionState(
+      requestOption: PermissionRequestOption(),
+    );
+    if (!status.isAuth && mounted) {
+      context.go('/local-perms');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
+  }
+}

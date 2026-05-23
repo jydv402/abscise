@@ -13,41 +13,49 @@ class LocalPermsController extends Notifier<LocalPermsState> {
     _permState = LocalPermsService();
 
     // Check permission status immediately on startup
-    _permState.checkCurrentStatus().then((status) {
-      if (status.isAuth) {
-        state = state.copyWith(status: PermStatus.granted);
-      }
-    });
+    checkPermissionsStatus();
 
     return const LocalPermsState();
   }
 
+  // Check the current OS permission state and update controller state accordingly
+  Future<void> checkPermissionsStatus() async {
+    try {
+      final status = await _permState.checkCurrentStatus();
+      if (status.isAuth) {
+        state = state.copyWith(status: PermStatus.granted);
+      } else {
+        final prefs = ref.read(sharedPreferencesProvider);
+        final hasRequestedBefore = prefs.getBool('has_requested_perms') ?? false;
+        if (hasRequestedBefore) {
+          state = state.copyWith(status: PermStatus.denied, errorMsg: null);
+        }
+      }
+    } catch (_) {
+      // Fail silently for background state checks
+    }
+  }
+
   // Execute the request flow and update the state accordingly
   Future<void> requestPermissions() async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    final hasRequestedBefore = prefs.getBool('has_requested_perms') ?? false;
+
+    // The normal allow everything button now only works for the first time.
+    // If already denied previously, it only shows the error snackbar.
+    if (hasRequestedBefore) {
+      state = state.copyWith(
+        status: PermStatus.denied,
+        errorMsg:
+            "Permission denied. Please use the settings button in the red container above.",
+      );
+      return;
+    }
+
     state = state.copyWith(status: PermStatus.requesting);
 
     try {
-      final currentStatus = await _permState.checkCurrentStatus();
-      final prefs = ref.read(sharedPreferencesProvider);
-      final hasRequestedBefore = prefs.getBool('has_requested_perms') ?? false;
-
-      // If user has already requested permissions before and it's not authorized,
-      // direct them to native app settings since the system prompt won't show again.
-      if (hasRequestedBefore && !currentStatus.isAuth) {
-        await PhotoManager.openSetting();
-        final nextStatus = await _permState.checkCurrentStatus();
-        if (nextStatus.isAuth) {
-          state = state.copyWith(status: PermStatus.granted);
-        } else {
-          state = state.copyWith(
-            status: PermStatus.denied,
-            errorMsg: "Permission denied in settings.",
-          );
-        }
-        return;
-      }
-
-      // Otherwise, request access explicitly for the first time
+      // Request access explicitly for the first time
       final accessResult = await _permState.requestExternalStorageAccess();
       await prefs.setBool('has_requested_perms', true);
 
@@ -63,6 +71,29 @@ class LocalPermsController extends Notifier<LocalPermsState> {
       state = state.copyWith(
         status: PermStatus.denied,
         errorMsg: "An error occurred: $e",
+      );
+    }
+  }
+
+  // Open native system settings for permission authorization recovery
+  Future<void> openAppSettings() async {
+    state = state.copyWith(status: PermStatus.requesting);
+    try {
+      await PhotoManager.openSetting();
+      final nextStatus = await _permState.checkCurrentStatus();
+      if (nextStatus.isAuth) {
+        state = state.copyWith(status: PermStatus.granted);
+      } else {
+        state = state.copyWith(
+          status: PermStatus.denied,
+          errorMsg:
+              null, // Transition state back silently without popping up snackbar
+        );
+      }
+    } catch (e) {
+      state = state.copyWith(
+        status: PermStatus.denied,
+        errorMsg: "Could not open settings: $e",
       );
     }
   }
