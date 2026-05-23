@@ -22,7 +22,7 @@ class StatsScreen extends StatelessWidget {
               ),
               Text(
                 // TODO: Get this value from the backend
-                '67.00 MB',
+                '67.67 MB',
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
             ],
