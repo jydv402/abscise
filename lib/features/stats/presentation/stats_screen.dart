@@ -98,10 +98,10 @@ class StatsScreen extends ConsumerWidget {
               : 'Not Connected (Onboarding Skipped)',
           iconifyIcon: isGoogleAuthenticated
               ? Ph.google_photos_logo_duotone
-              : Ph.google_photos_logo_bold,
+              : Ph.google_photos_logo,
           iconColor: isGoogleAuthenticated
-              ? AppTheme.primaryPurple
-              : AppTheme.textSecondary,
+              ? AppTheme.keepGreen
+              : AppTheme.deleteRed,
         ),
 
         const SizedBox(height: 36),
@@ -203,7 +203,7 @@ class StatsScreen extends ConsumerWidget {
                     StackButton(
                       label: 'Switch Account',
                       iconifyIcon: Ph.arrow_arc_right,
-                      variant: ButtonVariant.primary,
+                      variant: ButtonVariant.tertiary,
                       onPressed: () async {
                         // Logout and navigate to the google sign-in screen
                         await ref
@@ -237,7 +237,7 @@ class StatsScreen extends ConsumerWidget {
                     StackButton(
                       label: 'Log Out',
                       iconifyIcon: Ph.arrow_arc_right,
-                      variant: ButtonVariant.primary,
+                      variant: ButtonVariant.tertiary,
                       onPressed: () async {
                         await ref
                             .read(googleAuthControllerProvider.notifier)

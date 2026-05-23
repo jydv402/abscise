@@ -2,7 +2,7 @@ import 'package:abscise/core/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 
-enum ButtonVariant { primary, secondary }
+enum ButtonVariant { primary, secondary, tertiary }
 
 class StackButton extends StatelessWidget {
   final String label;
@@ -21,7 +21,7 @@ class StackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isPrimary = variant == ButtonVariant.primary;
-
+    final isTertiary = variant == ButtonVariant.tertiary;
     return InkWell(
       onTap: onPressed,
       borderRadius: BorderRadius.circular(50),
@@ -35,8 +35,10 @@ class StackButton extends StatelessWidget {
             decoration: BoxDecoration(
               color: isPrimary
                   ? AppTheme.primaryPurple
+                  : isTertiary
+                  ? AppTheme.secondaryPurple
                   : AppTheme.darkBackground,
-              border: isPrimary
+              border: isPrimary || isTertiary
                   ? null
                   : Border.all(color: AppTheme.tertiaryLime, width: 2),
               borderRadius: BorderRadius.circular(50),
