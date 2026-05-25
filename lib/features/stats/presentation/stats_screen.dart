@@ -145,7 +145,7 @@ class StatsScreen extends ConsumerWidget {
                 StackButton(
                   label: 'Link Account',
                   iconifyIcon: Ph.arrow_arc_right,
-                  variant: ButtonVariant.primary,
+                  variant: ButtonVariant.tertiary,
                   onPressed: () => context.go('/google-auth'),
                 ),
               ],
