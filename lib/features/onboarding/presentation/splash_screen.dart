@@ -38,7 +38,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
     // Enforcing a minimum splash display duration
     final elapsed = stopwatch.elapsedMilliseconds;
-    const minimumSplashDuration = 1325; // Wait for at least 1.325 seconds
+    const minimumSplashDuration = 1200; // Wait for at least 1.2 seconds
     if (elapsed < minimumSplashDuration) {
       await Future.delayed(
         Duration(milliseconds: minimumSplashDuration - elapsed),
