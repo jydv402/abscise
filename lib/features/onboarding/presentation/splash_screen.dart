@@ -25,38 +25,38 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<void> _initializeAndRoute() async {
-    final stopwatch = Stopwatch()..start();
+    // final stopwatch = Stopwatch()..start();
 
-    // Asynchronously check local storage permissions
-    final permsService = LocalPermsService();
-    final permStatus = await permsService.checkCurrentStatus();
+    // // Asynchronously check local storage permissions
+    // final permsService = LocalPermsService();
+    // final permStatus = await permsService.checkCurrentStatus();
 
-    // Read Google authentication cached flags from SharedPreferences
-    final prefs = ref.read(appPreferencesProvider);
-    final alreadySkipped = prefs.getGoogleAuthSkipped();
-    final alreadyAuthenticated = prefs.getGoogleAuthenticated();
+    // // Read Google authentication cached flags from SharedPreferences
+    // final prefs = ref.read(appPreferencesProvider);
+    // final alreadySkipped = prefs.getGoogleAuthSkipped();
+    // final alreadyAuthenticated = prefs.getGoogleAuthenticated();
 
-    // Enforcing a minimum splash display duration
-    final elapsed = stopwatch.elapsedMilliseconds;
-    const minimumSplashDuration = 1325; // Wait for at least 1.325 seconds
-    if (elapsed < minimumSplashDuration) {
-      await Future.delayed(
-        Duration(milliseconds: minimumSplashDuration - elapsed),
-      );
-    }
+    // // Enforcing a minimum splash display duration
+    // final elapsed = stopwatch.elapsedMilliseconds;
+    // const minimumSplashDuration = 1325; // Wait for at least 1.325 seconds
+    // if (elapsed < minimumSplashDuration) {
+    //   await Future.delayed(
+    //     Duration(milliseconds: minimumSplashDuration - elapsed),
+    //   );
+    // }
 
-    if (!mounted) return;
+    // if (!mounted) return;
 
-    // Select the correct destination route
-    if (permStatus.isAuth) {
-      if (alreadySkipped || alreadyAuthenticated) {
-        context.go('/local');
-      } else {
-        context.go('/google-auth');
-      }
-    } else {
-      context.go('/local-perms');
-    }
+    // // Select the correct destination route
+    // if (permStatus.isAuth) {
+    //   if (alreadySkipped || alreadyAuthenticated) {
+    //     context.go('/local');
+    //   } else {
+    //     context.go('/google-auth');
+    //   }
+    // } else {
+    //   context.go('/local-perms');
+    // }
   }
 
   @override
@@ -82,22 +82,36 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                   curve: Curves.easeOutBack,
                 ),
             // Progress indicator
-            CircularProgressIndicator(
-              strokeWidth: 3.0,
-              strokeCap: .round,
-              constraints: BoxConstraints(minWidth: 32, minHeight: 32),
-              valueColor: AlwaysStoppedAnimation<Color>(AppTheme.tertiaryLime),
-            ).animate().fadeIn(delay: 400.ms, duration: 400.ms),
+            Padding(
+              padding: .symmetric(horizontal: 100),
+              child: LinearProgressIndicator(
+                borderRadius: .circular(32),
+                backgroundColor: AppTheme.tertiaryLime.withValues(alpha: 0.25),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  AppTheme.tertiaryLime,
+                ),
+              ).animate().fadeIn(delay: 200.ms, duration: 400.ms),
+            ),
           ],
         ),
       ),
-      floatingActionButton: Text(
-        'Abscise',
-        style: Theme.of(context).textTheme.displayLarge?.copyWith(
-          color: AppTheme.tertiaryLime,
-          fontWeight: .w400,
-        ),
-      ).animate().fadeIn(delay: 200.ms, duration: 400.ms),
+      floatingActionButton:
+          Text(
+                'Abscise',
+                style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                  color: AppTheme.tertiaryLime,
+                  fontWeight: .w400,
+                ),
+              )
+              .animate()
+              .slide(
+                delay: 200.ms,
+                duration: 400.ms,
+                begin: const Offset(0, 0.5),
+                end: Offset.zero,
+                curve: Curves.easeOutCubic,
+              )
+              .fadeIn(delay: 200.ms, duration: 400.ms),
       floatingActionButtonLocation: .centerFloat,
     );
   }
