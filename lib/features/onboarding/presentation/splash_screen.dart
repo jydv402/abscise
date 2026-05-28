@@ -25,38 +25,38 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<void> _initializeAndRoute() async {
-    // final stopwatch = Stopwatch()..start();
+    final stopwatch = Stopwatch()..start();
 
-    // // Asynchronously check local storage permissions
-    // final permsService = LocalPermsService();
-    // final permStatus = await permsService.checkCurrentStatus();
+    // Asynchronously check local storage permissions
+    final permsService = LocalPermsService();
+    final permStatus = await permsService.checkCurrentStatus();
 
-    // // Read Google authentication cached flags from SharedPreferences
-    // final prefs = ref.read(appPreferencesProvider);
-    // final alreadySkipped = prefs.getGoogleAuthSkipped();
-    // final alreadyAuthenticated = prefs.getGoogleAuthenticated();
+    // Read Google authentication cached flags from SharedPreferences
+    final prefs = ref.read(appPreferencesProvider);
+    final alreadySkipped = prefs.getGoogleAuthSkipped();
+    final alreadyAuthenticated = prefs.getGoogleAuthenticated();
 
-    // // Enforcing a minimum splash display duration
-    // final elapsed = stopwatch.elapsedMilliseconds;
-    // const minimumSplashDuration = 1325; // Wait for at least 1.325 seconds
-    // if (elapsed < minimumSplashDuration) {
-    //   await Future.delayed(
-    //     Duration(milliseconds: minimumSplashDuration - elapsed),
-    //   );
-    // }
+    // Enforcing a minimum splash display duration
+    final elapsed = stopwatch.elapsedMilliseconds;
+    const minimumSplashDuration = 1325; // Wait for at least 1.325 seconds
+    if (elapsed < minimumSplashDuration) {
+      await Future.delayed(
+        Duration(milliseconds: minimumSplashDuration - elapsed),
+      );
+    }
 
-    // if (!mounted) return;
+    if (!mounted) return;
 
-    // // Select the correct destination route
-    // if (permStatus.isAuth) {
-    //   if (alreadySkipped || alreadyAuthenticated) {
-    //     context.go('/local');
-    //   } else {
-    //     context.go('/google-auth');
-    //   }
-    // } else {
-    //   context.go('/local-perms');
-    // }
+    // Select the correct destination route
+    if (permStatus.isAuth) {
+      if (alreadySkipped || alreadyAuthenticated) {
+        context.go('/local');
+      } else {
+        context.go('/google-auth');
+      }
+    } else {
+      context.go('/local-perms');
+    }
   }
 
   @override
