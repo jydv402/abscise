@@ -4,6 +4,7 @@ import 'package:photo_manager/photo_manager.dart';
 
 import '../../features/onboarding/presentation/google_auth_screen.dart';
 import '../../features/onboarding/presentation/local_perms_screen.dart';
+import '../../features/onboarding/presentation/splash_screen.dart';
 
 import '../../features/local_mode/presentation/local_screen.dart';
 import '../../features/cloud_mode/presentation/cloud_screen.dart';
@@ -20,10 +21,11 @@ final _binNavigatorKey = GlobalKey<NavigatorState>();
 final _statsNavigatorKey = GlobalKey<NavigatorState>();
 
 final appRouter = GoRouter(
-  initialLocation: '/local-perms',
+  initialLocation: '/splash',
   navigatorKey: _rootNavigatorKey,
   debugLogDiagnostics: true,
   routes: [
+    GoRoute(path: '/splash', builder: (context, state) => const SplashScreen()),
     GoRoute(
       path: '/local-perms',
       builder: (context, state) => const LocalPermsScreen(),
@@ -37,7 +39,9 @@ final appRouter = GoRouter(
         return ShellLifecycleObserver(
           child: Scaffold(
             body: navigationShell,
-            floatingActionButton: CustomNavBar(navigationShell: navigationShell),
+            floatingActionButton: CustomNavBar(
+              navigationShell: navigationShell,
+            ),
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerFloat,
           ),
