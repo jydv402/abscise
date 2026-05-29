@@ -31,19 +31,50 @@ class _LocalScreenState extends ConsumerState<LocalScreen> {
     return Scaffold(
       backgroundColor: AppTheme.darkBackground,
       body: Padding(
-        // Matches AppTheme.topPadding left, top, and right values
-        padding: const EdgeInsets.fromLTRB(16, 100, 16, 0),
+        padding: const EdgeInsets.fromLTRB(16, 60, 16, 100),
         child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start, // Left-aligns the header title
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Left-aligned header title matching the rest of the app
-            Text(
-              'Local Photos',
-              style: Theme.of(context).textTheme.headlineLarge,
-            ),
+            // Compact Top Header Row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Local Photos',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
 
-            const SizedBox(height: 16),
+                // Sleek, low-profile Undo Button
+                AnimatedOpacity(
+                  opacity: state.history.isNotEmpty ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 250),
+                  child: IgnorePointer(
+                    ignoring: state.history.isEmpty,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppTheme.surfaceColor,
+                        border: Border.all(
+                          color: AppTheme.secondaryPurple.withValues(
+                            alpha: 0.4,
+                          ),
+                          width: 1.5,
+                        ),
+                      ),
+                      child: IconButton(
+                        icon: const Iconify(
+                          MaterialSymbols.undo_rounded,
+                          color: AppTheme.primaryPurple,
+                          size: 24,
+                        ),
+                        onPressed: () =>
+                            ref.read(swipeProvider.notifier).undo(),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
 
             // Card Stack Container (Uses LayoutBuilder to dynamically scale aspect ratio)
             Expanded(
@@ -78,9 +109,9 @@ class _LocalScreenState extends ConsumerState<LocalScreen> {
                           final availableHeight = constraints.maxHeight;
                           final availableWidth = constraints.maxWidth;
 
-                          // Reserve a 70px buffer at the top of the card stack bounding box
+                          // Reserve a 50px buffer at the top of the card stack bounding box
                           // to prevent the up-shifted layered cards from being clipped at the top.
-                          const double topShiftBuffer = 70.0;
+                          const double topShiftBuffer = 50.0;
                           final double usableHeight =
                               availableHeight - topShiftBuffer;
 
@@ -121,75 +152,7 @@ class _LocalScreenState extends ConsumerState<LocalScreen> {
                       ),
               ),
             ),
-
-            const SizedBox(height: 24),
-
-            // Bottom Deletion & Navigation Controls
-            if (state.deck.isNotEmpty || state.history.isNotEmpty)
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 12.0),
-                  child: _buildRoundButton(
-                    icon: MaterialSymbols.undo_rounded,
-                    color: AppTheme.secondaryPurple,
-                    onPressed: state.history.isEmpty
-                        ? null
-                        : () => ref.read(swipeProvider.notifier).undo(),
-                  ),
-                ),
-              ),
-
-            // Vertical spacer to elevate the control buttons clear of the floating navigation bar
-            const SizedBox(height: 100),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRoundButton({
-    required String icon,
-    required Color color,
-    required VoidCallback? onPressed,
-  }) {
-    const double size = 72;
-    const double iconSize = 36;
-    final bool disabled = onPressed == null;
-
-    return Opacity(
-      opacity: disabled ? 0.3 : 1.0,
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: AppTheme.darkBackground,
-          border: Border.all(
-            color: disabled ? Colors.white10 : color.withValues(alpha: 0.4),
-            width: 2,
-          ),
-          boxShadow: disabled
-              ? []
-              : [
-                  BoxShadow(
-                    color: color.withValues(alpha: 0.15),
-                    blurRadius: 12,
-                    spreadRadius: 2,
-                  ),
-                ],
-        ),
-        child: ClipOval(
-          child: Material(
-            color: Colors.transparent,
-            child: IconButton(
-              icon: Iconify(
-                icon,
-                color: disabled ? Colors.white38 : color,
-                size: iconSize,
-              ),
-              onPressed: onPressed,
-            ),
-          ),
         ),
       ),
     );
