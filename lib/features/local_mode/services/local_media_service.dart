@@ -6,7 +6,7 @@ import 'package:photo_manager/photo_manager.dart';
 
 class LocalMediaService {
   /// Fetches and returns local media items
-  /// Returns List<MediaItem>
+  /// Returns `List<MediaItem>`
   Future<List<MediaItem>> fetchLocalMedia({
     required int page,
     int size = 50,

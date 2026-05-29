@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/const/media_item.dart';
 import '../../../core/const/swipe_state.dart';
 import '../../../core/const/swiped_item.dart';
 import '../../bin/controllers/bin_controller.dart';
@@ -61,6 +60,11 @@ class SwipeController extends Notifier<SwipeState> {
     );
     // Add to the bin
     ref.read(binProvider.notifier).addToBin(swipeItem);
+
+    // Load the next chunk based on the length of the deck
+    if (state.deck.length < 5) {
+      loadNextChunk();
+    }
   }
 
   void swipeRight() {
@@ -77,6 +81,11 @@ class SwipeController extends Notifier<SwipeState> {
       ], // Add to history
       currentIndex: state.currentIndex + 1,
     );
+
+    // Load the next chunk based on the length of the deck
+    if (state.deck.length < 5) {
+      loadNextChunk();
+    }
   }
 
   void undo() {

@@ -68,10 +68,7 @@ class GoogleAuthController extends Notifier<GoogleAuthState> {
         }
       } else {
         // Background silent check failed or scopes missing
-        state = GoogleAuthState(
-          status: AuthStatus.unauthenticated,
-          user: user,
-        );
+        state = GoogleAuthState(status: AuthStatus.unauthenticated, user: user);
       }
     } else if (event is GoogleSignInAuthenticationEventSignOut) {
       // Clear cached session on logout

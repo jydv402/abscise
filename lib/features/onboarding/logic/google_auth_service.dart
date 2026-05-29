@@ -21,11 +21,16 @@ class GoogleAuthService {
 
     final String? activeClientId = (clientId != null && clientId.isNotEmpty)
         ? clientId
-        : (defaultClientId != null && defaultClientId.isNotEmpty ? defaultClientId : null);
+        : (defaultClientId != null && defaultClientId.isNotEmpty
+              ? defaultClientId
+              : null);
 
-    final String? activeServerClientId = (serverClientId != null && serverClientId.isNotEmpty)
+    final String? activeServerClientId =
+        (serverClientId != null && serverClientId.isNotEmpty)
         ? serverClientId
-        : (defaultServerClientId != null && defaultServerClientId.isNotEmpty ? defaultServerClientId : null);
+        : (defaultServerClientId != null && defaultServerClientId.isNotEmpty
+              ? defaultServerClientId
+              : null);
 
     try {
       await _authInstance.initialize(

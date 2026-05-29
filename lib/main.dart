@@ -13,11 +13,7 @@ void main() async {
 
   await AppPreferences.init();
 
-  runApp(
-    const ProviderScope(
-      child: AbsciseApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: AbsciseApp()));
 }
 
 class AbsciseApp extends StatelessWidget {
