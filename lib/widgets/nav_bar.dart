@@ -22,11 +22,24 @@ class CustomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+
+    // Sleek border radius and border width scaling to match inner items
+    final double borderRadiusValue = screenWidth < 340
+        ? 32.0
+        : (screenWidth > 400 ? 48.0 : 44.0);
+    final double borderWidthValue = screenWidth < 340
+        ? 2.0
+        : (screenWidth > 400 ? 3.0 : 2.5);
+
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.primaryPurple,
-        border: Border.all(color: AppTheme.darkBackground, width: 3),
-        borderRadius: BorderRadius.circular(56),
+        border: Border.all(
+          color: AppTheme.darkBackground,
+          width: borderWidthValue,
+        ),
+        borderRadius: BorderRadius.circular(borderRadiusValue),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -84,18 +97,38 @@ class _NavBarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+
+    // Dynamic sleek padding that responds to screen width to prevent overflow
+    // under high display scaling / small screens, while providing a substantial
+    // feel on larger screens.
+    final double paddingValue = screenWidth < 340
+        ? 12.0
+        : (screenWidth > 400 ? 18.0 : 16.0);
+
+    final double marginValue = screenWidth < 340
+        ? 3.0
+        : (screenWidth > 400 ? 5.0 : 4.0);
+
+    final double iconSize = screenWidth < 340
+        ? 22.0
+        : (screenWidth > 400 ? 26.0 : 24.0);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: .all(24),
-        margin: index == 0 || index == 3 ? .all(4) : .zero,
+        padding: EdgeInsets.all(paddingValue),
+        margin: index == 0 || index == 3
+            ? EdgeInsets.all(marginValue)
+            : EdgeInsets.zero,
         decoration: BoxDecoration(
           color: isSelected ? AppTheme.darkBackground : Colors.transparent,
-          shape: .circle,
+          shape: BoxShape.circle,
         ),
         child: Iconify(
           isSelected ? _activeIcons[index] : _inactiveIcons[index],
           color: isSelected ? AppTheme.tertiaryLime : AppTheme.darkBackground,
+          size: iconSize,
         ),
       ),
     );
