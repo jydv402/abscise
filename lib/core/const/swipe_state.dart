@@ -6,12 +6,16 @@ class SwipeState {
   final List<SwipedItem> history; // List of cards that have been swiped
   final bool isLoading;
   final int currentIndex;
+  final int page;
+  final bool hasMore;
 
   SwipeState({
     required this.deck,
     required this.history,
     required this.isLoading,
     required this.currentIndex,
+    required this.page,
+    required this.hasMore,
   });
 
   SwipeState copyWith({
@@ -19,12 +23,16 @@ class SwipeState {
     List<SwipedItem>? history,
     bool? isLoading,
     int? currentIndex,
+    int? page,
+    bool? hasMore,
   }) {
     return SwipeState(
       deck: deck ?? this.deck,
       history: history ?? this.history,
       isLoading: isLoading ?? this.isLoading,
       currentIndex: currentIndex ?? this.currentIndex,
+      page: page ?? this.page,
+      hasMore: hasMore ?? this.hasMore,
     );
   }
 }

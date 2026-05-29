@@ -3,18 +3,44 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/const/media_item.dart';
 import '../../../core/const/swipe_state.dart';
 import '../../../core/const/swiped_item.dart';
+import '../../bin/controllers/bin_controller.dart';
+import '../services/local_media_service.dart';
 
 class SwipeController extends Notifier<SwipeState> {
   @override
   SwipeState build() {
-    return SwipeState(deck: [], history: [], isLoading: false, currentIndex: 0);
+    return SwipeState(
+      deck: [],
+      history: [],
+      isLoading: false,
+      currentIndex: 0,
+      page: 0,
+      hasMore: true,
+    );
   }
 
-  void loadNextChunk(List<MediaItem> newItems) {
-    state = state.copyWith(
-      deck: [...state.deck, ...newItems],
-      isLoading: false,
-    );
+  /// Loads the next chunk of media items
+  Future<void> loadNextChunk() async {
+    if (state.isLoading || !state.hasMore) return;
+
+    state = state.copyWith(isLoading: true);
+
+    try {
+      final mediaService = ref.read(localMediaServiceProvider);
+      final newItems = await mediaService.fetchLocalMedia(page: state.page);
+
+      if (newItems.isEmpty) {
+        state = state.copyWith(isLoading: false, hasMore: false);
+      } else {
+        state = state.copyWith(
+          deck: [...state.deck, ...newItems],
+          page: state.page + 1,
+          isLoading: false,
+        );
+      }
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+    }
   }
 
   /// Swipe left for delete
@@ -33,7 +59,8 @@ class SwipeController extends Notifier<SwipeState> {
       ], // Add to history
       currentIndex: state.currentIndex + 1,
     );
-    // TODO: Add logic to add the item to bin
+    // Add to the bin
+    ref.read(binProvider.notifier).addToBin(swipeItem);
   }
 
   void swipeRight() {
@@ -71,7 +98,13 @@ class SwipeController extends Notifier<SwipeState> {
     );
 
     if (lastSwiped.isDeleted) {
-      // TODO: Add logic to remove the item from the bin
+      // Remove the item from the bin
+      ref.read(binProvider.notifier).removeFromBin(lastSwiped.item);
     }
   }
 }
+
+// Defining the provider for the SwipeController\
+final swipeProvider = NotifierProvider<SwipeController, SwipeState>(
+  SwipeController.new,
+);
