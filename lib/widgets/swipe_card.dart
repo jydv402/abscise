@@ -1,10 +1,13 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:iconify_flutter/iconify_flutter.dart';
+import 'package:iconify_flutter/icons/ph.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
 
 import '../core/const/media_item.dart';
 import '../core/themes/app_theme.dart';
+import 'media_fullscreen_viewer.dart';
 
 class SwipeCard extends StatelessWidget {
   final MediaItem item;
@@ -42,19 +45,17 @@ class SwipeCard extends StatelessWidget {
             AssetEntityImage(
               item.localAsset!,
               isOriginal: false,
-              thumbnailSize: const ThumbnailSize(500, 800), // Downsampled resolution for fast rendering
+              thumbnailSize: const ThumbnailSize(
+                500,
+                800,
+              ), // Downsampled resolution for fast rendering
               thumbnailFormat: ThumbnailFormat.jpeg,
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Image.file(
-                File(item.path),
-                fit: BoxFit.cover,
-              ),
+              errorBuilder: (context, error, stackTrace) =>
+                  Image.file(File(item.path), fit: BoxFit.cover),
             )
           else
-            Image.file(
-              File(item.path),
-              fit: BoxFit.cover,
-            ),
+            Image.file(File(item.path), fit: BoxFit.cover),
 
           // Real-time Solid Full-Card Action Overlays (Keep / Delete color fills)
           if (isTopCard) ...[
@@ -62,7 +63,9 @@ class SwipeCard extends StatelessWidget {
             if (keepOpacity > 0.0)
               IgnorePointer(
                 child: Container(
-                  color: AppTheme.keepGreen.withValues(alpha: keepOpacity * 0.35),
+                  color: AppTheme.keepGreen.withValues(
+                    alpha: keepOpacity * 0.35,
+                  ),
                 ),
               ),
 
@@ -70,9 +73,112 @@ class SwipeCard extends StatelessWidget {
             if (deleteOpacity > 0.0)
               IgnorePointer(
                 child: Container(
-                  color: AppTheme.deleteRed.withValues(alpha: deleteOpacity * 0.35),
+                  color: AppTheme.deleteRed.withValues(
+                    alpha: deleteOpacity * 0.35,
+                  ),
                 ),
               ),
+
+            // Glassmorphic Fullscreen Inspect Button
+            Positioned(
+              bottom: 20,
+              right: 20,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  Navigator.of(context, rootNavigator: true).push(
+                    PageRouteBuilder(
+                      opaque: false, // Transparent transition overlay
+                      pageBuilder: (context, anim1, anim2) =>
+                          MediaFullscreenViewer(item: item),
+                      transitionsBuilder: (context, anim1, anim2, child) {
+                        return FadeTransition(opacity: anim1, child: child);
+                      },
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.black54,
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.24),
+                      width: 1.5,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.2),
+                        blurRadius: 8,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                  child: const Iconify(
+                    Ph.arrows_out_bold,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ),
+              ),
+            ),
+
+            // File type and size in MB (top left corner)
+            Positioned(
+              top: 20,
+              left: 20,
+              child: Row(
+                spacing: 8,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black87,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        width: 1,
+                      ),
+                    ),
+                    child: Text(
+                      item.type == MediaType.video ? 'VIDEO' : 'IMAGE',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Outfit',
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black87,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        width: 1,
+                      ),
+                    ),
+                    child: Text(
+                      '${item.fileSizeMb?.toStringAsFixed(2) ?? "0.00"} MB',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Outfit',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
 
           // Clean, crisp edge border drawn on top of the image to maximize contrast
@@ -95,7 +201,12 @@ class SwipeCard extends StatelessWidget {
     return Transform(
       alignment: Alignment.center,
       transform: Matrix4.identity()
-        ..translateByDouble(dragOffset.dx, dragOffset.dy + verticalOffset, 0.0, 1.0)
+        ..translateByDouble(
+          dragOffset.dx,
+          dragOffset.dy + verticalOffset,
+          0.0,
+          1.0,
+        )
         ..rotateZ(rotationAngle)
         ..scaleByDouble(scaleX, scaleY, 1.0, 1.0),
       child: cardBody,

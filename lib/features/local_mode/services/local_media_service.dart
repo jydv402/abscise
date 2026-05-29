@@ -51,6 +51,9 @@ class LocalMediaService {
         continue;
       }
 
+      final int fileLength = await file.length();
+      final double sizeInMb = fileLength / (1024 * 1024);
+
       // Mapping file attributes to mediaItems
       mediaItems.add(
         MediaItem(
@@ -64,6 +67,7 @@ class LocalMediaService {
               ? Duration(seconds: asset.duration)
               : null,
           localAsset: asset,
+          fileSizeMb: sizeInMb,
         ),
       );
     }

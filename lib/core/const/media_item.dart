@@ -10,7 +10,9 @@ class MediaItem {
   final MediaType type;
   final StorageMode source;
   final Duration? duration; // For videos
-  final AssetEntity? localAsset; // Reference to native local asset for performant thumbnail loading
+  final AssetEntity?
+  localAsset; // Reference to native local asset for performant thumbnail loading
+  final double? fileSizeMb; // Pre-calculated file size in megabytes
 
   MediaItem({
     required this.id,
@@ -19,5 +21,6 @@ class MediaItem {
     required this.source,
     this.duration,
     this.localAsset,
+    this.fileSizeMb,
   });
 }
