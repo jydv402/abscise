@@ -78,9 +78,9 @@ class _LocalScreenState extends ConsumerState<LocalScreen> {
                           final availableHeight = constraints.maxHeight;
                           final availableWidth = constraints.maxWidth;
 
-                          // Reserve a 40px buffer at the top of the card stack bounding box
+                          // Reserve a 70px buffer at the top of the card stack bounding box
                           // to prevent the up-shifted layered cards from being clipped at the top.
-                          const double topShiftBuffer = 40.0;
+                          const double topShiftBuffer = 70.0;
                           final double usableHeight =
                               availableHeight - topShiftBuffer;
 

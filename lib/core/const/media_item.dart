@@ -1,3 +1,5 @@
+import 'package:photo_manager/photo_manager.dart';
+
 enum StorageMode { local, gPhotos }
 
 enum MediaType { image, video }
@@ -8,6 +10,7 @@ class MediaItem {
   final MediaType type;
   final StorageMode source;
   final Duration? duration; // For videos
+  final AssetEntity? localAsset; // Reference to native local asset for performant thumbnail loading
 
   MediaItem({
     required this.id,
@@ -15,5 +18,6 @@ class MediaItem {
     required this.type,
     required this.source,
     this.duration,
+    this.localAsset,
   });
 }

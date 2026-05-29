@@ -1,12 +1,15 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:photo_manager/photo_manager.dart';
+import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
 
 import '../core/const/media_item.dart';
 import '../core/themes/app_theme.dart';
 
 class SwipeCard extends StatelessWidget {
   final MediaItem item;
-  final double scale;
+  final double scaleX;
+  final double scaleY;
   final double verticalOffset;
   final Offset dragOffset;
   final double rotationAngle;
@@ -17,7 +20,8 @@ class SwipeCard extends StatelessWidget {
   const SwipeCard({
     super.key,
     required this.item,
-    required this.scale,
+    required this.scaleX,
+    required this.scaleY,
     required this.verticalOffset,
     this.dragOffset = Offset.zero,
     this.rotationAngle = 0.0,
@@ -33,76 +37,56 @@ class SwipeCard extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // Media content preview
-          Image.file(File(item.path), fit: BoxFit.cover),
+          // Performant downsampled local media loading
+          if (item.localAsset != null)
+            AssetEntityImage(
+              item.localAsset!,
+              isOriginal: false,
+              thumbnailSize: const ThumbnailSize(500, 800), // Downsampled resolution for fast rendering
+              thumbnailFormat: ThumbnailFormat.jpeg,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Image.file(
+                File(item.path),
+                fit: BoxFit.cover,
+              ),
+            )
+          else
+            Image.file(
+              File(item.path),
+              fit: BoxFit.cover,
+            ),
 
-          // Subtle bottom shadow gradient to elevate text overlays
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.transparent, Colors.black87],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
+          // Real-time Solid Full-Card Action Overlays (Keep / Delete color fills)
+          if (isTopCard) ...[
+            // "KEEP" Green Overlay
+            if (keepOpacity > 0.0)
+              IgnorePointer(
+                child: Container(
+                  color: AppTheme.keepGreen.withValues(alpha: keepOpacity * 0.35),
+                ),
+              ),
+
+            // "DELETE" Red Overlay
+            if (deleteOpacity > 0.0)
+              IgnorePointer(
+                child: Container(
+                  color: AppTheme.deleteRed.withValues(alpha: deleteOpacity * 0.35),
+                ),
+              ),
+          ],
+
+          // Clean, crisp edge border drawn on top of the image to maximize contrast
+          IgnorePointer(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.15),
+                  width: 1.5,
+                ),
               ),
             ),
           ),
-
-          // Real-time Action Badges (Keep / Delete labels)
-          if (isTopCard) ...[
-            // "KEEP" badge (Fades in green when dragged right)
-            Positioned(
-              top: 40,
-              left: 40,
-              child: Opacity(
-                opacity: keepOpacity,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: AppTheme.tertiaryLime, width: 3),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    'KEEP',
-                    style: TextStyle(
-                      color: AppTheme.tertiaryLime,
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-
-            // "DELETE" badge (Fades in red/orange when dragged left)
-            Positioned(
-              top: 40,
-              right: 40,
-              child: Opacity(
-                opacity: deleteOpacity,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.redAccent, width: 3),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Text(
-                    'DELETE',
-                    style: TextStyle(
-                      color: Colors.redAccent,
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
         ],
       ),
     );
@@ -111,14 +95,9 @@ class SwipeCard extends StatelessWidget {
     return Transform(
       alignment: Alignment.center,
       transform: Matrix4.identity()
-        ..translateByDouble(
-          dragOffset.dx,
-          dragOffset.dy + verticalOffset,
-          0.0,
-          1.0,
-        )
+        ..translateByDouble(dragOffset.dx, dragOffset.dy + verticalOffset, 0.0, 1.0)
         ..rotateZ(rotationAngle)
-        ..scaleByDouble(scale, scale, 1.0, 1.0),
+        ..scaleByDouble(scaleX, scaleY, 1.0, 1.0),
       child: cardBody,
     );
   }

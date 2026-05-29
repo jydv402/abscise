@@ -63,6 +63,7 @@ class LocalMediaService {
           duration: asset.type == AssetType.video
               ? Duration(seconds: asset.duration)
               : null,
+          localAsset: asset,
         ),
       );
     }
