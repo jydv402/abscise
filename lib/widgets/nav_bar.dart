@@ -24,22 +24,28 @@ class CustomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
 
-    // Sleek border radius and border width scaling to match inner items
+    // Sleek border radius scaling to match inner items
     final double borderRadiusValue = screenWidth < 340
         ? 32.0
         : (screenWidth > 400 ? 48.0 : 44.0);
-    final double borderWidthValue = screenWidth < 340
-        ? 2.0
-        : (screenWidth > 400 ? 3.0 : 2.5);
-
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.primaryPurple,
-        border: Border.all(
-          color: AppTheme.darkBackground,
-          width: borderWidthValue,
-        ),
         borderRadius: BorderRadius.circular(borderRadiusValue),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.darkBackground.withValues(alpha: 0.90),
+            blurRadius: 16.0,
+            spreadRadius: 2.0,
+            offset: const Offset(0, 0),
+          ),
+          BoxShadow(
+            color: AppTheme.darkBackground.withValues(alpha: 0.70),
+            blurRadius: 32.0,
+            spreadRadius: 6.0,
+            offset: const Offset(0, 0),
+          ),
+        ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
