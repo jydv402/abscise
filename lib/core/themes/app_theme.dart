@@ -12,7 +12,7 @@ class AppTheme {
   static const Color textBlack = Color(0xFF000000);
   static const Color textSecondary = Color(0xFFA1A1AA);
 
-  static const EdgeInsets topPadding = .fromLTRB(16, 100, 16, 50);
+  static const EdgeInsets topPadding = .fromLTRB(16, 70, 16, 180);
   static const double borderRadius = 32;
 
   static ThemeData get darkTheme {

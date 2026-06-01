@@ -1,14 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CloudScreen extends StatelessWidget {
+import '../../../core/themes/app_theme.dart';
+
+class CloudScreen extends ConsumerStatefulWidget {
   const CloudScreen({super.key});
 
   @override
+  ConsumerState<CloudScreen> createState() => _CloudScreenState();
+}
+
+class _CloudScreenState extends ConsumerState<CloudScreen> {
+  @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'Google Photos',
-        style: Theme.of(context).textTheme.headlineLarge,
+    return Scaffold(
+      body: Padding(
+        padding: AppTheme.topPadding,
+        child: Column(
+          crossAxisAlignment: .start,
+          children: [
+            Text('Cloud Photos', style: Theme.of(context).textTheme.titleLarge),
+          ],
+        ),
       ),
     );
   }

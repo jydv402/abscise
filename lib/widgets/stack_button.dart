@@ -36,7 +36,7 @@ class StackButton extends StatelessWidget {
               color: isPrimary
                   ? AppTheme.primaryPurple
                   : isTertiary
-                  ? AppTheme.secondaryPurple
+                  ? AppTheme.surfaceColor
                   : AppTheme.darkBackground,
               border: isPrimary || isTertiary
                   ? null

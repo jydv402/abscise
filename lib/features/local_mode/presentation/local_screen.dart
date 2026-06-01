@@ -31,50 +31,41 @@ class _LocalScreenState extends ConsumerState<LocalScreen> {
     return Scaffold(
       backgroundColor: AppTheme.darkBackground,
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 60, 16, 100),
+        padding: AppTheme.topPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Compact Top Header Row
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Local Photos',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-
-                // Sleek, low-profile Undo Button
-                AnimatedOpacity(
-                  opacity: state.history.isNotEmpty ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 250),
-                  child: IgnorePointer(
-                    ignoring: state.history.isEmpty,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppTheme.surfaceColor,
-                        border: Border.all(
-                          color: AppTheme.secondaryPurple.withValues(
-                            alpha: 0.4,
-                          ),
-                          width: 1.5,
-                        ),
-                      ),
-                      child: IconButton(
-                        icon: const Iconify(
-                          MaterialSymbols.undo_rounded,
-                          color: AppTheme.primaryPurple,
-                          size: 24,
-                        ),
-                        onPressed: () =>
-                            ref.read(swipeProvider.notifier).undo(),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            Text('Local Photos', style: Theme.of(context).textTheme.titleLarge),
+            // // Sleek, low-profile Undo Button
+            // AnimatedOpacity(
+            //   opacity: state.history.isNotEmpty ? 1.0 : 0.0,
+            //   duration: const Duration(milliseconds: 250),
+            //   child: IgnorePointer(
+            //     ignoring: state.history.isEmpty,
+            //     child: Container(
+            //       decoration: BoxDecoration(
+            //         shape: BoxShape.circle,
+            //         color: AppTheme.surfaceColor,
+            //         border: Border.all(
+            //           color: AppTheme.secondaryPurple.withValues(
+            //             alpha: 0.4,
+            //           ),
+            //           width: 1.5,
+            //         ),
+            //       ),
+            //       child: IconButton(
+            //         icon: const Iconify(
+            //           MaterialSymbols.undo_rounded,
+            //           color: AppTheme.primaryPurple,
+            //           size: 24,
+            //         ),
+            //         onPressed: () =>
+            //             ref.read(swipeProvider.notifier).undo(),
+            //       ),
+            //     ),
+            //   ),
+            // ),
 
             // Card Stack Container (Uses LayoutBuilder to dynamically scale aspect ratio)
             Expanded(
@@ -111,7 +102,7 @@ class _LocalScreenState extends ConsumerState<LocalScreen> {
 
                           // Reserve a 50px buffer at the top of the card stack bounding box
                           // to prevent the up-shifted layered cards from being clipped at the top.
-                          const double topShiftBuffer = 50.0;
+                          const double topShiftBuffer = 25.0;
                           final double usableHeight =
                               availableHeight - topShiftBuffer;
 
