@@ -1,36 +1,14 @@
 import 'package:abscise/widgets/message_container.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/ph.dart';
 
-import '../../../core/providers/shared_prefs_provider.dart';
 import '../../../core/themes/app_theme.dart';
 import '../../../widgets/stack_button.dart';
 
-class LocalPrivacyScreen extends ConsumerStatefulWidget {
+class LocalPrivacyScreen extends StatelessWidget {
   const LocalPrivacyScreen({super.key});
-
-  @override
-  ConsumerState<LocalPrivacyScreen> createState() => _LocalPrivacyScreenState();
-}
-
-class _LocalPrivacyScreenState extends ConsumerState<LocalPrivacyScreen> {
-  bool _consentAccepted = false;
-
-  @override
-  void initState() {
-    super.initState();
-    // Initialize state from existing preference
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        setState(() {
-          _consentAccepted = ref.read(appPreferencesProvider).getLocalConsentAccepted();
-        });
-      }
-    });
-  }
 
   Widget _buildSectionCard(
     BuildContext context, {
@@ -184,63 +162,15 @@ class _LocalPrivacyScreenState extends ConsumerState<LocalPrivacyScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 24),
-
-          // Interactive Checkbox for Local Consent
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Checkbox(
-                value: _consentAccepted,
-                onChanged: (val) {
-                  setState(() {
-                    _consentAccepted = val ?? false;
-                  });
-                },
-                activeColor: AppTheme.primaryPurple,
-                checkColor: AppTheme.darkBackground,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'I read and explicitly accept the Local Privacy Policy & Terms of Use.',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.textWhite,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-
-          // Accept button to save to persistent storage and return
-          StackButton(
-            label: 'Accept & Return',
-            iconifyIcon: Ph.check_bold,
-            onPressed: () {
-              if (!_consentAccepted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    backgroundColor: AppTheme.deleteRed,
-                    content: Text(
-                      'Please accept the Local Privacy Policy & Terms of Use first.',
-                      style: TextStyle(fontFamily: 'Outfit'),
-                    ),
-                  ),
-                );
-                return;
-              }
-              final prefs = ref.read(appPreferencesProvider);
-              prefs.setLocalConsentAccepted(true);
-              prefs.setLocalConsentTimestamp(DateTime.now().toUtc().toIso8601String());
-              context.pop(true);
-            },
-            variant: ButtonVariant.primary,
-          ),
-          const SizedBox(height: 64),
         ],
       ),
+      floatingActionButton: StackButton(
+        label: 'Accept & Return',
+        iconifyIcon: Ph.check_bold,
+        onPressed: () => context.pop(true),
+        variant: ButtonVariant.primary,
+      ),
+      floatingActionButtonLocation: .centerFloat,
     );
   }
 }

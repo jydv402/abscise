@@ -1,5 +1,6 @@
 import 'package:abscise/widgets/message_container.dart';
 import 'package:abscise/widgets/stack_button.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -22,10 +23,19 @@ class LocalPermsScreen extends ConsumerStatefulWidget {
 
 class _LocalPermsScreenState extends ConsumerState<LocalPermsScreen>
     with WidgetsBindingObserver {
+  bool _consentAccepted = false;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {
+          _consentAccepted = ref.read(appPreferencesProvider).getLocalConsentAccepted();
+        });
+      }
+    });
   }
 
   @override
@@ -233,7 +243,75 @@ class _LocalPermsScreenState extends ConsumerState<LocalPermsScreen>
               ],
             ),
           ),
-          const SizedBox(height: 100),
+          const SizedBox(height: 24),
+          // Interactive Local Consent Box
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Checkbox(
+                value: _consentAccepted,
+                onChanged: isProcessing
+                    ? null
+                    : (val) {
+                        final newValue = val ?? false;
+                        setState(() {
+                          _consentAccepted = newValue;
+                        });
+                        final prefs = ref.read(appPreferencesProvider);
+                        prefs.setLocalConsentAccepted(newValue);
+                        if (newValue) {
+                          prefs.setLocalConsentTimestamp(DateTime.now().toUtc().toIso8601String());
+                        } else {
+                          prefs.setLocalConsentTimestamp(null);
+                        }
+                      },
+                activeColor: AppTheme.primaryPurple,
+                checkColor: AppTheme.darkBackground,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: RichText(
+                  text: TextSpan(
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppTheme.textWhite,
+                          fontSize: 14,
+                          height: 1.4,
+                        ),
+                    children: [
+                      const TextSpan(
+                        text: 'I read and explicitly accept the ',
+                      ),
+                      TextSpan(
+                        text: 'Local Privacy Policy & Terms of Use',
+                        style: const TextStyle(
+                          color: AppTheme.primaryPurple,
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () async {
+                            final accepted = await context.push<bool>('/local-privacy');
+                            if (accepted == true) {
+                              setState(() {
+                                _consentAccepted = true;
+                              });
+                              final prefs = ref.read(appPreferencesProvider);
+                              prefs.setLocalConsentAccepted(true);
+                              prefs.setLocalConsentTimestamp(DateTime.now().toUtc().toIso8601String());
+                            }
+                          },
+                      ),
+                      const TextSpan(
+                        text:
+                            '. I authorize Abscise to catalog my local media files strictly on-device to build the swipe cards deck.',
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 120),
         ],
       ),
       floatingActionButton: Column(
@@ -243,7 +321,17 @@ class _LocalPermsScreenState extends ConsumerState<LocalPermsScreen>
           StackButton(
             label: "See privacy policy",
             iconifyIcon: Ph.arrow_bend_double_up_right,
-            onPressed: () => context.push('/local-privacy'),
+            onPressed: () async {
+              final accepted = await context.push<bool>('/local-privacy');
+              if (accepted == true) {
+                setState(() {
+                  _consentAccepted = true;
+                });
+                final prefs = ref.read(appPreferencesProvider);
+                prefs.setLocalConsentAccepted(true);
+                prefs.setLocalConsentTimestamp(DateTime.now().toUtc().toIso8601String());
+              }
+            },
             variant: ButtonVariant.secondary,
           ),
           StackButton(
@@ -252,13 +340,12 @@ class _LocalPermsScreenState extends ConsumerState<LocalPermsScreen>
             onPressed: isProcessing
                 ? () {}
                 : () {
-                    final prefs = ref.read(appPreferencesProvider);
-                    if (!prefs.getLocalConsentAccepted()) {
+                    if (!_consentAccepted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           backgroundColor: AppTheme.deleteRed,
                           content: Text(
-                            'Please read and accept the Local Privacy Policy first.',
+                            'Please read and accept the Local Privacy Policy & Terms of Use first.',
                             style: TextStyle(fontFamily: 'Outfit'),
                           ),
                         ),

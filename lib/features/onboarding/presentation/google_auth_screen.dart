@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/ph.dart';
 
+import '../../../core/providers/shared_prefs_provider.dart';
 import '../../../core/themes/app_theme.dart';
 import '../../../widgets/message_container.dart';
 import '../../../widgets/stack_button.dart';
@@ -20,6 +21,18 @@ class GoogleAuthScreen extends ConsumerStatefulWidget {
 
 class _GoogleAuthScreenState extends ConsumerState<GoogleAuthScreen> {
   bool _consentAccepted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {
+          _consentAccepted = ref.read(appPreferencesProvider).getGooglePhotosConsentAccepted();
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -144,9 +157,17 @@ class _GoogleAuthScreenState extends ConsumerState<GoogleAuthScreen> {
                 onChanged: isProcessing
                     ? null
                     : (val) {
+                        final newValue = val ?? false;
                         setState(() {
-                          _consentAccepted = val ?? false;
+                          _consentAccepted = newValue;
                         });
+                        final prefs = ref.read(appPreferencesProvider);
+                        prefs.setGooglePhotosConsentAccepted(newValue);
+                        if (newValue) {
+                          prefs.setGooglePhotosConsentTimestamp(DateTime.now().toUtc().toIso8601String());
+                        } else {
+                          prefs.setGooglePhotosConsentTimestamp(null);
+                        }
                       },
                 activeColor: AppTheme.primaryPurple,
                 checkColor: AppTheme.darkBackground,
@@ -178,6 +199,9 @@ class _GoogleAuthScreenState extends ConsumerState<GoogleAuthScreen> {
                               setState(() {
                                 _consentAccepted = true;
                               });
+                              final prefs = ref.read(appPreferencesProvider);
+                              prefs.setGooglePhotosConsentAccepted(true);
+                              prefs.setGooglePhotosConsentTimestamp(DateTime.now().toUtc().toIso8601String());
                             }
                           },
                       ),

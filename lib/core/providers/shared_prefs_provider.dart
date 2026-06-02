@@ -80,8 +80,10 @@ class AppPreferences {
     return _prefs.setString(_keyGoogleUserEmail, value);
   }
 
-  static const String _keyGooglePhotosConsentAccepted = 'google_photos_consent_accepted';
-  static const String _keyGooglePhotosConsentTimestamp = 'google_photos_consent_timestamp';
+  static const String _keyGooglePhotosConsentAccepted =
+      'google_photos_consent_accepted';
+  static const String _keyGooglePhotosConsentTimestamp =
+      'google_photos_consent_timestamp';
   static const String _keyLocalConsentAccepted = 'local_consent_accepted';
   static const String _keyLocalConsentTimestamp = 'local_consent_timestamp';
 
