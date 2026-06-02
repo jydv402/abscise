@@ -46,14 +46,17 @@ class CustomNavBar extends ConsumerWidget {
     BuildContext context,
     double screenWidth,
     double borderRadiusValue,
+    double dynamicHeight,
   ) {
     return Container(
       key: const ValueKey('tabNavBar'),
+      height: dynamicHeight,
       decoration: BoxDecoration(
         color: AppTheme.primaryPurple,
         borderRadius: BorderRadius.circular(borderRadiusValue),
         boxShadow: _buildDoubleShadow(),
       ),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
@@ -62,21 +65,25 @@ class CustomNavBar extends ConsumerWidget {
             index: 0,
             isSelected: navigationShell.currentIndex == 0,
             onTap: () => _onTabSelected(0),
+            dynamicHeight: dynamicHeight,
           ),
           _NavBarItem(
             index: 1,
             isSelected: navigationShell.currentIndex == 1,
             onTap: () => _onTabSelected(1),
+            dynamicHeight: dynamicHeight,
           ),
           _NavBarItem(
             index: 2,
             isSelected: navigationShell.currentIndex == 2,
             onTap: () => _onTabSelected(2),
+            dynamicHeight: dynamicHeight,
           ),
           _NavBarItem(
             index: 3,
             isSelected: navigationShell.currentIndex == 3,
             onTap: () => _onTabSelected(3),
+            dynamicHeight: dynamicHeight,
           ),
         ],
       ),
@@ -106,6 +113,8 @@ class CustomNavBar extends ConsumerWidget {
         .length;
     final bool hasHistory = swipeState.history.isNotEmpty;
 
+    final double circleDiameter = dynamicHeight - 16.0;
+
     return Row(
       key: const ValueKey('actionBarMode'),
       mainAxisAlignment: MainAxisAlignment.center,
@@ -126,8 +135,8 @@ class CustomNavBar extends ConsumerWidget {
             ),
             child: Center(
               child: Container(
-                width: iconSize + paddingValue,
-                height: iconSize + paddingValue,
+                width: circleDiameter,
+                height: circleDiameter,
                 decoration: const BoxDecoration(
                   color: AppTheme.darkBackground,
                   shape: BoxShape.circle,
@@ -152,7 +161,7 @@ class CustomNavBar extends ConsumerWidget {
             borderRadius: BorderRadius.circular(borderRadiusValue),
             boxShadow: _buildDoubleShadow(),
           ),
-          padding: EdgeInsets.symmetric(horizontal: paddingValue * 1.4),
+          padding: .only(left: paddingValue * 1.2, right: paddingValue * 0.45),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -177,7 +186,7 @@ class CustomNavBar extends ConsumerWidget {
                   ),
                 ],
               ),
-              SizedBox(width: paddingValue * 1.4),
+              SizedBox(width: paddingValue * 1.2),
 
               // Keep Count
               Row(
@@ -200,7 +209,7 @@ class CustomNavBar extends ConsumerWidget {
                   ),
                 ],
               ),
-              SizedBox(width: paddingValue * 1.4),
+              SizedBox(width: paddingValue * 1.2),
               // Undo Button
               GestureDetector(
                 onTap: hasHistory
@@ -210,15 +219,18 @@ class CustomNavBar extends ConsumerWidget {
                   opacity: hasHistory ? 1.0 : 0.35,
                   duration: const Duration(milliseconds: 200),
                   child: Container(
-                    padding: EdgeInsets.all(paddingValue * 0.5),
+                    width: circleDiameter,
+                    height: circleDiameter,
                     decoration: const BoxDecoration(
                       color: AppTheme.darkBackground,
                       shape: BoxShape.circle,
                     ),
-                    child: Iconify(
-                      Ph.arrow_u_up_left,
-                      color: AppTheme.tertiaryLime,
-                      size: iconSize,
+                    child: Center(
+                      child: Iconify(
+                        Ph.arrow_u_up_left_bold,
+                        color: AppTheme.tertiaryLime,
+                        size: iconSize,
+                      ),
                     ),
                   ),
                 ),
@@ -264,7 +276,12 @@ class CustomNavBar extends ConsumerWidget {
         );
       },
       child: mode == NavBarMode.pageSwitch
-          ? _buildTabNavBar(context, screenWidth, borderRadiusValue)
+          ? _buildTabNavBar(
+              context,
+              screenWidth,
+              borderRadiusValue,
+              dynamicHeight,
+            )
           : _buildActionBar(
               context,
               screenWidth,
@@ -282,10 +299,12 @@ class _NavBarItem extends StatelessWidget {
     required this.index,
     required this.isSelected,
     required this.onTap,
+    required this.dynamicHeight,
   });
   final int index;
   final bool isSelected;
   final VoidCallback onTap;
+  final double dynamicHeight;
 
   static const List<String> _activeIcons = [
     Ph.file_image_duotone,
@@ -304,37 +323,28 @@ class _NavBarItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
-
-    // Dynamic sleek padding that responds to screen width to prevent overflow
-    // under high display scaling / small screens, while providing a substantial
-    // feel on larger screens.
-    final double paddingValue = screenWidth < 340
-        ? 12.0
-        : (screenWidth > 400 ? 18.0 : 16.0);
-
-    final double marginValue = screenWidth < 340
-        ? 3.0
-        : (screenWidth > 400 ? 5.0 : 4.0);
-
     final double iconSize = screenWidth < 340
         ? 22.0
         : (screenWidth > 400 ? 26.0 : 24.0);
 
+    final double circleDiameter = dynamicHeight - 16.0;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(paddingValue),
-        margin: index == 0 || index == 3
-            ? EdgeInsets.all(marginValue)
-            : EdgeInsets.zero,
+        width: circleDiameter,
+        height: circleDiameter,
+        margin: index == 0 || index == 3 ? .zero : .symmetric(horizontal: 4),
         decoration: BoxDecoration(
           color: isSelected ? AppTheme.darkBackground : Colors.transparent,
           shape: BoxShape.circle,
         ),
-        child: Iconify(
-          isSelected ? _activeIcons[index] : _inactiveIcons[index],
-          color: isSelected ? AppTheme.tertiaryLime : AppTheme.darkBackground,
-          size: iconSize,
+        child: Center(
+          child: Iconify(
+            isSelected ? _activeIcons[index] : _inactiveIcons[index],
+            color: isSelected ? AppTheme.tertiaryLime : AppTheme.darkBackground,
+            size: iconSize,
+          ),
         ),
       ),
     );
