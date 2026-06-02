@@ -36,43 +36,9 @@ class _LocalScreenState extends ConsumerState<LocalScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Compact Top Header Row
-            Row(
-              mainAxisAlignment: .spaceBetween,
-              children: [
-                Text(
-                  'Local Photos',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                // Sleek, low-profile Undo Button
-                AnimatedOpacity(
-                  opacity: state.history.isNotEmpty ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 250),
-                  child: IgnorePointer(
-                    ignoring: state.history.isEmpty,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppTheme.surfaceColor,
-                        border: Border.all(
-                          color: AppTheme.secondaryPurple.withValues(
-                            alpha: 0.4,
-                          ),
-                          width: 1.5,
-                        ),
-                      ),
-                      child: IconButton(
-                        icon: const Iconify(
-                          MaterialSymbols.undo_rounded,
-                          color: AppTheme.primaryPurple,
-                          size: 24,
-                        ),
-                        onPressed: () =>
-                            ref.read(swipeProvider.notifier).undo(),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            Text(
+              'Local Photos',
+              style: Theme.of(context).textTheme.titleLarge,
             ),
 
             // Card Stack Container (Uses LayoutBuilder to dynamically scale aspect ratio)

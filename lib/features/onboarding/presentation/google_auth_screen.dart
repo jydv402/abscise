@@ -1,6 +1,8 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/ph.dart';
 
 import '../../../core/themes/app_theme.dart';
@@ -9,11 +11,18 @@ import '../../../widgets/stack_button.dart';
 import '../controllers/google_auth_controller.dart';
 import '../state/google_auth_state.dart';
 
-class GoogleAuthScreen extends ConsumerWidget {
+class GoogleAuthScreen extends ConsumerStatefulWidget {
   const GoogleAuthScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<GoogleAuthScreen> createState() => _GoogleAuthScreenState();
+}
+
+class _GoogleAuthScreenState extends ConsumerState<GoogleAuthScreen> {
+  bool _consentAccepted = false;
+
+  @override
+  Widget build(BuildContext context) {
     // Listen for authentication stream changes to handle reactive navigation
     ref.listen<GoogleAuthState>(googleAuthControllerProvider, (previous, next) {
       if (next.status == AuthStatus.authenticated ||
@@ -45,16 +54,148 @@ class GoogleAuthScreen extends ConsumerWidget {
             style: Theme.of(context).textTheme.headlineLarge,
           ),
           MessageContainer(
-            child: Text(
-              'To connect your Google Photos library and clear remote clutter, authenticate your account.',
-              style: Theme.of(context).textTheme.bodyMedium,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 16,
+              children: [
+                Text(
+                  'Unlock remote library decluttering with Google Photos Integration:',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: AppTheme.textWhite,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Iconify(
+                      Ph.google_photos_logo_bold,
+                      color: AppTheme.primaryPurple,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Cloud Sync Swipe Deck: Seamlessly swipe remote Google Photos. Swipe right to keep them, swipe left to clear library space.',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Iconify(
+                      Ph.check_bold,
+                      color: AppTheme.primaryPurple,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Safe Remote Bin Album: Swiped-left items are safely compiled inside a private "Abscise Bin" album on Google Photos. No cloud items are permanently deleted without your manual control.',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Iconify(
+                      Ph.shield_check_bold,
+                      color: AppTheme.primaryPurple,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Encrypted OAuth Authentication: Connect directly using secure Google OAuth. Your tokens, credentials, and photos are strictly private and never sent to external servers.',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                  ],
+                ),
+                const Divider(color: AppTheme.surfaceColor),
+                Text(
+                  'Why Google Photo Permissions are Required:',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: AppTheme.textWhite,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                Text(
+                  'Abscise requests limited-access API scope to read media metadata, display cloud photos on your swipe deck, create the custom "Abscise Bin" album, and add swiped-left items to that album. It does NOT request administrative permission to delete files directly from your cloud.',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppTheme.textSecondary,
+                        height: 1.4,
+                      ),
+                ),
+              ],
             ),
+          ),
+          const SizedBox(height: 24),
+          // Interactive Legal Consent Box
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Checkbox(
+                value: _consentAccepted,
+                onChanged: isProcessing
+                    ? null
+                    : (val) {
+                        setState(() {
+                          _consentAccepted = val ?? false;
+                        });
+                      },
+                activeColor: AppTheme.primaryPurple,
+                checkColor: AppTheme.darkBackground,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: RichText(
+                  text: TextSpan(
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppTheme.textWhite,
+                          fontSize: 14,
+                          height: 1.4,
+                        ),
+                    children: [
+                      const TextSpan(
+                        text: 'I read and explicitly consent to the ',
+                      ),
+                      TextSpan(
+                        text: 'Google Photos Terms & Privacy Policy',
+                        style: const TextStyle(
+                          color: AppTheme.primaryPurple,
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () async {
+                            final accepted = await context.push<bool>('/google-privacy');
+                            if (accepted == true) {
+                              setState(() {
+                                _consentAccepted = true;
+                              });
+                            }
+                          },
+                      ),
+                      const TextSpan(
+                        text:
+                            '. I authorize Abscise to link my account and manage my Google Photos library strictly by adding chosen items into the "Abscise Bin" album.',
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
 
       floatingActionButton: Column(
-        mainAxisSize: .min,
+        mainAxisSize: MainAxisSize.min,
         spacing: 12,
         children: [
           StackButton(
@@ -73,9 +214,21 @@ class GoogleAuthScreen extends ConsumerWidget {
             onPressed: isProcessing
                 ? () {}
                 : () {
+                    if (!_consentAccepted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          backgroundColor: AppTheme.deleteRed,
+                          content: Text(
+                            'Please read and accept the Google Photos Terms & Privacy Policy first.',
+                            style: TextStyle(fontFamily: 'Outfit'),
+                          ),
+                        ),
+                      );
+                      return;
+                    }
                     ref.read(googleAuthControllerProvider.notifier).login();
                   },
-            variant: ButtonVariant.primary,
+            variant: isProcessing ? ButtonVariant.secondary : ButtonVariant.primary,
           ),
         ],
       ),

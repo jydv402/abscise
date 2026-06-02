@@ -1,10 +1,12 @@
 import 'dart:ui' show lerpDouble;
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/const/media_item.dart';
+import '../core/providers/nav_bar_mode_provider.dart';
 import 'swipe_card.dart';
 
-class StackedSwipeDeck extends StatefulWidget {
+class StackedSwipeDeck extends ConsumerStatefulWidget {
   final List<MediaItem> deck;
   final VoidCallback onSwipeLeft;
   final VoidCallback onSwipeRight;
@@ -17,10 +19,10 @@ class StackedSwipeDeck extends StatefulWidget {
   });
 
   @override
-  State<StackedSwipeDeck> createState() => _StackedSwipeDeckState();
+  ConsumerState<StackedSwipeDeck> createState() => _StackedSwipeDeckState();
 }
 
-class _StackedSwipeDeckState extends State<StackedSwipeDeck>
+class _StackedSwipeDeckState extends ConsumerState<StackedSwipeDeck>
     with SingleTickerProviderStateMixin {
   Offset _dragOffset = Offset.zero;
   late AnimationController _animController;
@@ -44,6 +46,10 @@ class _StackedSwipeDeckState extends State<StackedSwipeDeck>
 
   void _onPanUpdate(DragUpdateDetails details) {
     if (_isAnimating || widget.deck.isEmpty) return;
+    
+    // Switch the bottom navigation bar to Action Bar mode on first drag touch
+    ref.read(navBarModeProvider.notifier).switchToActionBar();
+
     setState(() {
       _dragOffset += details.delta;
     });

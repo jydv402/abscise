@@ -159,11 +159,81 @@ class _LocalPermsScreenState extends ConsumerState<LocalPermsScreen>
             ),
           ],
           MessageContainer(
-            child: Text(
-              'To index your photos and media items and to clean them, Abscise requires local media storage permissions. Please grant access to your device\'s media library to proceed.',
-              style: Theme.of(context).textTheme.bodyMedium,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 16,
+              children: [
+                Text(
+                  'Abscise makes local storage decluttering quick and simple:',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Iconify(
+                      Ph.file_image_bold,
+                      color: AppTheme.tertiaryLime,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Card-Deck Swipe Interface: Review your local photos in an interactive swipe deck. Swipe right to keep them, swipe left to queue for clean up.',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Iconify(
+                      Ph.trash_bold,
+                      color: AppTheme.tertiaryLime,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Protected Two-Step Deletion: Swiped-left items are safely moved to a local Bin inside the app. They are never permanently deleted from storage without your final approval.',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Iconify(
+                      Ph.device_mobile_bold,
+                      color: AppTheme.tertiaryLime,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Absolute Device Privacy: Abscise runs 100% locally. Your files, library index, and swipe choices are kept securely on your offline storage and never uploaded to any remote server.',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                  ],
+                ),
+                const Divider(color: AppTheme.surfaceColor),
+                Text(
+                  'Why Storage Permission is Required:',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                Text(
+                  'To load image thumbnails into your interactive swipe deck, calculate storage statistics, and move swiped-left clutter into the safe local Bin, Abscise requires standard storage permission to read and manage files in your device library.',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.textSecondary,
+                    height: 1.4,
+                  ),
+                ),
+              ],
             ),
           ),
+          const SizedBox(height: 100),
         ],
       ),
       floatingActionButton: Column(
@@ -173,7 +243,7 @@ class _LocalPermsScreenState extends ConsumerState<LocalPermsScreen>
           StackButton(
             label: "See privacy policy",
             iconifyIcon: Ph.arrow_bend_double_up_right,
-            onPressed: () {},
+            onPressed: () => context.push('/local-privacy'),
             variant: ButtonVariant.secondary,
           ),
           StackButton(
@@ -181,9 +251,24 @@ class _LocalPermsScreenState extends ConsumerState<LocalPermsScreen>
             iconifyIcon: Ph.check_bold,
             onPressed: isProcessing
                 ? () {}
-                : () => ref
-                      .read(permsControllerProvider.notifier)
-                      .requestPermissions(),
+                : () {
+                    final prefs = ref.read(appPreferencesProvider);
+                    if (!prefs.getLocalConsentAccepted()) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          backgroundColor: AppTheme.deleteRed,
+                          content: Text(
+                            'Please read and accept the Local Privacy Policy first.',
+                            style: TextStyle(fontFamily: 'Outfit'),
+                          ),
+                        ),
+                      );
+                      return;
+                    }
+                    ref
+                        .read(permsControllerProvider.notifier)
+                        .requestPermissions();
+                  },
             variant: ButtonVariant.primary,
           ),
         ],

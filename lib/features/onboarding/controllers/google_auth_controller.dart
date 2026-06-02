@@ -46,6 +46,8 @@ class GoogleAuthController extends Notifier<GoogleAuthState> {
         await prefs.setGoogleAuthenticated(true);
         await prefs.setGoogleUserName(user.displayName);
         await prefs.setGoogleUserEmail(user.email);
+        await prefs.setGooglePhotosConsentAccepted(true);
+        await prefs.setGooglePhotosConsentTimestamp(DateTime.now().toUtc().toIso8601String());
 
         state = GoogleAuthState(status: AuthStatus.authenticated, user: user);
       } else if (_isManualLogin) {
@@ -57,6 +59,8 @@ class GoogleAuthController extends Notifier<GoogleAuthState> {
           await prefs.setGoogleAuthenticated(true);
           await prefs.setGoogleUserName(user.displayName);
           await prefs.setGoogleUserEmail(user.email);
+          await prefs.setGooglePhotosConsentAccepted(true);
+          await prefs.setGooglePhotosConsentTimestamp(DateTime.now().toUtc().toIso8601String());
 
           state = GoogleAuthState(status: AuthStatus.authenticated, user: user);
         } else {
@@ -76,6 +80,8 @@ class GoogleAuthController extends Notifier<GoogleAuthState> {
       await prefs.setGoogleAuthenticated(false);
       await prefs.setGoogleUserName(null);
       await prefs.setGoogleUserEmail(null);
+      await prefs.setGooglePhotosConsentAccepted(false);
+      await prefs.setGooglePhotosConsentTimestamp(null);
 
       state = const GoogleAuthState(status: AuthStatus.unauthenticated);
     }
@@ -154,6 +160,8 @@ class GoogleAuthController extends Notifier<GoogleAuthState> {
       await prefs.setGoogleAuthenticated(false);
       await prefs.setGoogleUserName(null);
       await prefs.setGoogleUserEmail(null);
+      await prefs.setGooglePhotosConsentAccepted(false);
+      await prefs.setGooglePhotosConsentTimestamp(null);
       state = const GoogleAuthState(status: AuthStatus.unauthenticated);
     } catch (e) {
       state = GoogleAuthState(

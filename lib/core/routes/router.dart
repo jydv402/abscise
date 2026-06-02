@@ -5,6 +5,8 @@ import 'package:photo_manager/photo_manager.dart';
 import '../../features/onboarding/presentation/google_auth_screen.dart';
 import '../../features/onboarding/presentation/local_perms_screen.dart';
 import '../../features/onboarding/presentation/splash_screen.dart';
+import '../../features/onboarding/presentation/local_privacy_screen.dart';
+import '../../features/onboarding/presentation/google_privacy_screen.dart';
 
 import '../../features/local_mode/presentation/local_screen.dart';
 import '../../features/cloud_mode/presentation/cloud_screen.dart';
@@ -33,6 +35,14 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/google-auth',
       builder: (context, state) => const GoogleAuthScreen(),
+    ),
+    GoRoute(
+      path: '/local-privacy',
+      builder: (context, state) => const LocalPrivacyScreen(),
+    ),
+    GoRoute(
+      path: '/google-privacy',
+      builder: (context, state) => const GooglePrivacyScreen(),
     ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {

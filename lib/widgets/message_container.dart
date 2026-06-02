@@ -9,6 +9,7 @@ class MessageContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: .only(top: 16),
       alignment: .centerStart,
       padding: const .all(24),
       decoration: BoxDecoration(

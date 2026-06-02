@@ -6,7 +6,12 @@ import 'package:iconify_flutter/icons/ph.dart';
 
 import '../core/themes/app_theme.dart';
 
-class CustomNavBar extends StatelessWidget {
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../core/providers/nav_bar_mode_provider.dart';
+import '../features/local_mode/controllers/swipe_controller.dart';
+import '../core/const/swipe_state.dart';
+
+class CustomNavBar extends ConsumerWidget {
   /// The navigation shell provided by GoRouter's StatefulShellRoute
   final StatefulNavigationShell navigationShell;
 
@@ -20,32 +25,34 @@ class CustomNavBar extends StatelessWidget {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
+  List<BoxShadow> _buildDoubleShadow() {
+    return [
+      BoxShadow(
+        color: AppTheme.darkBackground.withValues(alpha: 0.90),
+        blurRadius: 16.0,
+        spreadRadius: 2.0,
+        offset: const Offset(0, 0),
+      ),
+      BoxShadow(
+        color: AppTheme.darkBackground.withValues(alpha: 0.70),
+        blurRadius: 32.0,
+        spreadRadius: 6.0,
+        offset: const Offset(0, 0),
+      ),
+    ];
+  }
 
-    // Sleek border radius scaling to match inner items
-    final double borderRadiusValue = screenWidth < 340
-        ? 32.0
-        : (screenWidth > 400 ? 48.0 : 44.0);
+  Widget _buildTabNavBar(
+    BuildContext context,
+    double screenWidth,
+    double borderRadiusValue,
+  ) {
     return Container(
+      key: const ValueKey('tabNavBar'),
       decoration: BoxDecoration(
         color: AppTheme.primaryPurple,
         borderRadius: BorderRadius.circular(borderRadiusValue),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.darkBackground.withValues(alpha: 0.90),
-            blurRadius: 16.0,
-            spreadRadius: 2.0,
-            offset: const Offset(0, 0),
-          ),
-          BoxShadow(
-            color: AppTheme.darkBackground.withValues(alpha: 0.70),
-            blurRadius: 32.0,
-            spreadRadius: 6.0,
-            offset: const Offset(0, 0),
-          ),
-        ],
+        boxShadow: _buildDoubleShadow(),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -73,6 +80,190 @@ class CustomNavBar extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildActionBar(
+    BuildContext context,
+    double screenWidth,
+    double borderRadiusValue,
+    double dynamicHeight,
+    WidgetRef ref,
+    SwipeState swipeState,
+  ) {
+    final double paddingValue = screenWidth < 340
+        ? 12.0
+        : (screenWidth > 400 ? 18.0 : 16.0);
+    final double iconSize = screenWidth < 340
+        ? 22.0
+        : (screenWidth > 400 ? 26.0 : 24.0);
+
+    final int deleteCount = swipeState.history.where((item) => item.isDeleted).length;
+    final int keepCount = swipeState.history.where((item) => !item.isDeleted).length;
+    final bool hasHistory = swipeState.history.isNotEmpty;
+
+    return Row(
+      key: const ValueKey('actionBarMode'),
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Left Pill: Collapsed Nav Pill
+        GestureDetector(
+          onTap: () {
+            ref.read(navBarModeProvider.notifier).switchToPageSwitch();
+          },
+          child: Container(
+            width: dynamicHeight,
+            height: dynamicHeight,
+            decoration: BoxDecoration(
+              color: AppTheme.primaryPurple,
+              shape: BoxShape.circle,
+              boxShadow: _buildDoubleShadow(),
+            ),
+            child: Center(
+              child: Container(
+                width: iconSize + paddingValue * 0.8,
+                height: iconSize + paddingValue * 0.8,
+                decoration: const BoxDecoration(
+                  color: AppTheme.darkBackground,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Iconify(
+                    Ph.compass_bold,
+                    color: AppTheme.primaryPurple,
+                    size: iconSize,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        // Right Pill: Swipe Stats & Undo Pill
+        Container(
+          height: dynamicHeight,
+          decoration: BoxDecoration(
+            color: AppTheme.primaryPurple,
+            borderRadius: BorderRadius.circular(borderRadiusValue),
+            boxShadow: _buildDoubleShadow(),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: paddingValue * 1.4),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Delete Count
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Iconify(
+                    Ph.trash_bold,
+                    color: AppTheme.deleteRed,
+                    size: iconSize,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    '$deleteCount',
+                    style: TextStyle(
+                      fontFamily: 'Outfit',
+                      fontSize: iconSize - 5,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.darkBackground,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(width: paddingValue * 1.4),
+              // Center Undo Button
+              GestureDetector(
+                onTap: hasHistory
+                    ? () => ref.read(swipeProvider.notifier).undo()
+                    : null,
+                child: AnimatedOpacity(
+                  opacity: hasHistory ? 1.0 : 0.35,
+                  duration: const Duration(milliseconds: 200),
+                  child: Container(
+                    padding: EdgeInsets.all(paddingValue * 0.5),
+                    decoration: const BoxDecoration(
+                      color: AppTheme.darkBackground,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Iconify(
+                      Ph.arrow_counter_clockwise_bold,
+                      color: AppTheme.primaryPurple,
+                      size: iconSize,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: paddingValue * 1.4),
+              // Keep Count
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Iconify(
+                    Ph.check_bold,
+                    color: AppTheme.keepGreen,
+                    size: iconSize,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    '$keepCount',
+                    style: TextStyle(
+                      fontFamily: 'Outfit',
+                      fontSize: iconSize - 5,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.darkBackground,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final mode = ref.watch(navBarModeProvider);
+    final swipeState = ref.watch(swipeProvider);
+
+    // Sleek border radius scaling to match inner items
+    final double borderRadiusValue = screenWidth < 340
+        ? 32.0
+        : (screenWidth > 400 ? 48.0 : 44.0);
+
+    final double paddingValue = screenWidth < 340
+        ? 12.0
+        : (screenWidth > 400 ? 18.0 : 16.0);
+    final double marginValue = screenWidth < 340
+        ? 3.0
+        : (screenWidth > 400 ? 5.0 : 4.0);
+    final double iconSize = screenWidth < 340
+        ? 22.0
+        : (screenWidth > 400 ? 26.0 : 24.0);
+
+    final double dynamicHeight = paddingValue * 2 + iconSize + marginValue * 2;
+
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 350),
+      switchInCurve: Curves.easeInOut,
+      switchOutCurve: Curves.easeInOut,
+      transitionBuilder: (child, animation) {
+        return FadeTransition(
+          opacity: animation,
+          child: ScaleTransition(
+            scale: animation,
+            child: child,
+          ),
+        );
+      },
+      child: mode == NavBarMode.pageSwitch
+          ? _buildTabNavBar(context, screenWidth, borderRadiusValue)
+          : _buildActionBar(context, screenWidth, borderRadiusValue, dynamicHeight, ref, swipeState),
     ).animate().slideY(begin: 1.5, end: 0, curve: Curves.easeOutBack);
   }
 }

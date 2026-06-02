@@ -79,4 +79,49 @@ class AppPreferences {
     }
     return _prefs.setString(_keyGoogleUserEmail, value);
   }
+
+  static const String _keyGooglePhotosConsentAccepted = 'google_photos_consent_accepted';
+  static const String _keyGooglePhotosConsentTimestamp = 'google_photos_consent_timestamp';
+  static const String _keyLocalConsentAccepted = 'local_consent_accepted';
+  static const String _keyLocalConsentTimestamp = 'local_consent_timestamp';
+
+  // Getters and Setters for Google Photos Consent
+  bool getGooglePhotosConsentAccepted() {
+    return _prefs.getBool(_keyGooglePhotosConsentAccepted) ?? false;
+  }
+
+  Future<bool> setGooglePhotosConsentAccepted(bool value) {
+    return _prefs.setBool(_keyGooglePhotosConsentAccepted, value);
+  }
+
+  String? getGooglePhotosConsentTimestamp() {
+    return _prefs.getString(_keyGooglePhotosConsentTimestamp);
+  }
+
+  Future<bool> setGooglePhotosConsentTimestamp(String? value) {
+    if (value == null) {
+      return _prefs.remove(_keyGooglePhotosConsentTimestamp);
+    }
+    return _prefs.setString(_keyGooglePhotosConsentTimestamp, value);
+  }
+
+  // Getters and Setters for Local Storage Consent
+  bool getLocalConsentAccepted() {
+    return _prefs.getBool(_keyLocalConsentAccepted) ?? false;
+  }
+
+  Future<bool> setLocalConsentAccepted(bool value) {
+    return _prefs.setBool(_keyLocalConsentAccepted, value);
+  }
+
+  String? getLocalConsentTimestamp() {
+    return _prefs.getString(_keyLocalConsentTimestamp);
+  }
+
+  Future<bool> setLocalConsentTimestamp(String? value) {
+    if (value == null) {
+      return _prefs.remove(_keyLocalConsentTimestamp);
+    }
+    return _prefs.setString(_keyLocalConsentTimestamp, value);
+  }
 }
