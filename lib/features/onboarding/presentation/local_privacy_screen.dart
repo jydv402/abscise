@@ -45,7 +45,7 @@ class LocalPrivacyScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppTheme.darkBackground,
       body: ListView(
-        padding: AppTheme.topPadding,
+        padding: AppTheme.paddingL,
         children: [
           // Elegant Header Row with Back Button
           Row(

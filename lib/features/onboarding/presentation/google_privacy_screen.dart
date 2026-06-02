@@ -50,7 +50,7 @@ class GooglePrivacyScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppTheme.darkBackground,
       body: ListView(
-        padding: AppTheme.topPadding,
+        padding: AppTheme.paddingL,
         children: [
           // Header Row with Back Button
           Row(
@@ -85,7 +85,7 @@ class GooglePrivacyScreen extends StatelessWidget {
           Text(
             'This Privacy Policy and Terms of Use govern the connection and synchronization between the Abscise application and your Google Photos Library using Google OAuth APIs. Please read these terms carefully before authorizing access.',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppTheme.textWhite.withValues(alpha: 0.8),
+              color: AppTheme.textSecondary,
               height: 1.5,
             ),
           ),

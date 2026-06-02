@@ -10,9 +10,10 @@ class AppTheme {
   static const Color keepGreen = Color(0xFF22C55E);
   static const Color textWhite = Color(0xFFFFFFFF);
   static const Color textBlack = Color(0xFF000000);
-  static const Color textSecondary = Color(0xFFA1A1AA);
+  static const Color textSecondary = Color.fromARGB(205, 255, 255, 255);
 
-  static const EdgeInsets topPadding = .fromLTRB(16, 70, 16, 180);
+  static const EdgeInsets paddingL = .fromLTRB(16, 70, 16, 180);
+  static const EdgeInsets paddingXL = .fromLTRB(16, 70, 16, 300);
   static const double borderRadius = 32;
 
   static ThemeData get darkTheme {

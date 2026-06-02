@@ -20,7 +20,7 @@ class StatsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: AppTheme.topPadding,
+      padding: AppTheme.paddingL,
       children: const [
         _SectionHeading(title: 'Stats'),
         _SpaceSavedBox(),
@@ -29,6 +29,9 @@ class StatsScreen extends StatelessWidget {
         SizedBox(height: 36),
         _SectionHeading(title: 'Google Account Settings'),
         _GoogleAccountSettingsSection(),
+        SizedBox(height: 36),
+        _SectionHeading(title: 'Privacy Policy'),
+        _PrivacyPolicySection(),
         SizedBox(height: 36),
         _SectionHeading(title: 'About'),
         _AboutSection(),
@@ -216,9 +219,10 @@ class _UnauthenticatedSettingsBox extends StatelessWidget {
           ),
           Text(
             'Link your Google Photos library to manage your remote assets, swipe to clean duplicates, and free up cloud workspace storage.',
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: AppTheme.textSecondary),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: AppTheme.textSecondary,
+              fontWeight: .w500,
+            ),
           ),
           StackButton(
             label: 'Link Account',
@@ -264,9 +268,10 @@ class _AuthenticatedSettingsBox extends ConsumerWidget {
               ),
               Text(
                 googleUser?.email ?? cachedEmail ?? '',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: AppTheme.textSecondary),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: AppTheme.textSecondary,
+                  fontWeight: .w500,
+                ),
               ),
             ],
           ),
@@ -325,15 +330,49 @@ class _ActionRow extends StatelessWidget {
         Text(title, style: Theme.of(context).textTheme.titleMedium),
         Text(
           description,
-          style: Theme.of(
-            context,
-          ).textTheme.bodySmall?.copyWith(color: AppTheme.textSecondary),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+            color: AppTheme.textSecondary,
+            fontWeight: .w500,
+          ),
         ),
         StackButton(
           label: buttonLabel,
           iconifyIcon: Ph.arrow_arc_right,
           variant: ButtonVariant.tertiary,
           onPressed: onPressed,
+        ),
+      ],
+    );
+  }
+}
+
+// Goto Privacy Policy Section
+class _PrivacyPolicySection extends StatelessWidget {
+  const _PrivacyPolicySection();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        StatusCard(
+          title: 'Local Privacy Policy',
+          subtitle: 'See Local Privacy Policy',
+          startIcon: Ph.device_mobile_duotone,
+          isFirst: true,
+          isClickable: true,
+          onTap: () {
+            context.push('/local-privacy');
+          },
+        ),
+        StatusCard(
+          title: 'Google Photos Privacy Policy',
+          subtitle: 'See Google Photos Privacy Policy',
+          startIcon: Ph.cloud_duotone,
+          isLast: true,
+          isClickable: true,
+          onTap: () {
+            context.push('/google-privacy');
+          },
         ),
       ],
     );
@@ -372,9 +411,10 @@ class _AboutSection extends StatelessWidget {
           ),
           Text(
             'Abscise is built transparently and open-source. You can view the full source code, report any issues, or show support by starring the repository on GitHub.',
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: AppTheme.textSecondary),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: AppTheme.textSecondary,
+              fontWeight: .w500,
+            ),
           ),
           StackButton(
             label: 'View Repository',

@@ -7,7 +7,7 @@ class BinScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: AppTheme.topPadding,
+      padding: AppTheme.paddingL,
       children: [Text('Bin', style: Theme.of(context).textTheme.titleLarge)],
     );
   }

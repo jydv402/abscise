@@ -1,5 +1,5 @@
-import 'package:abscise/widgets/message_container.dart';
 import 'package:abscise/widgets/stack_button.dart';
+import 'package:abscise/widgets/status_card.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,7 +32,9 @@ class _LocalPermsScreenState extends ConsumerState<LocalPermsScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         setState(() {
-          _consentAccepted = ref.read(appPreferencesProvider).getLocalConsentAccepted();
+          _consentAccepted = ref
+              .read(appPreferencesProvider)
+              .getLocalConsentAccepted();
         });
       }
     });
@@ -65,7 +67,7 @@ class _LocalPermsScreenState extends ConsumerState<LocalPermsScreen>
             googleAuthState.status == AuthStatus.authenticated;
 
         if (alreadySkipped || alreadyAuthenticated) {
-          context.go('/local');
+          context.go('/local'); // Proceeds to the home screen
         } else {
           context.go('/google-auth');
         }
@@ -87,7 +89,7 @@ class _LocalPermsScreenState extends ConsumerState<LocalPermsScreen>
 
     return Scaffold(
       body: ListView(
-        padding: AppTheme.topPadding,
+        padding: AppTheme.paddingXL,
         children: [
           Text(
             'Grant Permissions',
@@ -168,81 +170,55 @@ class _LocalPermsScreenState extends ConsumerState<LocalPermsScreen>
               ),
             ),
           ],
-          MessageContainer(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 16,
-              children: [
-                Text(
-                  'Abscise makes local storage decluttering quick and simple:',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Iconify(
-                      Ph.file_image_bold,
-                      color: AppTheme.tertiaryLime,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'Card-Deck Swipe Interface: Review your local photos in an interactive swipe deck. Swipe right to keep them, swipe left to queue for clean up.',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Iconify(
-                      Ph.trash_bold,
-                      color: AppTheme.tertiaryLime,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'Protected Two-Step Deletion: Swiped-left items are safely moved to a local Bin inside the app. They are never permanently deleted from storage without your final approval.',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Iconify(
-                      Ph.device_mobile_bold,
-                      color: AppTheme.tertiaryLime,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'Absolute Device Privacy: Abscise runs 100% locally. Your files, library index, and swipe choices are kept securely on your offline storage and never uploaded to any remote server.',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ),
-                  ],
-                ),
-                const Divider(color: AppTheme.surfaceColor),
-                Text(
-                  'Why Storage Permission is Required:',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                Text(
-                  'To load image thumbnails into your interactive swipe deck, calculate storage statistics, and move swiped-left clutter into the safe local Bin, Abscise requires standard storage permission to read and manage files in your device library.',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.textSecondary,
-                    height: 1.4,
-                  ),
-                ),
-              ],
+
+          // App Features explanation cards
+          Container(
+            margin: .only(top: 16),
+            alignment: .centerStart,
+            padding: const .all(24),
+            decoration: BoxDecoration(
+              color: AppTheme.secondaryPurple,
+              borderRadius: .vertical(
+                top: .circular(AppTheme.borderRadius),
+                bottom: .circular(4),
+              ),
+            ),
+            child: Text(
+              'Abscise makes local storage decluttering quick and simple:',
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
           ),
+          StatusCard(
+            title: 'Card-Deck Swipe Interface',
+            subtitle:
+                'Review your local photos in an interactive swipe deck. Swipe right to keep them, swipe left to queue for clean up.',
+            startIcon: Ph.file_image_duotone,
+            isFirst: true,
+            isLast: true,
+          ),
+          StatusCard(
+            title: 'Protected Two-Step Deletion',
+            subtitle:
+                'Swiped-left items are safely moved to a local Bin inside the app. They are never permanently deleted from storage without your final approval.',
+            startIcon: Ph.trash_duotone,
+            isFirst: true,
+            isLast: true,
+          ),
+          StatusCard(
+            title: 'Absolute Device Privacy',
+            subtitle:
+                'Abscise runs 100% locally. Your files, library index, and swipe choices are kept securely on your offline storage and never uploaded to any remote server.',
+            startIcon: Ph.device_mobile_duotone,
+            isFirst: true,
+            isLast: true,
+          ),
+          StatusCard(
+            title: 'Why Storage Permission is Required?',
+            subtitle:
+                'To load image thumbnails into your interactive swipe deck, calculate storage statistics, and move swiped-left clutter into the safe local Bin, Abscise requires standard storage permission to read and manage files in your device library.',
+            startIcon: Ph.question_duotone,
+          ),
+
           const SizedBox(height: 24),
           // Interactive Local Consent Box
           Row(
@@ -260,7 +236,9 @@ class _LocalPermsScreenState extends ConsumerState<LocalPermsScreen>
                         final prefs = ref.read(appPreferencesProvider);
                         prefs.setLocalConsentAccepted(newValue);
                         if (newValue) {
-                          prefs.setLocalConsentTimestamp(DateTime.now().toUtc().toIso8601String());
+                          prefs.setLocalConsentTimestamp(
+                            DateTime.now().toUtc().toIso8601String(),
+                          );
                         } else {
                           prefs.setLocalConsentTimestamp(null);
                         }
@@ -273,14 +251,12 @@ class _LocalPermsScreenState extends ConsumerState<LocalPermsScreen>
                 child: RichText(
                   text: TextSpan(
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppTheme.textWhite,
-                          fontSize: 14,
-                          height: 1.4,
-                        ),
+                      color: AppTheme.textWhite,
+                      fontSize: 14,
+                      height: 1.4,
+                    ),
                     children: [
-                      const TextSpan(
-                        text: 'I read and explicitly accept the ',
-                      ),
+                      const TextSpan(text: 'I read and explicitly accept the '),
                       TextSpan(
                         text: 'Local Privacy Policy & Terms of Use',
                         style: const TextStyle(
@@ -290,14 +266,18 @@ class _LocalPermsScreenState extends ConsumerState<LocalPermsScreen>
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () async {
-                            final accepted = await context.push<bool>('/local-privacy');
+                            final accepted = await context.push<bool>(
+                              '/local-privacy',
+                            );
                             if (accepted == true) {
                               setState(() {
                                 _consentAccepted = true;
                               });
                               final prefs = ref.read(appPreferencesProvider);
                               prefs.setLocalConsentAccepted(true);
-                              prefs.setLocalConsentTimestamp(DateTime.now().toUtc().toIso8601String());
+                              prefs.setLocalConsentTimestamp(
+                                DateTime.now().toUtc().toIso8601String(),
+                              );
                             }
                           },
                       ),
@@ -311,7 +291,6 @@ class _LocalPermsScreenState extends ConsumerState<LocalPermsScreen>
               ),
             ],
           ),
-          const SizedBox(height: 120),
         ],
       ),
       floatingActionButton: Column(
@@ -329,7 +308,9 @@ class _LocalPermsScreenState extends ConsumerState<LocalPermsScreen>
                 });
                 final prefs = ref.read(appPreferencesProvider);
                 prefs.setLocalConsentAccepted(true);
-                prefs.setLocalConsentTimestamp(DateTime.now().toUtc().toIso8601String());
+                prefs.setLocalConsentTimestamp(
+                  DateTime.now().toUtc().toIso8601String(),
+                );
               }
             },
             variant: ButtonVariant.secondary,

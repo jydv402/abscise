@@ -15,7 +15,7 @@ class _CloudScreenState extends ConsumerState<CloudScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: AppTheme.topPadding,
+        padding: AppTheme.paddingL,
         child: Column(
           crossAxisAlignment: .start,
           children: [
