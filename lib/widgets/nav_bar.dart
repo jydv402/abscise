@@ -98,8 +98,12 @@ class CustomNavBar extends ConsumerWidget {
         ? 22.0
         : (screenWidth > 400 ? 26.0 : 24.0);
 
-    final int deleteCount = swipeState.history.where((item) => item.isDeleted).length;
-    final int keepCount = swipeState.history.where((item) => !item.isDeleted).length;
+    final int deleteCount = swipeState.history
+        .where((item) => item.isDeleted)
+        .length;
+    final int keepCount = swipeState.history
+        .where((item) => !item.isDeleted)
+        .length;
     final bool hasHistory = swipeState.history.isNotEmpty;
 
     return Row(
@@ -122,16 +126,16 @@ class CustomNavBar extends ConsumerWidget {
             ),
             child: Center(
               child: Container(
-                width: iconSize + paddingValue * 0.8,
-                height: iconSize + paddingValue * 0.8,
+                width: iconSize + paddingValue,
+                height: iconSize + paddingValue,
                 decoration: const BoxDecoration(
                   color: AppTheme.darkBackground,
                   shape: BoxShape.circle,
                 ),
                 child: Center(
                   child: Iconify(
-                    Ph.compass_bold,
-                    color: AppTheme.primaryPurple,
+                    Ph.stack_duotone,
+                    color: AppTheme.tertiaryLime,
                     size: iconSize,
                   ),
                 ),
@@ -174,29 +178,7 @@ class CustomNavBar extends ConsumerWidget {
                 ],
               ),
               SizedBox(width: paddingValue * 1.4),
-              // Center Undo Button
-              GestureDetector(
-                onTap: hasHistory
-                    ? () => ref.read(swipeProvider.notifier).undo()
-                    : null,
-                child: AnimatedOpacity(
-                  opacity: hasHistory ? 1.0 : 0.35,
-                  duration: const Duration(milliseconds: 200),
-                  child: Container(
-                    padding: EdgeInsets.all(paddingValue * 0.5),
-                    decoration: const BoxDecoration(
-                      color: AppTheme.darkBackground,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Iconify(
-                      Ph.arrow_counter_clockwise_bold,
-                      color: AppTheme.primaryPurple,
-                      size: iconSize,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(width: paddingValue * 1.4),
+
               // Keep Count
               Row(
                 mainAxisSize: MainAxisSize.min,
@@ -217,6 +199,29 @@ class CustomNavBar extends ConsumerWidget {
                     ),
                   ),
                 ],
+              ),
+              SizedBox(width: paddingValue * 1.4),
+              // Undo Button
+              GestureDetector(
+                onTap: hasHistory
+                    ? () => ref.read(swipeProvider.notifier).undo()
+                    : null,
+                child: AnimatedOpacity(
+                  opacity: hasHistory ? 1.0 : 0.35,
+                  duration: const Duration(milliseconds: 200),
+                  child: Container(
+                    padding: EdgeInsets.all(paddingValue * 0.5),
+                    decoration: const BoxDecoration(
+                      color: AppTheme.darkBackground,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Iconify(
+                      Ph.arrow_u_up_left,
+                      color: AppTheme.tertiaryLime,
+                      size: iconSize,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -255,15 +260,19 @@ class CustomNavBar extends ConsumerWidget {
       transitionBuilder: (child, animation) {
         return FadeTransition(
           opacity: animation,
-          child: ScaleTransition(
-            scale: animation,
-            child: child,
-          ),
+          child: ScaleTransition(scale: animation, child: child),
         );
       },
       child: mode == NavBarMode.pageSwitch
           ? _buildTabNavBar(context, screenWidth, borderRadiusValue)
-          : _buildActionBar(context, screenWidth, borderRadiusValue, dynamicHeight, ref, swipeState),
+          : _buildActionBar(
+              context,
+              screenWidth,
+              borderRadiusValue,
+              dynamicHeight,
+              ref,
+              swipeState,
+            ),
     ).animate().slideY(begin: 1.5, end: 0, curve: Curves.easeOutBack);
   }
 }
