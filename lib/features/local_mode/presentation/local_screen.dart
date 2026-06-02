@@ -31,15 +31,12 @@ class _LocalScreenState extends ConsumerState<LocalScreen> {
     return Scaffold(
       backgroundColor: AppTheme.darkBackground,
       body: Padding(
-        padding: .fromLTRB(16, 58, 16, 120),
+        padding: .fromLTRB(16, 70, 16, 120),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Compact Top Header Row
-            Text(
-              'Local Photos',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+            Text('Local Photos', style: Theme.of(context).textTheme.titleLarge),
 
             // Card Stack Container (Uses LayoutBuilder to dynamically scale aspect ratio)
             Expanded(

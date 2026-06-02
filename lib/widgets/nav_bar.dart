@@ -117,6 +117,7 @@ class CustomNavBar extends ConsumerWidget {
 
     return Row(
       key: const ValueKey('actionBarMode'),
+      spacing: 12,
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -152,64 +153,82 @@ class CustomNavBar extends ConsumerWidget {
             ),
           ),
         ),
-        const SizedBox(width: 12),
+
         // Right Pill: Swipe Stats & Undo Pill
         Container(
           height: dynamicHeight,
           decoration: BoxDecoration(
             color: AppTheme.primaryPurple,
-            borderRadius: BorderRadius.circular(borderRadiusValue),
+            borderRadius: .circular(borderRadiusValue),
             boxShadow: _buildDoubleShadow(),
           ),
-          padding: .only(left: paddingValue * 1.2, right: paddingValue * 0.45),
+          padding: EdgeInsets.symmetric(horizontal: paddingValue * 0.45),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Delete Count
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Iconify(
-                    Ph.trash_bold,
-                    color: AppTheme.deleteRed,
-                    size: iconSize,
+              // Delete Count Pill
+              Container(
+                height: circleDiameter,
+                alignment: .center,
+                decoration: const BoxDecoration(
+                  color: AppTheme.darkBackground,
+                  borderRadius: .only(
+                    bottomRight: .circular(8),
+                    topRight: .circular(8),
+                    bottomLeft: .circular(AppTheme.borderRadius),
+                    topLeft: .circular(AppTheme.borderRadius),
                   ),
-                  const SizedBox(width: 6),
-                  Text(
-                    '$deleteCount',
-                    style: TextStyle(
-                      fontFamily: 'Outfit',
-                      fontSize: iconSize - 5,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.darkBackground,
+                ),
+                padding: const .fromLTRB(14, 0, 18, 0),
+                child: Row(
+                  spacing: 8,
+                  children: [
+                    Iconify(Ph.x_circle_duotone, color: AppTheme.deleteRed),
+                    Text(
+                      '$deleteCount',
+                      style: TextStyle(
+                        fontFamily: 'Outfit',
+                        fontSize: iconSize - 4,
+                        fontWeight: .w500,
+                        color: AppTheme.deleteRed,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-              SizedBox(width: paddingValue * 1.2),
+              const SizedBox(width: 3),
 
-              // Keep Count
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Iconify(
-                    Ph.check_bold,
-                    color: AppTheme.keepGreen,
-                    size: iconSize,
+              // Keep Count Pill
+              Container(
+                height: circleDiameter,
+                alignment: .center,
+                decoration: const BoxDecoration(
+                  color: AppTheme.darkBackground,
+                  borderRadius: .only(
+                    bottomRight: .circular(AppTheme.borderRadius),
+                    topRight: .circular(AppTheme.borderRadius),
+                    bottomLeft: .circular(8),
+                    topLeft: .circular(8),
                   ),
-                  const SizedBox(width: 6),
-                  Text(
-                    '$keepCount',
-                    style: TextStyle(
-                      fontFamily: 'Outfit',
-                      fontSize: iconSize - 5,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.darkBackground,
+                ),
+                padding: const .fromLTRB(18, 0, 14, 0),
+                child: Row(
+                  spacing: 8,
+                  children: [
+                    Text(
+                      '$keepCount',
+                      style: TextStyle(
+                        fontFamily: 'Outfit',
+                        fontSize: iconSize - 4,
+                        fontWeight: .w500,
+                        color: AppTheme.keepGreen,
+                      ),
                     ),
-                  ),
-                ],
+                    Iconify(Ph.check_circle_duotone, color: AppTheme.keepGreen),
+                  ],
+                ),
               ),
-              SizedBox(width: paddingValue * 1.2),
+              SizedBox(width: paddingValue * 0.5),
               // Undo Button
               GestureDetector(
                 onTap: hasHistory
@@ -227,7 +246,7 @@ class CustomNavBar extends ConsumerWidget {
                     ),
                     child: Center(
                       child: Iconify(
-                        Ph.arrow_u_up_left_bold,
+                        Ph.arrow_u_up_left,
                         color: AppTheme.tertiaryLime,
                         size: iconSize,
                       ),
@@ -270,9 +289,13 @@ class CustomNavBar extends ConsumerWidget {
       switchInCurve: Curves.easeInOut,
       switchOutCurve: Curves.easeInOut,
       transitionBuilder: (child, animation) {
+        final slideAnimation = Tween<Offset>(
+          begin: const Offset(0.0, 1.0),
+          end: Offset.zero,
+        ).animate(CurvedAnimation(parent: animation, curve: Curves.easeInOut));
         return FadeTransition(
           opacity: animation,
-          child: ScaleTransition(scale: animation, child: child),
+          child: SlideTransition(position: slideAnimation, child: child),
         );
       },
       child: mode == NavBarMode.pageSwitch
