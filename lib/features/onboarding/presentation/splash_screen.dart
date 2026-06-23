@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:photo_manager/photo_manager.dart';
 
-import '../../../core/providers/shared_prefs_provider.dart';
+// import '../../../core/providers/shared_prefs_provider.dart';
 import '../../../core/themes/app_theme.dart';
 import '../logic/local_perms_service.dart';
 
@@ -32,9 +32,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     final permStatus = await permsService.checkCurrentStatus();
 
     // Read Google authentication cached flags from SharedPreferences
-    final prefs = ref.read(appPreferencesProvider);
-    final alreadySkipped = prefs.getGoogleAuthSkipped();
-    final alreadyAuthenticated = prefs.getGoogleAuthenticated();
+    // final prefs = ref.read(appPreferencesProvider);
+    // final alreadySkipped = prefs.getGoogleAuthSkipped();
+    // final alreadyAuthenticated = prefs.getGoogleAuthenticated();
 
     // Enforcing a minimum splash display duration
     final elapsed = stopwatch.elapsedMilliseconds;
@@ -49,11 +49,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
     // Select the correct destination route
     if (permStatus.isAuth) {
-      if (alreadySkipped || alreadyAuthenticated) {
-        context.go('/local');
-      } else {
-        context.go('/google-auth');
-      }
+      // if (alreadySkipped || alreadyAuthenticated) {
+      context.go('/local');
+      // } else {
+      //   context.go('/google-auth');
+      // }
     } else {
       context.go('/local-perms');
     }

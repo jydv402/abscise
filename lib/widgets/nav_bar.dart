@@ -79,12 +79,6 @@ class CustomNavBar extends ConsumerWidget {
             onTap: () => _onTabSelected(2),
             dynamicHeight: dynamicHeight,
           ),
-          _NavBarItem(
-            index: 3,
-            isSelected: navigationShell.currentIndex == 3,
-            onTap: () => _onTabSelected(3),
-            dynamicHeight: dynamicHeight,
-          ),
         ],
       ),
     );
@@ -98,9 +92,6 @@ class CustomNavBar extends ConsumerWidget {
     WidgetRef ref,
     SwipeState swipeState,
   ) {
-    final double paddingValue = screenWidth < 340
-        ? 12.0
-        : (screenWidth > 400 ? 18.0 : 16.0);
     final double iconSize = screenWidth < 340
         ? 22.0
         : (screenWidth > 400 ? 26.0 : 24.0);
@@ -114,6 +105,7 @@ class CustomNavBar extends ConsumerWidget {
     final bool hasHistory = swipeState.history.isNotEmpty;
 
     final double circleDiameter = dynamicHeight - 16.0;
+    final double gap = (dynamicHeight - circleDiameter) / 2; // Always 8.0
 
     return Row(
       key: const ValueKey('actionBarMode'),
@@ -162,7 +154,7 @@ class CustomNavBar extends ConsumerWidget {
             borderRadius: .circular(borderRadiusValue),
             boxShadow: _buildDoubleShadow(),
           ),
-          padding: EdgeInsets.symmetric(horizontal: paddingValue * 0.45),
+          padding: .all(gap),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -224,11 +216,15 @@ class CustomNavBar extends ConsumerWidget {
                         color: AppTheme.keepGreen,
                       ),
                     ),
-                    Iconify(Ph.check_circle_duotone, color: AppTheme.keepGreen),
+                    Iconify(
+                      Ph.check_circle_duotone,
+                      color: AppTheme.keepGreen,
+                      size: iconSize,
+                    ),
                   ],
                 ),
               ),
-              SizedBox(width: paddingValue * 0.5),
+              SizedBox(width: gap),
               // Undo Button
               GestureDetector(
                 onTap: hasHistory
@@ -331,14 +327,12 @@ class _NavBarItem extends StatelessWidget {
 
   static const List<String> _activeIcons = [
     Ph.file_image_duotone,
-    Ph.google_photos_logo_duotone,
     Ph.trash_duotone,
     Ph.graph_duotone,
   ];
 
   static const List<String> _inactiveIcons = [
     Ph.file_image_bold,
-    Ph.google_photos_logo_bold,
     Ph.trash_bold,
     Ph.graph_bold,
   ];
@@ -357,7 +351,7 @@ class _NavBarItem extends StatelessWidget {
       child: Container(
         width: circleDiameter,
         height: circleDiameter,
-        margin: index == 0 || index == 3 ? .zero : .symmetric(horizontal: 4),
+        margin: index == 0 || index == 2 ? .zero : .symmetric(horizontal: 4),
         decoration: BoxDecoration(
           color: isSelected ? AppTheme.darkBackground : Colors.transparent,
           shape: BoxShape.circle,

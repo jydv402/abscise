@@ -9,9 +9,9 @@ import 'package:iconify_flutter/icons/ph.dart';
 
 import '../../../core/providers/shared_prefs_provider.dart';
 import '../../../core/themes/app_theme.dart';
-import '../controllers/google_auth_controller.dart';
+// import '../controllers/google_auth_controller.dart';
 import '../controllers/local_perms_controller.dart';
-import '../state/google_auth_state.dart';
+// import '../state/google_auth_state.dart';
 import '../state/local_perms_state.dart';
 
 class LocalPermsScreen extends ConsumerStatefulWidget {
@@ -60,17 +60,17 @@ class _LocalPermsScreenState extends ConsumerState<LocalPermsScreen>
     // Navigate to the next screen if permission is granted
     ref.listen<LocalPermsState>(permsControllerProvider, (previous, next) {
       if (next.status == PermStatus.granted) {
-        final prefs = ref.read(appPreferencesProvider);
-        final alreadySkipped = prefs.getGoogleAuthSkipped();
-        final googleAuthState = ref.read(googleAuthControllerProvider);
-        final alreadyAuthenticated =
-            googleAuthState.status == AuthStatus.authenticated;
+        //         final prefs = ref.read(appPreferencesProvider);
+        // final alreadySkipped = prefs.getGoogleAuthSkipped();
+        // final googleAuthState = ref.read(googleAuthControllerProvider);
+        // final alreadyAuthenticated =
+        //     googleAuthState.status == AuthStatus.authenticated;
 
-        if (alreadySkipped || alreadyAuthenticated) {
-          context.go('/local'); // Proceeds to the home screen
-        } else {
-          context.go('/google-auth');
-        }
+        // if (alreadySkipped || alreadyAuthenticated) {
+        context.go('/local'); // Proceeds to the home screen
+        // } else {
+        //   context.go('/google-auth');
+        // }
       } else if (next.status == PermStatus.denied && next.errorMsg != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

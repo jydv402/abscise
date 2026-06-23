@@ -9,9 +9,9 @@ import 'package:iconify_flutter/icons/ph.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/themes/app_theme.dart';
-import '../../onboarding/controllers/google_auth_controller.dart';
+// import '../../onboarding/controllers/google_auth_controller.dart';
 import '../../onboarding/controllers/local_perms_controller.dart';
-import '../../onboarding/state/google_auth_state.dart';
+// import '../../onboarding/state/google_auth_state.dart';
 import '../../onboarding/state/local_perms_state.dart';
 
 class StatsScreen extends StatelessWidget {
@@ -25,10 +25,10 @@ class StatsScreen extends StatelessWidget {
         _SectionHeading(title: 'Stats'),
         _SpaceSavedBox(),
         _StorageAccessStatusCard(),
-        _GooglePhotosStatusCard(),
-        SizedBox(height: 36),
-        _SectionHeading(title: 'Google Account Settings'),
-        _GoogleAccountSettingsSection(),
+        // _GooglePhotosStatusCard(),
+        // SizedBox(height: 36),
+        // _SectionHeading(title: 'Google Account Settings'),
+        // _GoogleAccountSettingsSection(),
         SizedBox(height: 36),
         _SectionHeading(title: 'Privacy Policy'),
         _PrivacyPolicySection(),
@@ -137,214 +137,214 @@ class _StorageAccessStatusCard extends ConsumerWidget {
   }
 }
 
-/// Google Photos Access status card
-class _GooglePhotosStatusCard extends ConsumerWidget {
-  const _GooglePhotosStatusCard();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final googleAuthState = ref.watch(googleAuthControllerProvider);
-    final isGoogleAuthenticated =
-        googleAuthState.status == AuthStatus.authenticated;
-
-    final prefs = ref.watch(appPreferencesProvider);
-    final cachedEmail = prefs.getGoogleUserEmail();
-
-    return StatusCard(
-      title: 'Google Photos Sync',
-      subtitle: isGoogleAuthenticated
-          ? 'Connected: ${googleAuthState.user?.email ?? cachedEmail ?? "Account linked"}'
-          : 'Not Connected (Onboarding Skipped)',
-      startIcon: isGoogleAuthenticated
-          ? Ph.google_photos_logo_duotone
-          : Ph.google_photos_logo,
-      iconColor: isGoogleAuthenticated
-          ? AppTheme.keepGreen
-          : AppTheme.deleteRed,
-    );
-  }
-}
-
-/// Google Account settings section
-class _GoogleAccountSettingsSection extends ConsumerWidget {
-  const _GoogleAccountSettingsSection();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final googleAuthState = ref.watch(googleAuthControllerProvider);
-    final isGoogleAuthenticated =
-        googleAuthState.status == AuthStatus.authenticated;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (!isGoogleAuthenticated)
-          const _UnauthenticatedSettingsBox()
-        else
-          _AuthenticatedSettingsBox(googleUser: googleAuthState.user),
-      ],
-    );
-  }
-}
-
-/// Unauthenticated settings section
-class _UnauthenticatedSettingsBox extends StatelessWidget {
-  const _UnauthenticatedSettingsBox();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: AppTheme.secondaryPurple,
-        borderRadius: BorderRadius.circular(AppTheme.borderRadius),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 16,
-        children: [
-          Row(
-            children: [
-              const Iconify(
-                Ph.google_logo_bold,
-                color: AppTheme.tertiaryLime,
-                size: 28,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'Link Google Photos',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            ],
-          ),
-          Text(
-            'Link your Google Photos library to manage your remote assets, swipe to clean duplicates, and free up cloud workspace storage.',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: AppTheme.textSecondary,
-              fontWeight: .w500,
-            ),
-          ),
-          StackButton(
-            label: 'Link Account',
-            iconifyIcon: Ph.arrow_arc_right,
-            variant: ButtonVariant.tertiary,
-            onPressed: () => context.go('/google-auth'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Authenticated settings section
-class _AuthenticatedSettingsBox extends ConsumerWidget {
-  final dynamic googleUser;
-
-  const _AuthenticatedSettingsBox({required this.googleUser});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final prefs = ref.watch(appPreferencesProvider);
-    final cachedName = prefs.getGoogleUserName();
-    final cachedEmail = prefs.getGoogleUserEmail();
-
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: AppTheme.secondaryPurple,
-        borderRadius: BorderRadius.circular(AppTheme.borderRadius),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 24,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 4,
-            children: [
-              Text(
-                googleUser?.displayName ?? cachedName ?? 'Authenticated User',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              Text(
-                googleUser?.email ?? cachedEmail ?? '',
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: AppTheme.textSecondary,
-                  fontWeight: .w500,
-                ),
-              ),
-            ],
-          ),
-          const Divider(color: AppTheme.surfaceColor, height: 1),
-
-          // Switch Account Action
-          _ActionRow(
-            title: 'Switch Google Library',
-            description:
-                'Switch accounts to link a different Google Photos library and manage its media instead.',
-            buttonLabel: 'Switch Account',
-            onPressed: () async {
-              await ref.read(googleAuthControllerProvider.notifier).logout();
-              if (context.mounted) context.go('/google-auth');
-            },
-          ),
-          const Divider(color: AppTheme.surfaceColor, height: 1),
-
-          // Log Out Action
-          _ActionRow(
-            title: 'Revoke Integration',
-            description:
-                'Disconnect from Google Photos completely. Your local photos will remain untouched.',
-            buttonLabel: 'Log Out',
-            onPressed: () async {
-              await ref.read(googleAuthControllerProvider.notifier).logout();
-              if (context.mounted) context.go('/google-auth');
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Action Row Widget
-class _ActionRow extends StatelessWidget {
-  final String title;
-  final String description;
-  final String buttonLabel;
-  final VoidCallback onPressed;
-
-  const _ActionRow({
-    required this.title,
-    required this.description,
-    required this.buttonLabel,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 12,
-      children: [
-        Text(title, style: Theme.of(context).textTheme.titleMedium),
-        Text(
-          description,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            color: AppTheme.textSecondary,
-            fontWeight: .w500,
-          ),
-        ),
-        StackButton(
-          label: buttonLabel,
-          iconifyIcon: Ph.arrow_arc_right,
-          variant: ButtonVariant.tertiary,
-          onPressed: onPressed,
-        ),
-      ],
-    );
-  }
-}
+// /// Google Photos Access status card
+// class _GooglePhotosStatusCard extends ConsumerWidget {
+//   const _GooglePhotosStatusCard();
+// 
+//   @override
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     final googleAuthState = ref.watch(googleAuthControllerProvider);
+//     final isGoogleAuthenticated =
+//         googleAuthState.status == AuthStatus.authenticated;
+// 
+//     final prefs = ref.watch(appPreferencesProvider);
+//     final cachedEmail = prefs.getGoogleUserEmail();
+// 
+//     return StatusCard(
+//       title: 'Google Photos Sync',
+//       subtitle: isGoogleAuthenticated
+//           ? 'Connected: ${googleAuthState.user?.email ?? cachedEmail ?? "Account linked"}'
+//           : 'Not Connected (Onboarding Skipped)',
+//       startIcon: isGoogleAuthenticated
+//           ? Ph.google_photos_logo_duotone
+//           : Ph.google_photos_logo,
+//       iconColor: isGoogleAuthenticated
+//           ? AppTheme.keepGreen
+//           : AppTheme.deleteRed,
+//     );
+//   }
+// }
+// 
+// /// Google Account settings section
+// class _GoogleAccountSettingsSection extends ConsumerWidget {
+//   const _GoogleAccountSettingsSection();
+// 
+//   @override
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     final googleAuthState = ref.watch(googleAuthControllerProvider);
+//     final isGoogleAuthenticated =
+//         googleAuthState.status == AuthStatus.authenticated;
+// 
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         if (!isGoogleAuthenticated)
+//           const _UnauthenticatedSettingsBox()
+//         else
+//           _AuthenticatedSettingsBox(googleUser: googleAuthState.user),
+//       ],
+//     );
+//   }
+// }
+// 
+// /// Unauthenticated settings section
+// class _UnauthenticatedSettingsBox extends StatelessWidget {
+//   const _UnauthenticatedSettingsBox();
+// 
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       padding: const EdgeInsets.all(24),
+//       decoration: BoxDecoration(
+//         color: AppTheme.secondaryPurple,
+//         borderRadius: BorderRadius.circular(AppTheme.borderRadius),
+//       ),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         spacing: 16,
+//         children: [
+//           Row(
+//             children: [
+//               const Iconify(
+//                 Ph.google_logo_bold,
+//                 color: AppTheme.tertiaryLime,
+//                 size: 28,
+//               ),
+//               const SizedBox(width: 8),
+//               Text(
+//                 'Link Google Photos',
+//                 style: Theme.of(context).textTheme.titleLarge,
+//               ),
+//             ],
+//           ),
+//           Text(
+//             'Link your Google Photos library to manage your remote assets, swipe to clean duplicates, and free up cloud workspace storage.',
+//             style: Theme.of(context).textTheme.titleSmall?.copyWith(
+//               color: AppTheme.textSecondary,
+//               fontWeight: .w500,
+//             ),
+//           ),
+//           StackButton(
+//             label: 'Link Account',
+//             iconifyIcon: Ph.arrow_arc_right,
+//             variant: ButtonVariant.tertiary,
+//             onPressed: () => context.go('/google-auth'),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+// 
+// /// Authenticated settings section
+// class _AuthenticatedSettingsBox extends ConsumerWidget {
+//   final dynamic googleUser;
+// 
+//   const _AuthenticatedSettingsBox({required this.googleUser});
+// 
+//   @override
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     final prefs = ref.watch(appPreferencesProvider);
+//     final cachedName = prefs.getGoogleUserName();
+//     final cachedEmail = prefs.getGoogleUserEmail();
+// 
+//     return Container(
+//       padding: const EdgeInsets.all(24),
+//       decoration: BoxDecoration(
+//         color: AppTheme.secondaryPurple,
+//         borderRadius: BorderRadius.circular(AppTheme.borderRadius),
+//       ),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         spacing: 24,
+//         children: [
+//           Column(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             spacing: 4,
+//             children: [
+//               Text(
+//                 googleUser?.displayName ?? cachedName ?? 'Authenticated User',
+//                 style: Theme.of(context).textTheme.titleLarge,
+//               ),
+//               Text(
+//                 googleUser?.email ?? cachedEmail ?? '',
+//                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
+//                   color: AppTheme.textSecondary,
+//                   fontWeight: .w500,
+//                 ),
+//               ),
+//             ],
+//           ),
+//           const Divider(color: AppTheme.surfaceColor, height: 1),
+// 
+//           // Switch Account Action
+//           _ActionRow(
+//             title: 'Switch Google Library',
+//             description:
+//                 'Switch accounts to link a different Google Photos library and manage its media instead.',
+//             buttonLabel: 'Switch Account',
+//             onPressed: () async {
+//               await ref.read(googleAuthControllerProvider.notifier).logout();
+//               if (context.mounted) context.go('/google-auth');
+//             },
+//           ),
+//           const Divider(color: AppTheme.surfaceColor, height: 1),
+// 
+//           // Log Out Action
+//           _ActionRow(
+//             title: 'Revoke Integration',
+//             description:
+//                 'Disconnect from Google Photos completely. Your local photos will remain untouched.',
+//             buttonLabel: 'Log Out',
+//             onPressed: () async {
+//               await ref.read(googleAuthControllerProvider.notifier).logout();
+//               if (context.mounted) context.go('/google-auth');
+//             },
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+// 
+// /// Action Row Widget
+// class _ActionRow extends StatelessWidget {
+//   final String title;
+//   final String description;
+//   final String buttonLabel;
+//   final VoidCallback onPressed;
+// 
+//   const _ActionRow({
+//     required this.title,
+//     required this.description,
+//     required this.buttonLabel,
+//     required this.onPressed,
+//   });
+// 
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       spacing: 12,
+//       children: [
+//         Text(title, style: Theme.of(context).textTheme.titleMedium),
+//         Text(
+//           description,
+//           style: Theme.of(context).textTheme.titleSmall?.copyWith(
+//             color: AppTheme.textSecondary,
+//             fontWeight: .w500,
+//           ),
+//         ),
+//         StackButton(
+//           label: buttonLabel,
+//           iconifyIcon: Ph.arrow_arc_right,
+//           variant: ButtonVariant.tertiary,
+//           onPressed: onPressed,
+//         ),
+//       ],
+//     );
+//   }
+// }
 
 // Goto Privacy Policy Section
 class _PrivacyPolicySection extends StatelessWidget {
@@ -359,21 +359,22 @@ class _PrivacyPolicySection extends StatelessWidget {
           subtitle: 'See Local Privacy Policy',
           startIcon: Ph.device_mobile_duotone,
           isFirst: true,
+          isLast: true,
           isClickable: true,
           onTap: () {
             context.push('/local-privacy');
           },
         ),
-        StatusCard(
-          title: 'Google Photos Privacy Policy',
-          subtitle: 'See Google Photos Privacy Policy',
-          startIcon: Ph.cloud_duotone,
-          isLast: true,
-          isClickable: true,
-          onTap: () {
-            context.push('/google-privacy');
-          },
-        ),
+        // StatusCard(
+        //   title: 'Google Photos Privacy Policy',
+        //   subtitle: 'See Google Photos Privacy Policy',
+        //   startIcon: Ph.cloud_duotone,
+        //   isLast: true,
+        //   isClickable: true,
+        //   onTap: () {
+        //     context.push('/google-privacy');
+        //   },
+        // ),
       ],
     );
   }
