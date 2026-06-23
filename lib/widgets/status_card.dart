@@ -29,17 +29,12 @@ class StatusCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final BorderRadius borderRadiusVal = isFirst!
-        ? isLast!
-              ? const .vertical(top: .circular(4), bottom: .circular(4))
-              : .vertical(
-                  top: .circular(AppTheme.borderRadius),
-                  bottom: const .circular(4),
-                )
-        : .vertical(
-            top: const .circular(4),
-            bottom: .circular(AppTheme.borderRadius),
-          );
+    final BorderRadius borderRadiusVal = .only(
+      topLeft: .circular(isFirst! ? AppTheme.borderRadius : 4),
+      topRight: .circular(isFirst! ? AppTheme.borderRadius : 4),
+      bottomLeft: .circular(isLast! ? AppTheme.borderRadius : 4),
+      bottomRight: .circular(isLast! ? AppTheme.borderRadius : 4),
+    );
 
     final Widget cardContent = Row(
       children: [

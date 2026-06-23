@@ -131,7 +131,7 @@ class _StorageAccessStatusCard extends ConsumerWidget {
           : 'Local storage permission is denied.',
       startIcon: isStorageGranted ? Ph.check_bold : Ph.warning_bold,
       iconColor: isStorageGranted ? AppTheme.keepGreen : AppTheme.deleteRed,
-      isFirst: true,
+      isFirst: false,
       isLast: true,
     );
   }
@@ -140,16 +140,16 @@ class _StorageAccessStatusCard extends ConsumerWidget {
 // /// Google Photos Access status card
 // class _GooglePhotosStatusCard extends ConsumerWidget {
 //   const _GooglePhotosStatusCard();
-// 
+//
 //   @override
 //   Widget build(BuildContext context, WidgetRef ref) {
 //     final googleAuthState = ref.watch(googleAuthControllerProvider);
 //     final isGoogleAuthenticated =
 //         googleAuthState.status == AuthStatus.authenticated;
-// 
+//
 //     final prefs = ref.watch(appPreferencesProvider);
 //     final cachedEmail = prefs.getGoogleUserEmail();
-// 
+//
 //     return StatusCard(
 //       title: 'Google Photos Sync',
 //       subtitle: isGoogleAuthenticated
@@ -164,17 +164,17 @@ class _StorageAccessStatusCard extends ConsumerWidget {
 //     );
 //   }
 // }
-// 
+//
 // /// Google Account settings section
 // class _GoogleAccountSettingsSection extends ConsumerWidget {
 //   const _GoogleAccountSettingsSection();
-// 
+//
 //   @override
 //   Widget build(BuildContext context, WidgetRef ref) {
 //     final googleAuthState = ref.watch(googleAuthControllerProvider);
 //     final isGoogleAuthenticated =
 //         googleAuthState.status == AuthStatus.authenticated;
-// 
+//
 //     return Column(
 //       crossAxisAlignment: CrossAxisAlignment.start,
 //       children: [
@@ -186,11 +186,11 @@ class _StorageAccessStatusCard extends ConsumerWidget {
 //     );
 //   }
 // }
-// 
+//
 // /// Unauthenticated settings section
 // class _UnauthenticatedSettingsBox extends StatelessWidget {
 //   const _UnauthenticatedSettingsBox();
-// 
+//
 //   @override
 //   Widget build(BuildContext context) {
 //     return Container(
@@ -235,19 +235,19 @@ class _StorageAccessStatusCard extends ConsumerWidget {
 //     );
 //   }
 // }
-// 
+//
 // /// Authenticated settings section
 // class _AuthenticatedSettingsBox extends ConsumerWidget {
 //   final dynamic googleUser;
-// 
+//
 //   const _AuthenticatedSettingsBox({required this.googleUser});
-// 
+//
 //   @override
 //   Widget build(BuildContext context, WidgetRef ref) {
 //     final prefs = ref.watch(appPreferencesProvider);
 //     final cachedName = prefs.getGoogleUserName();
 //     final cachedEmail = prefs.getGoogleUserEmail();
-// 
+//
 //     return Container(
 //       padding: const EdgeInsets.all(24),
 //       decoration: BoxDecoration(
@@ -276,7 +276,7 @@ class _StorageAccessStatusCard extends ConsumerWidget {
 //             ],
 //           ),
 //           const Divider(color: AppTheme.surfaceColor, height: 1),
-// 
+//
 //           // Switch Account Action
 //           _ActionRow(
 //             title: 'Switch Google Library',
@@ -289,7 +289,7 @@ class _StorageAccessStatusCard extends ConsumerWidget {
 //             },
 //           ),
 //           const Divider(color: AppTheme.surfaceColor, height: 1),
-// 
+//
 //           // Log Out Action
 //           _ActionRow(
 //             title: 'Revoke Integration',
@@ -306,21 +306,21 @@ class _StorageAccessStatusCard extends ConsumerWidget {
 //     );
 //   }
 // }
-// 
+//
 // /// Action Row Widget
 // class _ActionRow extends StatelessWidget {
 //   final String title;
 //   final String description;
 //   final String buttonLabel;
 //   final VoidCallback onPressed;
-// 
+//
 //   const _ActionRow({
 //     required this.title,
 //     required this.description,
 //     required this.buttonLabel,
 //     required this.onPressed,
 //   });
-// 
+//
 //   @override
 //   Widget build(BuildContext context) {
 //     return Column(
@@ -358,12 +358,12 @@ class _PrivacyPolicySection extends StatelessWidget {
           title: 'Local Privacy Policy',
           subtitle: 'See Local Privacy Policy',
           startIcon: Ph.device_mobile_duotone,
-          isFirst: true,
-          isLast: true,
           isClickable: true,
           onTap: () {
             context.push('/local-privacy');
           },
+          isFirst: true,
+          isLast: true,
         ),
         // StatusCard(
         //   title: 'Google Photos Privacy Policy',
