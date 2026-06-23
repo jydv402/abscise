@@ -30,11 +30,54 @@ class StatsScreen extends StatelessWidget {
         // _SectionHeading(title: 'Google Account Settings'),
         // _GoogleAccountSettingsSection(),
         SizedBox(height: 36),
+        _SectionHeading(title: 'Select Ordering'),
+        _SelectOrderingSection(),
+        SizedBox(height: 36),
         _SectionHeading(title: 'Privacy Policy'),
         _PrivacyPolicySection(),
         SizedBox(height: 36),
         _SectionHeading(title: 'About'),
         _AboutSection(),
+      ],
+    );
+  }
+}
+
+/// Select Ordering Section
+class _SelectOrderingSection extends ConsumerWidget {
+  const _SelectOrderingSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isAscending = ref.watch(mediaFetchAscendingProvider);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        StatusCard(
+          title: 'Oldest First (Ascending)',
+          subtitle: 'Load media items from oldest to newest',
+          startIcon: Ph.sort_ascending_duotone,
+          isClickable: true,
+          endIcon: isAscending ? Ph.check_square_fill : Ph.square,
+          isFirst: true,
+          isLast: false,
+          onTap: () {
+            ref.read(mediaFetchAscendingProvider.notifier).setOrder(true);
+          },
+        ),
+        StatusCard(
+          title: 'Newest First (Descending)',
+          subtitle: 'Load media items from newest to oldest',
+          startIcon: Ph.sort_descending_duotone,
+          isClickable: true,
+          endIcon: !isAscending ? Ph.check_square_fill : Ph.square,
+          isFirst: false,
+          isLast: true,
+          onTap: () {
+            ref.read(mediaFetchAscendingProvider.notifier).setOrder(false);
+          },
+        ),
       ],
     );
   }

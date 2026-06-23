@@ -10,6 +10,7 @@ class LocalMediaService {
   Future<List<MediaItem>> fetchLocalMedia({
     required int page,
     int size = 50,
+    required bool ascending,
   }) async {
     // Initially check if permissions are allowed
     final PermissionState ps = await PhotoManager.requestPermissionExtend();
@@ -19,7 +20,7 @@ class LocalMediaService {
 
     // Setup chronological sorting options
     final filterOption = FilterOptionGroup(
-      orders: [const OrderOption(type: .createDate, asc: true)],
+      orders: [OrderOption(type: OrderOptionType.createDate, asc: ascending)],
     );
 
     // Load albums from the device

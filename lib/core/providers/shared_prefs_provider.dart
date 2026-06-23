@@ -126,4 +126,34 @@ class AppPreferences {
     }
     return _prefs.setString(_keyLocalConsentTimestamp, value);
   }
+
+  static const String _keyMediaFetchAscending = 'media_fetch_ascending';
+
+  // Getters and Setters for Media Fetch Ordering (Ascending / Descending)
+  bool getMediaFetchAscending() {
+    return _prefs.getBool(_keyMediaFetchAscending) ?? true;
+  }
+
+  Future<bool> setMediaFetchAscending(bool value) {
+    return _prefs.setBool(_keyMediaFetchAscending, value);
+  }
 }
+
+class MediaFetchAscendingNotifier extends Notifier<bool> {
+  @override
+  bool build() {
+    final prefs = ref.watch(appPreferencesProvider);
+    return prefs.getMediaFetchAscending();
+  }
+
+  Future<void> setOrder(bool ascending) async {
+    state = ascending;
+    final prefs = ref.read(appPreferencesProvider);
+    await prefs.setMediaFetchAscending(ascending);
+  }
+}
+
+final mediaFetchAscendingProvider = NotifierProvider<MediaFetchAscendingNotifier, bool>(
+  MediaFetchAscendingNotifier.new,
+);
+

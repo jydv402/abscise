@@ -2,12 +2,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/const/swipe_state.dart';
 import '../../../core/const/swiped_item.dart';
+import '../../../core/providers/shared_prefs_provider.dart';
 import '../../bin/controllers/bin_controller.dart';
 import '../services/local_media_service.dart';
 
 class SwipeController extends Notifier<SwipeState> {
   @override
   SwipeState build() {
+    // Watch sorting provider so controller resets state when order changes
+    ref.watch(mediaFetchAscendingProvider);
+
     return SwipeState(
       deck: [],
       history: [],
@@ -26,7 +30,11 @@ class SwipeController extends Notifier<SwipeState> {
 
     try {
       final mediaService = ref.read(localMediaServiceProvider);
-      final newItems = await mediaService.fetchLocalMedia(page: state.page);
+      final ascending = ref.read(mediaFetchAscendingProvider);
+      final newItems = await mediaService.fetchLocalMedia(
+        page: state.page,
+        ascending: ascending,
+      );
 
       if (newItems.isEmpty) {
         state = state.copyWith(isLoading: false, hasMore: false);
