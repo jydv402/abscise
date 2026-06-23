@@ -12,6 +12,11 @@ class SwipeController extends Notifier<SwipeState> {
     // Watch sorting provider so controller resets state when order changes
     ref.watch(mediaFetchAscendingProvider);
 
+    // Schedule initial load when build is called (e.g. on initialization or order change)
+    Future.microtask(() {
+      loadNextChunk();
+    });
+
     return SwipeState(
       deck: [],
       history: [],

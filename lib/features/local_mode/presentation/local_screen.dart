@@ -7,25 +7,11 @@ import '../../../core/themes/app_theme.dart';
 import '../../../widgets/stacked_swipe_deck.dart';
 import '../controllers/swipe_controller.dart';
 
-class LocalScreen extends ConsumerStatefulWidget {
+class LocalScreen extends ConsumerWidget {
   const LocalScreen({super.key});
 
   @override
-  ConsumerState<LocalScreen> createState() => _LocalScreenState();
-}
-
-class _LocalScreenState extends ConsumerState<LocalScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Load the initial chunk of media files on mount
-    Future.microtask(() {
-      ref.read(swipeProvider.notifier).loadNextChunk();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(swipeProvider);
 
     return Scaffold(
