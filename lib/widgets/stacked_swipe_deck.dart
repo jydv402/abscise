@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/const/media_item.dart';
 import '../core/providers/nav_bar_mode_provider.dart';
 import 'swipe_card.dart';
+import '../features/local_mode/controllers/swipe_controller.dart';
 
 class StackedSwipeDeck extends ConsumerStatefulWidget {
   final List<MediaItem> deck;
@@ -24,6 +25,9 @@ class StackedSwipeDeck extends ConsumerStatefulWidget {
 
 class _StackedSwipeDeckState extends ConsumerState<StackedSwipeDeck>
     with SingleTickerProviderStateMixin {
+  static const double _swipeThreshold = 120.0;
+  static const double _velocityThreshold = 300.0;
+
   Offset _dragOffset = Offset.zero;
   late AnimationController _animController;
   late Animation<Offset> _slideAnimation;
@@ -34,8 +38,11 @@ class _StackedSwipeDeckState extends ConsumerState<StackedSwipeDeck>
     super.initState();
     _animController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 350),
     );
+    _animController.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
@@ -46,7 +53,7 @@ class _StackedSwipeDeckState extends ConsumerState<StackedSwipeDeck>
 
   void _onPanUpdate(DragUpdateDetails details) {
     if (_isAnimating || widget.deck.isEmpty) return;
-    
+
     // Switch the bottom navigation bar to Action Bar mode on first drag touch
     ref.read(navBarModeProvider.notifier).switchToActionBar();
 
@@ -61,10 +68,11 @@ class _StackedSwipeDeckState extends ConsumerState<StackedSwipeDeck>
     final double velocityX = details.velocity.pixelsPerSecond.dx;
 
     // Decide whether the swipe performed is a left swipe or right swipe
-    // Threshold set to 220px
-    if (_dragOffset.dx > 220 || velocityX > 400) {
+    // Threshold set to _swipeThreshold or velocity set to _velocityThreshold
+    if (_dragOffset.dx > _swipeThreshold || velocityX > _velocityThreshold) {
       _dismissCard(toRight: true);
-    } else if (_dragOffset.dx < -220 || velocityX < -400) {
+    } else if (_dragOffset.dx < -_swipeThreshold ||
+        velocityX < -_velocityThreshold) {
       _dismissCard(toRight: false);
     } else {
       _resetCard();
@@ -80,10 +88,13 @@ class _StackedSwipeDeckState extends ConsumerState<StackedSwipeDeck>
     final screenWidth = MediaQuery.of(context).size.width;
     final targetX = toRight ? screenWidth * 1.5 : -screenWidth * 1.5;
 
-    _slideAnimation = Tween<Offset>(
-      begin: _dragOffset,
-      end: Offset(targetX, _dragOffset.dy),
-    ).animate(CurvedAnimation(parent: _animController, curve: Curves.easeOut));
+    _slideAnimation =
+        Tween<Offset>(
+          begin: _dragOffset,
+          end: Offset(targetX, _dragOffset.dy),
+        ).animate(
+          CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
+        );
 
     _animController.forward(from: 0.0).then((_) {
       setState(() {
@@ -122,6 +133,57 @@ class _StackedSwipeDeckState extends ConsumerState<StackedSwipeDeck>
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<SwipeTriggerEvent?>(swipeTriggerProvider, (previous, event) {
+      if (event == null) return;
+
+      switch (event.action) {
+        case SwipeTriggerAction.swipeLeft:
+          _dismissCard(toRight: false);
+          break;
+        case SwipeTriggerAction.swipeRight:
+          _dismissCard(toRight: true);
+          break;
+        case SwipeTriggerAction.undo:
+          final screenWidth = MediaQuery.of(context).size.width;
+          final beginX = event.isDeleted
+              ? -screenWidth * 1.5
+              : screenWidth * 1.5;
+
+          // Initialize _slideAnimation FIRST
+          _slideAnimation =
+              Tween<Offset>(begin: Offset(beginX, 0), end: Offset.zero).animate(
+                CurvedAnimation(
+                  parent: _animController,
+                  curve: Curves.easeOutCubic,
+                ),
+              );
+
+          // Set the state variables
+          setState(() {
+            _dragOffset = Offset(beginX, 0);
+            _isAnimating = true;
+          });
+
+          // Perform the actual state update (which triggers parent rebuild)
+          ref.read(swipeProvider.notifier).undo();
+
+          // Start the slide-in animation
+          _animController.forward(from: 0.0).then((_) {
+            setState(() {
+              _dragOffset = Offset.zero;
+              _isAnimating = false;
+            });
+            _animController.reset();
+          });
+          break;
+      }
+
+      // Reset the trigger so that it can be refired with the same action later
+      Future.microtask(() {
+        ref.read(swipeTriggerProvider.notifier).state = null;
+      });
+    });
+
     if (widget.deck.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -130,14 +192,23 @@ class _StackedSwipeDeckState extends ConsumerState<StackedSwipeDeck>
     final activeOffset = _isAnimating ? _slideAnimation.value : _dragOffset;
 
     // Swipe progress factor for background cards scaling interpolation (0.0 to 1.0)
-    final double progress = (activeOffset.dx.abs() / 220.0).clamp(0.0, 1.0);
+    final double progress = (activeOffset.dx.abs() / _swipeThreshold).clamp(
+      0.0,
+      1.0,
+    );
 
     // Dynamic rotation angle of top card
     final double rotationAngle = (activeOffset.dx / screenWidth) * 0.25;
 
     // Badges opacities
-    final double keepOpacity = (activeOffset.dx / 220.0).clamp(0.0, 1.0);
-    final double deleteOpacity = (-activeOffset.dx / 220.0).clamp(0.0, 1.0);
+    final double keepOpacity = (activeOffset.dx / _swipeThreshold).clamp(
+      0.0,
+      1.0,
+    );
+    final double deleteOpacity = (-activeOffset.dx / _swipeThreshold).clamp(
+      0.0,
+      1.0,
+    );
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,

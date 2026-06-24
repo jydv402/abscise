@@ -130,3 +130,27 @@ class SwipeController extends Notifier<SwipeState> {
 final swipeProvider = NotifierProvider<SwipeController, SwipeState>(
   SwipeController.new,
 );
+
+enum SwipeTriggerAction { swipeLeft, swipeRight, undo }
+
+class SwipeTriggerEvent {
+  final SwipeTriggerAction action;
+  final bool isDeleted;
+  final int timestamp;
+
+  SwipeTriggerEvent(this.action, {this.isDeleted = false})
+    : timestamp = DateTime.now().microsecondsSinceEpoch;
+}
+
+class SwipeTriggerNotifier extends Notifier<SwipeTriggerEvent?> {
+  @override
+  SwipeTriggerEvent? build() => null;
+
+  @override
+  set state(SwipeTriggerEvent? value) => super.state = value;
+}
+
+final swipeTriggerProvider =
+    NotifierProvider<SwipeTriggerNotifier, SwipeTriggerEvent?>(
+      SwipeTriggerNotifier.new,
+    );

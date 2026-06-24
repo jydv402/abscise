@@ -159,92 +159,120 @@ class CustomNavBar extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               // Delete Count Pill
-              Container(
-                height: circleDiameter,
-                alignment: .center,
-                decoration: const BoxDecoration(
-                  color: AppTheme.darkBackground,
-                  borderRadius: .only(
-                    bottomRight: .circular(8),
-                    topRight: .circular(8),
-                    bottomLeft: .circular(AppTheme.borderRadius),
-                    topLeft: .circular(AppTheme.borderRadius),
-                  ),
+              Material(
+                color: AppTheme.darkBackground,
+                borderRadius: const .only(
+                  bottomRight: .circular(8),
+                  topRight: .circular(8),
+                  bottomLeft: .circular(AppTheme.borderRadius),
+                  topLeft: .circular(AppTheme.borderRadius),
                 ),
-                padding: const .fromLTRB(14, 0, 18, 0),
-                child: Row(
-                  spacing: 8,
-                  children: [
-                    Iconify(Ph.x_circle_duotone, color: AppTheme.deleteRed),
-                    Text(
-                      '$deleteCount',
-                      style: TextStyle(
-                        fontFamily: 'Outfit',
-                        fontSize: iconSize - 4,
-                        fontWeight: .w500,
-                        color: AppTheme.deleteRed,
-                      ),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: swipeState.deck.isNotEmpty
+                      ? () {
+                          ref.read(swipeTriggerProvider.notifier).state =
+                              SwipeTriggerEvent(SwipeTriggerAction.swipeLeft);
+                        }
+                      : null,
+                  child: Container(
+                    height: circleDiameter,
+                    alignment: .center,
+                    padding: const .fromLTRB(14, 0, 18, 0),
+                    child: Row(
+                      spacing: 8,
+                      children: [
+                        Iconify(Ph.x_circle_duotone, color: AppTheme.deleteRed),
+                        Text(
+                          '$deleteCount',
+                          style: TextStyle(
+                            fontFamily: 'Outfit',
+                            fontSize: iconSize - 4,
+                            fontWeight: .w500,
+                            color: AppTheme.deleteRed,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
               const SizedBox(width: 3),
 
               // Keep Count Pill
-              Container(
-                height: circleDiameter,
-                alignment: .center,
-                decoration: const BoxDecoration(
-                  color: AppTheme.darkBackground,
-                  borderRadius: .only(
-                    bottomRight: .circular(AppTheme.borderRadius),
-                    topRight: .circular(AppTheme.borderRadius),
-                    bottomLeft: .circular(8),
-                    topLeft: .circular(8),
-                  ),
+              Material(
+                color: AppTheme.darkBackground,
+                borderRadius: const .only(
+                  bottomRight: .circular(AppTheme.borderRadius),
+                  topRight: .circular(AppTheme.borderRadius),
+                  bottomLeft: .circular(8),
+                  topLeft: .circular(8),
                 ),
-                padding: const .fromLTRB(18, 0, 14, 0),
-                child: Row(
-                  spacing: 8,
-                  children: [
-                    Text(
-                      '$keepCount',
-                      style: TextStyle(
-                        fontFamily: 'Outfit',
-                        fontSize: iconSize - 4,
-                        fontWeight: .w500,
-                        color: AppTheme.keepGreen,
-                      ),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: swipeState.deck.isNotEmpty
+                      ? () {
+                          ref.read(swipeTriggerProvider.notifier).state =
+                              SwipeTriggerEvent(SwipeTriggerAction.swipeRight);
+                        }
+                      : null,
+                  child: Container(
+                    height: circleDiameter,
+                    alignment: .center,
+                    padding: const .fromLTRB(18, 0, 14, 0),
+                    child: Row(
+                      spacing: 8,
+                      children: [
+                        Text(
+                          '$keepCount',
+                          style: TextStyle(
+                            fontFamily: 'Outfit',
+                            fontSize: iconSize - 4,
+                            fontWeight: .w500,
+                            color: AppTheme.keepGreen,
+                          ),
+                        ),
+                        Iconify(
+                          Ph.check_circle_duotone,
+                          color: AppTheme.keepGreen,
+                          size: iconSize,
+                        ),
+                      ],
                     ),
-                    Iconify(
-                      Ph.check_circle_duotone,
-                      color: AppTheme.keepGreen,
-                      size: iconSize,
-                    ),
-                  ],
+                  ),
                 ),
               ),
               SizedBox(width: gap),
+
               // Undo Button
-              GestureDetector(
-                onTap: hasHistory
-                    ? () => ref.read(swipeProvider.notifier).undo()
-                    : null,
-                child: AnimatedOpacity(
-                  opacity: hasHistory ? 1.0 : 0.35,
-                  duration: const Duration(milliseconds: 200),
-                  child: Container(
-                    width: circleDiameter,
-                    height: circleDiameter,
-                    decoration: const BoxDecoration(
-                      color: AppTheme.darkBackground,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Iconify(
-                        Ph.arrow_u_up_left,
-                        color: AppTheme.tertiaryLime,
-                        size: iconSize,
+              AnimatedOpacity(
+                opacity: hasHistory ? 1.0 : 0.35,
+                duration: const Duration(milliseconds: 200),
+                child: Material(
+                  color: AppTheme.darkBackground,
+                  shape: const CircleBorder(),
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: hasHistory
+                        ? () {
+                            final lastSwiped = swipeState.history.last;
+                            ref
+                                .read(swipeTriggerProvider.notifier)
+                                .state = SwipeTriggerEvent(
+                              SwipeTriggerAction.undo,
+                              isDeleted: lastSwiped.isDeleted,
+                            );
+                          }
+                        : null,
+                    child: SizedBox(
+                      width: circleDiameter,
+                      height: circleDiameter,
+                      child: Center(
+                        child: Iconify(
+                          Ph.arrow_u_up_left,
+                          color: AppTheme.tertiaryLime,
+                          size: iconSize,
+                        ),
                       ),
                     ),
                   ),

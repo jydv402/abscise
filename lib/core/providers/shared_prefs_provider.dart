@@ -153,7 +153,7 @@ class MediaFetchAscendingNotifier extends Notifier<bool> {
   }
 }
 
-final mediaFetchAscendingProvider = NotifierProvider<MediaFetchAscendingNotifier, bool>(
-  MediaFetchAscendingNotifier.new,
-);
-
+final mediaFetchAscendingProvider =
+    NotifierProvider<MediaFetchAscendingNotifier, bool>(
+      MediaFetchAscendingNotifier.new,
+    );
