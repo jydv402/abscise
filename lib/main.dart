@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/providers/shared_prefs_provider.dart';
 import 'core/routes/router.dart';
 import 'core/themes/app_theme.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,7 +12,12 @@ void main() async {
   // Load environment variables from .env file
   await dotenv.load(fileName: ".env");
 
+  // Initialize shared preferences
   await AppPreferences.init();
+
+  // Initialize Hive and open the box
+  await Hive.initFlutter();
+  await Hive.openBox('abscise_bin');
 
   runApp(const ProviderScope(child: AbsciseApp()));
 }

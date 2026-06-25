@@ -24,6 +24,8 @@ dependencies:
   photo_manager_image_provider: ^2.2.0
   video_player: ^2.11.1
   url_launcher: ^6.3.2
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
 
 dev_dependencies:
   flutter_test:
