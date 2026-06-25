@@ -20,7 +20,7 @@ dependencies:
   iconify_flutter: ^0.0.7
   google_sign_in: ^7.2.0
   extension_google_sign_in_as_googleapis_auth: ^3.0.0
-  flutter_dotenv: ^6.0.1
+  # flutter_dotenv: ^6.0.1 <Temporarily disabled>
   photo_manager_image_provider: ^2.2.0
   video_player: ^2.11.1
   url_launcher: ^6.3.2
