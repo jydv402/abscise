@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'core/providers/shared_prefs_provider.dart';
-import 'core/routes/router.dart';
-import 'core/themes/app_theme.dart';
+import 'package:abscise/providers/shared_prefs_provider.dart';
+import 'package:abscise/routes/app_router.dart';
+import 'package:abscise/themes/app_theme.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
