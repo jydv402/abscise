@@ -19,8 +19,8 @@ class LocalBinService {
 
   LocalBinService(this._box) {
     // Hydrate the in-memory set from Hive on construction.
-    final storedIds = _box.get(_binIdsKey, defaultValue: <dynamic>[]);
-    _cachedIds = Set<String>.from(storedIds.cast<String>());
+    final storedIds = _box.get(_binIdsKey, defaultValue: <dynamic>[]) as List<dynamic>;
+    _cachedIds = storedIds.map((e) => e.toString()).toSet();
   }
 
   // ---------------------------------------------------------------------------

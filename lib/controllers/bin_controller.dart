@@ -1,6 +1,7 @@
-import 'dart:io';
+// dart:io no longer needed since we use PhotoManager for deletions
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:photo_manager/photo_manager.dart';
 
 import 'package:abscise/models/bin_state.dart';
 import 'package:abscise/models/media_model.dart';
@@ -68,27 +69,25 @@ class BinController extends Notifier<BinState> {
     double mbFreed = 0;
     final List<String> deletedIds = [];
 
-    for (final item in items) {
-      try {
-        final file = File(item.path);
-        if (await file.exists()) {
-          await file.delete();
-          deletedCount++;
-          mbFreed += item.fileSizeMb ?? 0;
-        } else {
-          // File already gone (manually deleted externally), still count it.
-          deletedCount++;
-          mbFreed += item.fileSizeMb ?? 0;
-        }
-        deletedIds.add(item.id);
-      } catch (_) {
-        // Skip files that fail to delete (e.g. permission issues).
-        // They remain in the bin for the user to retry.
+    final idsToDelete = items.map((i) => i.id).toList();
+    
+    try {
+      final successfullyDeletedIds = await PhotoManager.editor.deleteWithIds(idsToDelete);
+      
+      for (final id in successfullyDeletedIds) {
+        final item = items.firstWhere((element) => element.id == id);
+        deletedCount++;
+        mbFreed += item.fileSizeMb ?? 0;
+        deletedIds.add(id);
       }
+    } catch (_) {
+      // Catch native errors if any
     }
 
     // Remove successfully deleted items from Hive and in-memory state.
     await binService.clearAll(deletedIds);
+
+    // Update the in-memory state to reflect the deletions.
     state = state.copyWith(
       localBin: state.localBin
           .where((element) => !deletedIds.contains(element.id))
