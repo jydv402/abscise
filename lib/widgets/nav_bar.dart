@@ -9,7 +9,11 @@ import '../core/themes/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/providers/nav_bar_mode_provider.dart';
 import '../features/local_mode/controllers/swipe_controller.dart';
+import '../features/bin/controllers/bin_controller.dart';
+import '../features/bin/presentation/bin_screen.dart';
 import '../core/const/swipe_state.dart';
+import '../core/const/media_item.dart';
+import '../core/providers/shared_prefs_provider.dart';
 
 class CustomNavBar extends ConsumerWidget {
   /// The navigation shell provided by GoRouter's StatefulShellRoute
@@ -285,6 +289,280 @@ class CustomNavBar extends ConsumerWidget {
     );
   }
 
+  Future<bool> _showConfirmDialog(
+    BuildContext context, {
+    required String title,
+    required String message,
+    required String confirmLabel,
+    required Color confirmColor,
+  }) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: AppTheme.surfaceColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            title: Text(
+              title,
+              style: const TextStyle(
+                fontFamily: 'Outfit',
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            content: Text(
+              message,
+              style: const TextStyle(
+                fontFamily: 'Outfit',
+                color: AppTheme.textSecondary,
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(
+                    fontFamily: 'Outfit',
+                    color: AppTheme.textSecondary,
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                style: TextButton.styleFrom(
+                  backgroundColor: confirmColor.withValues(alpha: 0.15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Text(
+                  confirmLabel,
+                  style: TextStyle(
+                    fontFamily: 'Outfit',
+                    color: confirmColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
+
+  Future<void> _handleRestore(
+    BuildContext context,
+    WidgetRef ref,
+    List<MediaItem> items,
+  ) async {
+    final confirmed = await _showConfirmDialog(
+      context,
+      title: 'Restore ${items.length} items?',
+      message:
+          'These items will be removed from the bin and will reappear in your swipe deck.',
+      confirmLabel: 'Restore',
+      confirmColor: AppTheme.keepGreen,
+    );
+    if (confirmed) {
+      await ref.read(binProvider.notifier).restoreItems(items);
+      ref.read(binSelectionProvider.notifier).clearSelection();
+      ref.read(swipeProvider.notifier).loadNextChunk();
+    }
+  }
+
+  Future<void> _handleDelete(
+    BuildContext context,
+    WidgetRef ref,
+    List<MediaItem> items,
+  ) async {
+    final confirmed = await _showConfirmDialog(
+      context,
+      title: 'Permanently delete ${items.length} items?',
+      message:
+          'These files will be permanently removed from your device. This action cannot be undone.',
+      confirmLabel: 'Delete',
+      confirmColor: AppTheme.deleteRed,
+    );
+    if (confirmed) {
+      final result =
+          await ref.read(binProvider.notifier).permanentlyDeleteLocal(items);
+      ref.read(binSelectionProvider.notifier).clearSelection();
+      ref.read(memorySavedProvider.notifier).addMemorySaved(result.mbFreed);
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Deleted ${result.deletedCount} items · Freed ${result.mbFreed.toStringAsFixed(1)} MB',
+              style: const TextStyle(fontFamily: 'Outfit'),
+            ),
+            backgroundColor: AppTheme.surfaceColor,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  Widget _buildBinSelectionBar(
+    BuildContext context,
+    double screenWidth,
+    double borderRadiusValue,
+    double dynamicHeight,
+    WidgetRef ref,
+  ) {
+    final selection = ref.watch(binSelectionProvider);
+    final binState = ref.watch(binProvider);
+    final selectedCount = selection.length;
+    final selectedItems =
+        binState.localBin.where((i) => selection.contains(i.id)).toList();
+
+    final double circleDiameter = dynamicHeight - 16.0;
+    final double gap = (dynamicHeight - circleDiameter) / 2;
+    final double fontSize = screenWidth < 340 ? 14.0 : 16.0;
+
+    return Row(
+      key: const ValueKey('binSelectionBar'),
+      spacing: 12,
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Left Pill: Deselect All
+        GestureDetector(
+          onTap: () {
+            ref.read(binSelectionProvider.notifier).clearSelection();
+          },
+          child: Container(
+            width: dynamicHeight,
+            height: dynamicHeight,
+            decoration: BoxDecoration(
+              color: AppTheme.primaryPurple,
+              shape: BoxShape.circle,
+              boxShadow: _buildDoubleShadow(),
+            ),
+            child: Center(
+              child: Container(
+                width: circleDiameter,
+                height: circleDiameter,
+                decoration: const BoxDecoration(
+                  color: AppTheme.darkBackground,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Iconify(
+                    Ph.stack_duotone,
+                    color: AppTheme.tertiaryLime,
+                    size: fontSize + 6,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        // Right Pill: Restore | Delete | Count
+        Container(
+          height: dynamicHeight,
+          decoration: BoxDecoration(
+            color: AppTheme.primaryPurple,
+            borderRadius: BorderRadius.circular(borderRadiusValue),
+            boxShadow: _buildDoubleShadow(),
+          ),
+          padding: EdgeInsets.all(gap),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Restore Pill
+              Material(
+                color: AppTheme.darkBackground,
+                borderRadius: BorderRadius.only(
+                  bottomRight: const Radius.circular(8),
+                  topRight: const Radius.circular(8),
+                  bottomLeft: Radius.circular(AppTheme.borderRadius),
+                  topLeft: Radius.circular(AppTheme.borderRadius),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: () => _handleRestore(context, ref, selectedItems),
+                  child: Container(
+                    height: circleDiameter,
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      'Restore',
+                      style: TextStyle(
+                        fontFamily: 'Outfit',
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.w500,
+                        color: AppTheme.textWhite,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 3),
+
+              // Delete Pill
+              Material(
+                color: AppTheme.darkBackground,
+                borderRadius: BorderRadius.circular(8),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: () => _handleDelete(context, ref, selectedItems),
+                  child: Container(
+                    height: circleDiameter,
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      'Delete',
+                      style: TextStyle(
+                        fontFamily: 'Outfit',
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.w500,
+                        color: AppTheme.deleteRed,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 3),
+
+              // Count Pill
+              Material(
+                color: AppTheme.darkBackground,
+                borderRadius: BorderRadius.only(
+                  bottomRight: Radius.circular(AppTheme.borderRadius),
+                  topRight: Radius.circular(AppTheme.borderRadius),
+                  bottomLeft: const Radius.circular(8),
+                  topLeft: const Radius.circular(8),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: Container(
+                  height: circleDiameter,
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    '$selectedCount',
+                    style: TextStyle(
+                      fontFamily: 'Outfit',
+                      fontSize: fontSize,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textWhite,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final double screenWidth = MediaQuery.of(context).size.width;
@@ -308,6 +586,9 @@ class CustomNavBar extends ConsumerWidget {
 
     final double dynamicHeight = paddingValue * 2 + iconSize + marginValue * 2;
 
+    final bool isBinTab = navigationShell.currentIndex == 1;
+    final bool hasBinSelection = isBinTab && ref.watch(binSelectionProvider).isNotEmpty;
+
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 350),
       switchInCurve: Curves.easeInOut,
@@ -322,21 +603,29 @@ class CustomNavBar extends ConsumerWidget {
           child: SlideTransition(position: slideAnimation, child: child),
         );
       },
-      child: mode == NavBarMode.pageSwitch
-          ? _buildTabNavBar(
-              context,
-              screenWidth,
-              borderRadiusValue,
-              dynamicHeight,
-            )
-          : _buildActionBar(
+      child: hasBinSelection
+          ? _buildBinSelectionBar(
               context,
               screenWidth,
               borderRadiusValue,
               dynamicHeight,
               ref,
-              swipeState,
-            ),
+            )
+          : mode == NavBarMode.pageSwitch
+              ? _buildTabNavBar(
+                  context,
+                  screenWidth,
+                  borderRadiusValue,
+                  dynamicHeight,
+                )
+              : _buildActionBar(
+                  context,
+                  screenWidth,
+                  borderRadiusValue,
+                  dynamicHeight,
+                  ref,
+                  swipeState,
+                ),
     ).animate().slideY(begin: 1.5, end: 0, curve: Curves.easeOutBack);
   }
 }

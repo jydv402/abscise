@@ -21,6 +21,7 @@ class StatsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       padding: AppTheme.paddingL,
+      physics: const BouncingScrollPhysics(),
       children: const [
         _SectionHeading(title: 'Stats'),
         _SpaceSavedBox(),
@@ -105,9 +106,7 @@ class _SpaceSavedBox extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Isolated listen: Only rebuilds when memorySaved values shift
-    final memorySaved = ref.watch(
-      appPreferencesProvider.select((p) => p.getMemorySaved()),
-    );
+    final memorySaved = ref.watch(memorySavedProvider);
 
     return Container(
       padding: const .all(24),

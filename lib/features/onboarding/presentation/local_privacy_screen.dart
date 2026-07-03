@@ -26,7 +26,12 @@ class LocalPrivacyScreen extends StatelessWidget {
             children: [
               Iconify(iconPath, color: iconColor, size: 28),
               const SizedBox(width: 12),
-              Text(title, style: Theme.of(context).textTheme.titleLarge),
+              Expanded(
+                child: Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ),
             ],
           ),
           Text(

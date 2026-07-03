@@ -4,6 +4,7 @@ import '../../../core/const/swipe_state.dart';
 import '../../../core/const/swiped_item.dart';
 import '../../../core/providers/shared_prefs_provider.dart';
 import '../../bin/controllers/bin_controller.dart';
+import '../../bin/services/local_bin_service.dart';
 import '../services/local_media_service.dart';
 
 class SwipeController extends Notifier<SwipeState> {
@@ -27,7 +28,9 @@ class SwipeController extends Notifier<SwipeState> {
     );
   }
 
-  /// Loads the next chunk of media items
+  /// Loads the next chunk of media items.
+  /// Filters out items that are already in the persistent bin so they
+  /// never reappear in the swipe deck after the app is restarted.
   Future<void> loadNextChunk() async {
     if (state.isLoading || !state.hasMore) return;
 
@@ -36,6 +39,9 @@ class SwipeController extends Notifier<SwipeState> {
     try {
       final mediaService = ref.read(localMediaServiceProvider);
       final ascending = ref.read(mediaFetchAscendingProvider);
+      final binService = ref.read(localBinServiceProvider);
+      final binIds = binService.getBinIds();
+
       final newItems = await mediaService.fetchLocalMedia(
         page: state.page,
         ascending: ascending,
@@ -44,11 +50,22 @@ class SwipeController extends Notifier<SwipeState> {
       if (newItems.isEmpty) {
         state = state.copyWith(isLoading: false, hasMore: false);
       } else {
+        // Filter out any items that are already in the persistent bin.
+        final filtered = newItems
+            .where((item) => !binIds.contains(item.id))
+            .toList();
+
         state = state.copyWith(
-          deck: [...state.deck, ...newItems],
+          deck: [...state.deck, ...filtered],
           page: state.page + 1,
           isLoading: false,
         );
+
+        // If all items in this chunk were filtered out (already binned),
+        // automatically load the next chunk to avoid an empty/stalled deck.
+        if (filtered.isEmpty && state.hasMore) {
+          loadNextChunk();
+        }
       }
     } catch (e) {
       state = state.copyWith(isLoading: false);
@@ -71,7 +88,7 @@ class SwipeController extends Notifier<SwipeState> {
       ], // Add to history
       currentIndex: state.currentIndex + 1,
     );
-    // Add to the bin
+    // Add to the bin (persists to Hive automatically)
     ref.read(binProvider.notifier).addToBin(swipeItem);
 
     // Load the next chunk based on the length of the deck
@@ -120,13 +137,13 @@ class SwipeController extends Notifier<SwipeState> {
     );
 
     if (lastSwiped.isDeleted) {
-      // Remove the item from the bin
+      // Remove the item from the bin (also removes from Hive persistence)
       ref.read(binProvider.notifier).removeFromBin(lastSwiped.item);
     }
   }
 }
 
-// Defining the provider for the SwipeController\
+// Defining the provider for the SwipeController\\
 final swipeProvider = NotifierProvider<SwipeController, SwipeState>(
   SwipeController.new,
 );

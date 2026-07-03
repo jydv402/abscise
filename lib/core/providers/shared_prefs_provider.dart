@@ -157,3 +157,21 @@ final mediaFetchAscendingProvider =
     NotifierProvider<MediaFetchAscendingNotifier, bool>(
       MediaFetchAscendingNotifier.new,
     );
+
+class MemorySavedNotifier extends Notifier<double> {
+  @override
+  double build() {
+    final prefs = ref.watch(appPreferencesProvider);
+    return prefs.getMemorySaved();
+  }
+
+  Future<void> addMemorySaved(double mb) async {
+    state += mb;
+    final prefs = ref.read(appPreferencesProvider);
+    await prefs.setMemorySaved(state);
+  }
+}
+
+final memorySavedProvider = NotifierProvider<MemorySavedNotifier, double>(
+  MemorySavedNotifier.new,
+);
