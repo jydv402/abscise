@@ -70,10 +70,12 @@ class BinController extends Notifier<BinState> {
     final List<String> deletedIds = [];
 
     final idsToDelete = items.map((i) => i.id).toList();
-    
+
     try {
-      final successfullyDeletedIds = await PhotoManager.editor.deleteWithIds(idsToDelete);
-      
+      final successfullyDeletedIds = await PhotoManager.editor.deleteWithIds(
+        idsToDelete,
+      );
+
       for (final id in successfullyDeletedIds) {
         final item = items.firstWhere((element) => element.id == id);
         deletedCount++;

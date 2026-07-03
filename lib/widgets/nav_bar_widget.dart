@@ -29,7 +29,7 @@ class CustomNavBar extends ConsumerWidget {
     );
   }
 
-  List<BoxShadow> _buildDoubleShadow() {
+  static List<BoxShadow> get doubleShadow {
     return [
       BoxShadow(
         color: AppTheme.darkBackground.withValues(alpha: 0.90),
@@ -48,9 +48,10 @@ class CustomNavBar extends ConsumerWidget {
 
   Widget _buildTabNavBar(
     BuildContext context,
-    double screenWidth,
     double borderRadiusValue,
     double dynamicHeight,
+    double circleDiameter,
+    double iconSize,
   ) {
     return Container(
       key: const ValueKey('tabNavBar'),
@@ -58,30 +59,34 @@ class CustomNavBar extends ConsumerWidget {
       decoration: BoxDecoration(
         color: AppTheme.primaryPurple,
         borderRadius: BorderRadius.circular(borderRadiusValue),
-        boxShadow: _buildDoubleShadow(),
+        boxShadow: doubleShadow,
       ),
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
+        spacing: 4,
         children: [
           _NavBarItem(
             index: 0,
             isSelected: navigationShell.currentIndex == 0,
             onTap: () => _onTabSelected(0),
-            dynamicHeight: dynamicHeight,
+            circleDiameter: circleDiameter,
+            iconSize: iconSize,
           ),
           _NavBarItem(
             index: 1,
             isSelected: navigationShell.currentIndex == 1,
             onTap: () => _onTabSelected(1),
-            dynamicHeight: dynamicHeight,
+            circleDiameter: circleDiameter,
+            iconSize: iconSize,
           ),
           _NavBarItem(
             index: 2,
             isSelected: navigationShell.currentIndex == 2,
             onTap: () => _onTabSelected(2),
-            dynamicHeight: dynamicHeight,
+            circleDiameter: circleDiameter,
+            iconSize: iconSize,
           ),
         ],
       ),
@@ -90,16 +95,14 @@ class CustomNavBar extends ConsumerWidget {
 
   Widget _buildActionBar(
     BuildContext context,
-    double screenWidth,
-    double borderRadiusValue,
-    double dynamicHeight,
     WidgetRef ref,
     SwipeState swipeState,
+    double borderRadiusValue,
+    double dynamicHeight,
+    double circleDiameter,
+    double gap,
+    double iconSize,
   ) {
-    final double iconSize = screenWidth < 340
-        ? 22.0
-        : (screenWidth > 400 ? 26.0 : 24.0);
-
     final int deleteCount = swipeState.history
         .where((item) => item.isDeleted)
         .length;
@@ -108,9 +111,6 @@ class CustomNavBar extends ConsumerWidget {
         .length;
     final bool hasHistory = swipeState.history.isNotEmpty;
 
-    final double circleDiameter = dynamicHeight - 16.0;
-    final double gap = (dynamicHeight - circleDiameter) / 2; // Always 8.0
-
     return Row(
       key: const ValueKey('actionBarMode'),
       spacing: 12,
@@ -118,36 +118,13 @@ class CustomNavBar extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         // Left Pill: Collapsed Nav Pill
-        GestureDetector(
-          onTap: () {
-            ref.read(navBarModeProvider.notifier).switchToPageSwitch();
-          },
-          child: Container(
-            width: dynamicHeight,
-            height: dynamicHeight,
-            decoration: BoxDecoration(
-              color: AppTheme.primaryPurple,
-              shape: BoxShape.circle,
-              boxShadow: _buildDoubleShadow(),
-            ),
-            child: Center(
-              child: Container(
-                width: circleDiameter,
-                height: circleDiameter,
-                decoration: const BoxDecoration(
-                  color: AppTheme.darkBackground,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Iconify(
-                    Ph.stack_duotone,
-                    color: AppTheme.tertiaryLime,
-                    size: iconSize,
-                  ),
-                ),
-              ),
-            ),
-          ),
+        _ActionIconButton(
+          onTap: () =>
+              ref.read(navBarModeProvider.notifier).switchToPageSwitch(),
+          dynamicHeight: dynamicHeight,
+          circleDiameter: circleDiameter,
+          iconSize: iconSize,
+          icon: Ph.stack_duotone,
         ),
 
         // Right Pill: Swipe Stats & Undo Pill
@@ -155,98 +132,75 @@ class CustomNavBar extends ConsumerWidget {
           height: dynamicHeight,
           decoration: BoxDecoration(
             color: AppTheme.primaryPurple,
-            borderRadius: .circular(borderRadiusValue),
-            boxShadow: _buildDoubleShadow(),
+            borderRadius: BorderRadius.circular(borderRadiusValue),
+            boxShadow: doubleShadow,
           ),
-          padding: .all(gap),
+          padding: EdgeInsets.all(gap),
           child: Row(
             mainAxisSize: MainAxisSize.min,
+            spacing: 3,
             children: [
               // Delete Count Pill
-              Material(
-                color: AppTheme.darkBackground,
-                borderRadius: const .only(
-                  bottomRight: .circular(8),
-                  topRight: .circular(8),
-                  bottomLeft: .circular(AppTheme.borderRadius),
-                  topLeft: .circular(AppTheme.borderRadius),
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: InkWell(
-                  onTap: swipeState.deck.isNotEmpty
-                      ? () {
-                          ref.read(swipeTriggerProvider.notifier).state =
-                              SwipeTriggerEvent(SwipeTriggerAction.swipeLeft);
-                        }
-                      : null,
-                  child: Container(
-                    height: circleDiameter,
-                    alignment: .center,
-                    padding: const .fromLTRB(14, 0, 18, 0),
-                    child: Row(
-                      spacing: 8,
-                      children: [
-                        Iconify(Ph.x_circle_duotone, color: AppTheme.deleteRed),
-                        Text(
-                          '$deleteCount',
-                          style: TextStyle(
-                            fontFamily: 'Outfit',
-                            fontSize: iconSize - 4,
-                            fontWeight: .w500,
-                            color: AppTheme.deleteRed,
-                          ),
-                        ),
-                      ],
+              _PillButton(
+                position: _PillPosition.left,
+                height: circleDiameter,
+                padding: const EdgeInsets.fromLTRB(14, 0, 18, 0),
+                onTap: swipeState.deck.isNotEmpty
+                    ? () {
+                        ref.read(swipeTriggerProvider.notifier).state =
+                            SwipeTriggerEvent(SwipeTriggerAction.swipeLeft);
+                      }
+                    : null,
+                child: Row(
+                  spacing: 8,
+                  children: [
+                    Iconify(Ph.x_circle_duotone, color: AppTheme.deleteRed),
+                    Text(
+                      '$deleteCount',
+                      style: TextStyle(
+                        fontFamily: 'Outfit',
+                        fontSize: iconSize - 4,
+                        fontWeight: FontWeight.w500,
+                        color: AppTheme.deleteRed,
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
-              const SizedBox(width: 3),
 
               // Keep Count Pill
-              Material(
-                color: AppTheme.darkBackground,
-                borderRadius: const .only(
-                  bottomRight: .circular(AppTheme.borderRadius),
-                  topRight: .circular(AppTheme.borderRadius),
-                  bottomLeft: .circular(8),
-                  topLeft: .circular(8),
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: InkWell(
-                  onTap: swipeState.deck.isNotEmpty
-                      ? () {
-                          ref.read(swipeTriggerProvider.notifier).state =
-                              SwipeTriggerEvent(SwipeTriggerAction.swipeRight);
-                        }
-                      : null,
-                  child: Container(
-                    height: circleDiameter,
-                    alignment: .center,
-                    padding: const .fromLTRB(18, 0, 14, 0),
-                    child: Row(
-                      spacing: 8,
-                      children: [
-                        Text(
-                          '$keepCount',
-                          style: TextStyle(
-                            fontFamily: 'Outfit',
-                            fontSize: iconSize - 4,
-                            fontWeight: .w500,
-                            color: AppTheme.keepGreen,
-                          ),
-                        ),
-                        Iconify(
-                          Ph.check_circle_duotone,
-                          color: AppTheme.keepGreen,
-                          size: iconSize,
-                        ),
-                      ],
+              _PillButton(
+                position: _PillPosition.right,
+                height: circleDiameter,
+                padding: const EdgeInsets.fromLTRB(18, 0, 14, 0),
+                onTap: swipeState.deck.isNotEmpty
+                    ? () {
+                        ref.read(swipeTriggerProvider.notifier).state =
+                            SwipeTriggerEvent(SwipeTriggerAction.swipeRight);
+                      }
+                    : null,
+                child: Row(
+                  spacing: 8,
+                  children: [
+                    Text(
+                      '$keepCount',
+                      style: TextStyle(
+                        fontFamily: 'Outfit',
+                        fontSize: iconSize - 4,
+                        fontWeight: FontWeight.w500,
+                        color: AppTheme.keepGreen,
+                      ),
                     ),
-                  ),
+                    Iconify(
+                      Ph.check_circle_duotone,
+                      color: AppTheme.keepGreen,
+                      size: iconSize,
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(width: gap),
+
+              SizedBox(width: gap - 3),
 
               // Undo Button
               AnimatedOpacity(
@@ -411,10 +365,13 @@ class CustomNavBar extends ConsumerWidget {
 
   Widget _buildBinSelectionBar(
     BuildContext context,
-    double screenWidth,
+    WidgetRef ref,
     double borderRadiusValue,
     double dynamicHeight,
-    WidgetRef ref,
+    double circleDiameter,
+    double gap,
+    double fontSize,
+    double iconSize,
   ) {
     final selection = ref.watch(binSelectionProvider);
     final binState = ref.watch(binProvider);
@@ -423,10 +380,6 @@ class CustomNavBar extends ConsumerWidget {
         .where((i) => selection.contains(i.id))
         .toList();
 
-    final double circleDiameter = dynamicHeight - 16.0;
-    final double gap = (dynamicHeight - circleDiameter) / 2;
-    final double fontSize = screenWidth < 340 ? 14.0 : 16.0;
-
     return Row(
       key: const ValueKey('binSelectionBar'),
       spacing: 12,
@@ -434,36 +387,12 @@ class CustomNavBar extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         // Left Pill: Deselect All
-        GestureDetector(
-          onTap: () {
-            ref.read(binSelectionProvider.notifier).clearSelection();
-          },
-          child: Container(
-            width: dynamicHeight,
-            height: dynamicHeight,
-            decoration: BoxDecoration(
-              color: AppTheme.primaryPurple,
-              shape: BoxShape.circle,
-              boxShadow: _buildDoubleShadow(),
-            ),
-            child: Center(
-              child: Container(
-                width: circleDiameter,
-                height: circleDiameter,
-                decoration: const BoxDecoration(
-                  color: AppTheme.darkBackground,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Iconify(
-                    Ph.stack_duotone,
-                    color: AppTheme.tertiaryLime,
-                    size: fontSize + 6,
-                  ),
-                ),
-              ),
-            ),
-          ),
+        _ActionIconButton(
+          onTap: () => ref.read(binSelectionProvider.notifier).clearSelection(),
+          dynamicHeight: dynamicHeight,
+          circleDiameter: circleDiameter,
+          iconSize: fontSize + 6,
+          icon: Ph.stack_duotone,
         ),
 
         // Right Pill: Restore | Delete | Count
@@ -472,89 +401,56 @@ class CustomNavBar extends ConsumerWidget {
           decoration: BoxDecoration(
             color: AppTheme.primaryPurple,
             borderRadius: BorderRadius.circular(borderRadiusValue),
-            boxShadow: _buildDoubleShadow(),
+            boxShadow: doubleShadow,
           ),
           padding: EdgeInsets.all(gap),
           child: Row(
             mainAxisSize: MainAxisSize.min,
+            spacing: 3,
             children: [
               // Restore Pill
-              Material(
-                color: AppTheme.darkBackground,
-                borderRadius: BorderRadius.only(
-                  bottomRight: const Radius.circular(8),
-                  topRight: const Radius.circular(8),
-                  bottomLeft: Radius.circular(AppTheme.borderRadius),
-                  topLeft: Radius.circular(AppTheme.borderRadius),
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: InkWell(
-                  onTap: () => _handleRestore(context, ref, selectedItems),
-                  child: Container(
-                    height: circleDiameter,
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      'Restore',
-                      style: TextStyle(
-                        fontFamily: 'Outfit',
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.w500,
-                        color: AppTheme.textWhite,
-                      ),
-                    ),
+              _PillButton(
+                position: _PillPosition.left,
+                height: circleDiameter,
+                onTap: () => _handleRestore(context, ref, selectedItems),
+                child: Text(
+                  'Restore',
+                  style: TextStyle(
+                    fontFamily: 'Outfit',
+                    fontSize: fontSize,
+                    fontWeight: FontWeight.w500,
+                    color: AppTheme.textWhite,
                   ),
                 ),
               ),
-              const SizedBox(width: 3),
 
               // Delete Pill
-              Material(
-                color: AppTheme.darkBackground,
-                borderRadius: BorderRadius.circular(8),
-                clipBehavior: Clip.antiAlias,
-                child: InkWell(
-                  onTap: () => _handleDelete(context, ref, selectedItems),
-                  child: Container(
-                    height: circleDiameter,
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      'Delete',
-                      style: TextStyle(
-                        fontFamily: 'Outfit',
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.w500,
-                        color: AppTheme.deleteRed,
-                      ),
-                    ),
+              _PillButton(
+                position: _PillPosition.middle,
+                height: circleDiameter,
+                onTap: () => _handleDelete(context, ref, selectedItems),
+                child: Text(
+                  'Delete',
+                  style: TextStyle(
+                    fontFamily: 'Outfit',
+                    fontSize: fontSize,
+                    fontWeight: FontWeight.w500,
+                    color: AppTheme.deleteRed,
                   ),
                 ),
               ),
-              const SizedBox(width: 3),
 
               // Count Pill
-              Material(
-                color: AppTheme.darkBackground,
-                borderRadius: BorderRadius.only(
-                  bottomRight: Radius.circular(AppTheme.borderRadius),
-                  topRight: Radius.circular(AppTheme.borderRadius),
-                  bottomLeft: const Radius.circular(8),
-                  topLeft: const Radius.circular(8),
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: Container(
-                  height: circleDiameter,
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    '$selectedCount',
-                    style: TextStyle(
-                      fontFamily: 'Outfit',
-                      fontSize: fontSize,
-                      fontWeight: FontWeight.w600,
-                      color: AppTheme.textWhite,
-                    ),
+              _PillButton(
+                position: _PillPosition.right,
+                height: circleDiameter,
+                child: Text(
+                  '$selectedCount',
+                  style: TextStyle(
+                    fontFamily: 'Outfit',
+                    fontSize: fontSize,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.textWhite,
                   ),
                 ),
               ),
@@ -585,8 +481,11 @@ class CustomNavBar extends ConsumerWidget {
     final double iconSize = screenWidth < 340
         ? 22.0
         : (screenWidth > 400 ? 26.0 : 24.0);
+    final double fontSize = screenWidth < 340 ? 14.0 : 16.0;
 
     final double dynamicHeight = paddingValue * 2 + iconSize + marginValue * 2;
+    final double circleDiameter = dynamicHeight - 16.0;
+    final double gap = (dynamicHeight - circleDiameter) / 2;
 
     final bool isBinTab = navigationShell.currentIndex == 1;
     final bool hasBinSelection =
@@ -609,25 +508,31 @@ class CustomNavBar extends ConsumerWidget {
       child: hasBinSelection
           ? _buildBinSelectionBar(
               context,
-              screenWidth,
+              ref,
               borderRadiusValue,
               dynamicHeight,
-              ref,
+              circleDiameter,
+              gap,
+              fontSize,
+              iconSize,
             )
           : mode == NavBarMode.pageSwitch
           ? _buildTabNavBar(
               context,
-              screenWidth,
               borderRadiusValue,
               dynamicHeight,
+              circleDiameter,
+              iconSize,
             )
           : _buildActionBar(
               context,
-              screenWidth,
-              borderRadiusValue,
-              dynamicHeight,
               ref,
               swipeState,
+              borderRadiusValue,
+              dynamicHeight,
+              circleDiameter,
+              gap,
+              iconSize,
             ),
     ).animate().slideY(begin: 1.5, end: 0, curve: Curves.easeOutBack);
   }
@@ -638,12 +543,14 @@ class _NavBarItem extends StatelessWidget {
     required this.index,
     required this.isSelected,
     required this.onTap,
-    required this.dynamicHeight,
+    required this.circleDiameter,
+    required this.iconSize,
   });
   final int index;
   final bool isSelected;
   final VoidCallback onTap;
-  final double dynamicHeight;
+  final double circleDiameter;
+  final double iconSize;
 
   static const List<String> _activeIcons = [
     Ph.file_image_duotone,
@@ -659,19 +566,11 @@ class _NavBarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double iconSize = screenWidth < 340
-        ? 22.0
-        : (screenWidth > 400 ? 26.0 : 24.0);
-
-    final double circleDiameter = dynamicHeight - 16.0;
-
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: circleDiameter,
         height: circleDiameter,
-        margin: index == 0 || index == 2 ? .zero : .symmetric(horizontal: 4),
         decoration: BoxDecoration(
           color: isSelected ? AppTheme.darkBackground : Colors.transparent,
           shape: BoxShape.circle,
@@ -682,6 +581,117 @@ class _NavBarItem extends StatelessWidget {
             color: isSelected ? AppTheme.tertiaryLime : AppTheme.darkBackground,
             size: iconSize,
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ActionIconButton extends StatelessWidget {
+  final VoidCallback onTap;
+  final double dynamicHeight;
+  final double circleDiameter;
+  final double iconSize;
+  final String icon;
+
+  const _ActionIconButton({
+    required this.onTap,
+    required this.dynamicHeight,
+    required this.circleDiameter,
+    required this.iconSize,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: dynamicHeight,
+        height: dynamicHeight,
+        decoration: BoxDecoration(
+          color: AppTheme.primaryPurple,
+          shape: BoxShape.circle,
+          boxShadow: CustomNavBar.doubleShadow,
+        ),
+        child: Center(
+          child: Container(
+            width: circleDiameter,
+            height: circleDiameter,
+            decoration: const BoxDecoration(
+              color: AppTheme.darkBackground,
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Iconify(
+                icon,
+                color: AppTheme.tertiaryLime,
+                size: iconSize,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+enum _PillPosition { left, middle, right, standalone }
+
+class _PillButton extends StatelessWidget {
+  final Widget child;
+  final VoidCallback? onTap;
+  final double height;
+  final _PillPosition position;
+  final EdgeInsetsGeometry padding;
+
+  const _PillButton({
+    required this.child,
+    this.onTap,
+    required this.height,
+    this.position = _PillPosition.standalone,
+    this.padding = const EdgeInsets.symmetric(horizontal: 16),
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    BorderRadius borderRadius;
+    switch (position) {
+      case _PillPosition.left:
+        borderRadius = const BorderRadius.only(
+          topLeft: Radius.circular(AppTheme.borderRadius),
+          bottomLeft: Radius.circular(AppTheme.borderRadius),
+          topRight: Radius.circular(8),
+          bottomRight: Radius.circular(8),
+        );
+        break;
+      case _PillPosition.middle:
+        borderRadius = BorderRadius.circular(8);
+        break;
+      case _PillPosition.right:
+        borderRadius = const BorderRadius.only(
+          topLeft: Radius.circular(8),
+          bottomLeft: Radius.circular(8),
+          topRight: Radius.circular(AppTheme.borderRadius),
+          bottomRight: Radius.circular(AppTheme.borderRadius),
+        );
+        break;
+      case _PillPosition.standalone:
+        borderRadius = BorderRadius.circular(AppTheme.borderRadius);
+        break;
+    }
+
+    return Material(
+      color: AppTheme.darkBackground,
+      borderRadius: borderRadius,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          height: height,
+          alignment: Alignment.center,
+          padding: padding,
+          child: child,
         ),
       ),
     );
