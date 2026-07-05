@@ -63,46 +63,60 @@ class CustomNavBar extends ConsumerWidget {
     final bool hasBinSelection =
         isBinTab && ref.watch(binSelectionProvider).isNotEmpty;
 
-    return AnimatedSwitcher(
+    return AnimatedSize(
       duration: const Duration(milliseconds: 350),
-      switchInCurve: Curves.easeInOut,
-      switchOutCurve: Curves.easeInOut,
-      transitionBuilder: (child, animation) {
-        final slideAnimation = Tween<Offset>(
-          begin: const Offset(0.0, 1.0),
-          end: Offset.zero,
-        ).animate(CurvedAnimation(parent: animation, curve: Curves.easeInOut));
-        return FadeTransition(
-          opacity: animation,
-          child: SlideTransition(position: slideAnimation, child: child),
-        );
-      },
-      child: hasBinSelection
-          ? BinSelectionBar(
-              borderRadiusValue: borderRadiusValue,
-              dynamicHeight: dynamicHeight,
-              circleDiameter: circleDiameter,
-              gap: gap,
-              fontSize: fontSize,
-              iconSize: iconSize,
-            )
-          : mode == NavBarMode.pageSwitch
-          ? TabNavBar(
-              navigationShell: navigationShell,
-              borderRadiusValue: borderRadiusValue,
-              dynamicHeight: dynamicHeight,
-              circleDiameter: circleDiameter,
-              iconSize: iconSize,
-            )
-          : ActionNavBar(
-              swipeState: swipeState,
-              borderRadiusValue: borderRadiusValue,
-              dynamicHeight: dynamicHeight,
-              circleDiameter: circleDiameter,
-              gap: gap,
-              fontSize: fontSize,
-              iconSize: iconSize,
-            ),
+      curve: Curves.easeInOut,
+      alignment: Alignment.bottomCenter,
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 350),
+        switchInCurve: Curves.easeInOut,
+        switchOutCurve: Curves.easeInOut,
+        layoutBuilder: (currentChild, previousChildren) {
+          return Stack(
+            alignment: Alignment.bottomCenter,
+            children: <Widget>[...previousChildren, ?currentChild],
+          );
+        },
+        transitionBuilder: (child, animation) {
+          final slideAnimation =
+              Tween<Offset>(
+                begin: const Offset(0.0, 1.0),
+                end: Offset.zero,
+              ).animate(
+                CurvedAnimation(parent: animation, curve: Curves.easeInOut),
+              );
+          return FadeTransition(
+            opacity: animation,
+            child: SlideTransition(position: slideAnimation, child: child),
+          );
+        },
+        child: hasBinSelection
+            ? BinSelectionBar(
+                borderRadiusValue: borderRadiusValue,
+                dynamicHeight: dynamicHeight,
+                circleDiameter: circleDiameter,
+                gap: gap,
+                fontSize: fontSize,
+                iconSize: iconSize,
+              )
+            : mode == NavBarMode.pageSwitch
+            ? TabNavBar(
+                navigationShell: navigationShell,
+                borderRadiusValue: borderRadiusValue,
+                dynamicHeight: dynamicHeight,
+                circleDiameter: circleDiameter,
+                iconSize: iconSize,
+              )
+            : ActionNavBar(
+                swipeState: swipeState,
+                borderRadiusValue: borderRadiusValue,
+                dynamicHeight: dynamicHeight,
+                circleDiameter: circleDiameter,
+                gap: gap,
+                fontSize: fontSize,
+                iconSize: iconSize,
+              ),
+      ),
     ).animate().slideY(begin: 1.5, end: 0, curve: Curves.easeOutBack);
   }
 }

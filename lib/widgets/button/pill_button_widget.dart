@@ -10,6 +10,7 @@ class PillButton extends StatelessWidget {
   final double height;
   final PillPosition position;
   final EdgeInsetsGeometry padding;
+  final String? tooltipMessage;
 
   const PillButton({
     super.key,
@@ -18,6 +19,7 @@ class PillButton extends StatelessWidget {
     required this.height,
     this.position = PillPosition.standalone,
     this.padding = const EdgeInsets.symmetric(horizontal: 16),
+    this.tooltipMessage,
   });
 
   @override
@@ -48,7 +50,7 @@ class PillButton extends StatelessWidget {
         break;
     }
 
-    return Material(
+    Widget button = Material(
       color: AppTheme.darkBackground,
       borderRadius: borderRadius,
       clipBehavior: Clip.antiAlias,
@@ -62,5 +64,11 @@ class PillButton extends StatelessWidget {
         ),
       ),
     );
+
+    if (tooltipMessage != null) {
+      return Tooltip(message: tooltipMessage!, child: button);
+    }
+
+    return button;
   }
 }
