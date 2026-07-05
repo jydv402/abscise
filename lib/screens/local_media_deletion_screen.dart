@@ -4,7 +4,7 @@ import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
 
 import 'package:abscise/themes/app_theme.dart';
-import 'package:abscise/widgets/stacked_swipe_deck_widget.dart';
+import 'package:abscise/widgets/swipe_deck/stacked_swipe_deck_widget.dart';
 import 'package:abscise/controllers/swipe_controller.dart';
 
 class LocalScreen extends ConsumerWidget {

@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:abscise/models/media_model.dart';
 import 'package:abscise/providers/nav_bar_mode_provider.dart';
-import 'package:abscise/widgets/swipe_card_widget.dart';
+import 'package:abscise/widgets/swipe_deck/swipe_card_widget.dart';
 import 'package:abscise/controllers/swipe_controller.dart';
 
 class StackedSwipeDeck extends ConsumerStatefulWidget {

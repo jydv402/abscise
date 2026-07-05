@@ -5,7 +5,7 @@ import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/ph.dart';
 
 import 'package:abscise/themes/app_theme.dart';
-import 'package:abscise/widgets/stack_button_widget.dart';
+import 'package:abscise/widgets/button/stack_button_widget.dart';
 
 class LocalPrivacyScreen extends StatelessWidget {
   const LocalPrivacyScreen({super.key});

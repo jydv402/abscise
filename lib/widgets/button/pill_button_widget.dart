@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../themes/app_theme.dart';
+import '../../themes/app_theme.dart';
 
 enum PillPosition { left, middle, right, standalone }
 

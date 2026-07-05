@@ -9,7 +9,7 @@ import 'package:abscise/screens/local_media_deletion_screen.dart';
 import 'package:abscise/screens/bin_screen.dart';
 import 'package:abscise/screens/stats_screen.dart';
 
-import 'package:abscise/widgets/nav_bar_widget.dart';
+import 'package:abscise/widgets/navigation/nav_bar_widget.dart';
 
 // Private navigator keys for each parallel branch
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
