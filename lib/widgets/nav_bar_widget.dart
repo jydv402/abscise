@@ -14,6 +14,7 @@ import 'package:abscise/screens/bin_screen.dart';
 import 'package:abscise/models/swipe_state.dart';
 import 'package:abscise/models/media_model.dart';
 import 'package:abscise/providers/shared_prefs_provider.dart';
+import 'package:abscise/widgets/stack_button_widget.dart';
 
 class CustomNavBar extends ConsumerWidget {
   /// The navigation shell provided by GoRouter's StatefulShellRoute
@@ -243,124 +244,58 @@ class CustomNavBar extends ConsumerWidget {
     );
   }
 
-  Future<bool> _showConfirmDialog(
-    BuildContext context, {
-    required String title,
-    required String message,
-    required String confirmLabel,
-    required Color confirmColor,
-  }) async {
-    return await showDialog<bool>(
-          context: context,
-          builder: (context) => AlertDialog(
-            backgroundColor: AppTheme.surfaceColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            title: Text(
-              title,
-              style: const TextStyle(
-                fontFamily: 'Outfit',
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            content: Text(
-              message,
-              style: const TextStyle(
-                fontFamily: 'Outfit',
-                color: AppTheme.textSecondary,
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text(
-                  'Cancel',
-                  style: TextStyle(
-                    fontFamily: 'Outfit',
-                    color: AppTheme.textSecondary,
-                  ),
-                ),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                style: TextButton.styleFrom(
-                  backgroundColor: confirmColor.withValues(alpha: 0.15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: Text(
-                  confirmLabel,
-                  style: TextStyle(
-                    fontFamily: 'Outfit',
-                    color: confirmColor,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ) ??
-        false;
-  }
-
-  Future<void> _handleRestore(
+  void _handleRestore(
     BuildContext context,
     WidgetRef ref,
     List<MediaItem> items,
-  ) async {
-    final confirmed = await _showConfirmDialog(
-      context,
-      title: 'Restore ${items.length} items?',
-      message:
-          'These items will be removed from the bin and will reappear in your swipe deck.',
-      confirmLabel: 'Restore',
-      confirmColor: AppTheme.keepGreen,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => ActionBottomSheet(
+        title: 'Restore ${items.length} items?',
+        message:
+            'These items will be removed from the bin and will reappear in your swipe deck.',
+        confirmLabel: 'Restore',
+        confirmIcon: Ph.arrow_u_up_left_bold,
+        confirmColor: AppTheme.keepGreen,
+        onAction: (ref) async {
+          await ref.read(binProvider.notifier).restoreItems(items);
+          ref.read(binSelectionProvider.notifier).clearSelection();
+          ref.read(swipeProvider.notifier).loadNextChunk();
+          return 'Restored ${items.length} items';
+        },
+      ),
     );
-    if (confirmed) {
-      await ref.read(binProvider.notifier).restoreItems(items);
-      ref.read(binSelectionProvider.notifier).clearSelection();
-      ref.read(swipeProvider.notifier).loadNextChunk();
-    }
   }
 
-  Future<void> _handleDelete(
+  void _handleDelete(
     BuildContext context,
     WidgetRef ref,
     List<MediaItem> items,
-  ) async {
-    final confirmed = await _showConfirmDialog(
-      context,
-      title: 'Permanently delete ${items.length} items?',
-      message:
-          'These files will be permanently removed from your device. This action cannot be undone.',
-      confirmLabel: 'Delete',
-      confirmColor: AppTheme.deleteRed,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => ActionBottomSheet(
+        title: 'Permanently delete ${items.length} items?',
+        message:
+            'These files will be permanently removed from your device. This action cannot be undone.',
+        confirmLabel: 'Delete',
+        confirmIcon: Ph.trash_bold,
+        confirmColor: AppTheme.deleteRed,
+        onAction: (ref) async {
+          final result = await ref
+              .read(binProvider.notifier)
+              .permanentlyDeleteLocal(items);
+          ref.read(binSelectionProvider.notifier).clearSelection();
+          ref.read(memorySavedProvider.notifier).addMemorySaved(result.mbFreed);
+          return 'Deleted ${result.deletedCount} items · Freed ${result.mbFreed.toStringAsFixed(1)} MB';
+        },
+      ),
     );
-    if (confirmed) {
-      final result = await ref
-          .read(binProvider.notifier)
-          .permanentlyDeleteLocal(items);
-      ref.read(binSelectionProvider.notifier).clearSelection();
-      ref.read(memorySavedProvider.notifier).addMemorySaved(result.mbFreed);
-
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Deleted ${result.deletedCount} items · Freed ${result.mbFreed.toStringAsFixed(1)} MB',
-              style: const TextStyle(fontFamily: 'Outfit'),
-            ),
-            backgroundColor: AppTheme.surfaceColor,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        );
-      }
-    }
   }
 
   Widget _buildBinSelectionBar(
@@ -694,6 +629,164 @@ class _PillButton extends StatelessWidget {
           child: child,
         ),
       ),
+    );
+  }
+}
+
+class ActionBottomSheet extends ConsumerStatefulWidget {
+  final String title;
+  final String message;
+  final String confirmLabel;
+  final String confirmIcon;
+  final Color confirmColor;
+  final Future<String> Function(WidgetRef ref) onAction;
+
+  const ActionBottomSheet({
+    super.key,
+    required this.title,
+    required this.message,
+    required this.confirmLabel,
+    required this.confirmIcon,
+    required this.confirmColor,
+    required this.onAction,
+  });
+
+  @override
+  ConsumerState<ActionBottomSheet> createState() => _ActionBottomSheetState();
+}
+
+class _ActionBottomSheetState extends ConsumerState<ActionBottomSheet> {
+  bool _isProcessing = false;
+  bool _isSuccess = false;
+  String _successMessage = '';
+
+  Future<void> _handleConfirm() async {
+    setState(() {
+      _isProcessing = true;
+    });
+
+    try {
+      final successMsg = await widget.onAction(ref);
+      setState(() {
+        _isProcessing = false;
+        _isSuccess = true;
+        _successMessage = successMsg;
+      });
+
+      await Future.delayed(const Duration(milliseconds: 1500));
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: const BoxDecoration(
+        color: AppTheme.surfaceColor,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: SafeArea(
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: _isSuccess
+              ? _buildSuccessView()
+              : _isProcessing
+              ? _buildProcessingView()
+              : _buildConfirmView(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildConfirmView() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          widget.title,
+          style: const TextStyle(
+            fontFamily: 'Outfit',
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          widget.message,
+          style: const TextStyle(
+            fontFamily: 'Outfit',
+            color: AppTheme.textSecondary,
+          ),
+        ),
+        const SizedBox(height: 24),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 12,
+          children: [
+            StackButton(
+              label: 'Cancel',
+              iconifyIcon: Ph.x_bold,
+              onPressed: () => Navigator.of(context).pop(),
+              variant: ButtonVariant.tertiary,
+            ),
+            StackButton(
+              label: widget.confirmLabel,
+              iconifyIcon: widget.confirmIcon,
+              onPressed: _handleConfirm,
+              variant: ButtonVariant.primary,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProcessingView() {
+    return const SizedBox(
+      height: 120,
+      child: Center(
+        child: CircularProgressIndicator(color: AppTheme.tertiaryLime),
+      ),
+    );
+  }
+
+  Widget _buildSuccessView() {
+    return SizedBox(
+      height: 120,
+      child:
+          Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Iconify(
+                  Ph.check_circle_duotone,
+                  color: AppTheme.keepGreen,
+                  size: 40,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  _successMessage,
+                  style: const TextStyle(
+                    fontFamily: 'Outfit',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ).animate().scale(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOutBack,
+          ),
     );
   }
 }

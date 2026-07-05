@@ -181,30 +181,25 @@ class _LocalPermsScreenState extends ConsumerState<LocalPermsScreen>
             subtitle:
                 'Review your local photos in an interactive swipe deck. Swipe right to keep them, swipe left to queue for clean up.',
             startIcon: Ph.file_image_duotone,
-            isFirst: true,
-            isLast: true,
           ),
           StatusCard(
             title: 'Protected Two-Step Deletion',
             subtitle:
                 'Swiped-left items are safely moved to a local Bin inside the app. They are never permanently deleted from storage without your final approval.',
             startIcon: Ph.trash_duotone,
-            isFirst: true,
-            isLast: true,
           ),
           StatusCard(
             title: 'Absolute Device Privacy',
             subtitle:
                 'Abscise runs 100% locally. Your files, library index, and swipe choices are kept securely on your offline storage and never uploaded to any remote server.',
             startIcon: Ph.device_mobile_duotone,
-            isFirst: true,
-            isLast: true,
           ),
           StatusCard(
             title: 'Why Storage Permission is Required?',
             subtitle:
                 'To load image thumbnails into your interactive swipe deck, calculate storage statistics, and move swiped-left clutter into the safe local Bin, Abscise requires standard storage permission to read and manage files in your device library.',
             startIcon: Ph.question_duotone,
+            isLast: true,
           ),
 
           const SizedBox(height: 24),

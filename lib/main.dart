@@ -35,3 +35,8 @@ class AbsciseApp extends StatelessWidget {
     );
   }
 }
+
+// TODO: Fix the UI in the Bin page. The header text. Icon sizes in the Nav Bar
+// TODO: Add tutorial items inside each page in the header
+// TODO: Fix the color mismatch in the alert dialog and toast in Bin page
+// TODO: Re-design the actionBarMode
