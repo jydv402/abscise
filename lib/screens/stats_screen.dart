@@ -172,6 +172,7 @@ class _StorageAccessStatusCard extends ConsumerWidget {
     );
   }
 }
+
 // Goto Privacy Policy Section
 class _PrivacyPolicySection extends StatelessWidget {
   const _PrivacyPolicySection();

@@ -47,6 +47,67 @@ class CustomNavBar extends ConsumerWidget {
     ];
   }
 
+  /// Handles the restore action for selected items
+  /// Used in the bin selection mode to restore items from the bin back to the main deck
+  void _handleRestore(
+    BuildContext context,
+    WidgetRef ref,
+    List<MediaItem> items,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => ActionBottomSheet(
+        title:
+            'Restore ${items.length} ${items.length == 1 ? 'item' : 'items'}?',
+        message:
+            'These items will be removed from the bin and will reappear in the swipe deck.',
+        confirmLabel: 'Restore',
+        confirmIcon: Ph.arrow_u_up_left_bold,
+        confirmColor: AppTheme.keepGreen,
+        onAction: (ref) async {
+          await ref.read(binProvider.notifier).restoreItems(items);
+          ref.read(binSelectionProvider.notifier).clearSelection();
+          ref.read(swipeProvider.notifier).loadNextChunk();
+          return 'Restored ${items.length} items';
+        },
+      ),
+    );
+  }
+
+  /// Handles the delete action for selected items
+  /// Used in the bin selection mode to permanently delete items from the bin
+  void _handleDelete(
+    BuildContext context,
+    WidgetRef ref,
+    List<MediaItem> items,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => ActionBottomSheet(
+        title:
+            'Permanently delete ${items.length} ${items.length == 1 ? 'item' : 'items'}?',
+        message:
+            'These files will be permanently removed from your device. This action cannot be undone.',
+        confirmLabel: 'Delete',
+        confirmIcon: Ph.trash_bold,
+        confirmColor: AppTheme.deleteRed,
+        onAction: (ref) async {
+          final result = await ref
+              .read(binProvider.notifier)
+              .permanentlyDeleteLocal(items);
+          ref.read(binSelectionProvider.notifier).clearSelection();
+          ref.read(memorySavedProvider.notifier).addMemorySaved(result.mbFreed);
+          return 'Deleted ${result.deletedCount} items · Freed ${result.mbFreed.toStringAsFixed(1)} MB';
+        },
+      ),
+    );
+  }
+
+  /// Builds the tab navigation bar.
   Widget _buildTabNavBar(
     BuildContext context,
     double borderRadiusValue,
@@ -94,6 +155,7 @@ class CustomNavBar extends ConsumerWidget {
     );
   }
 
+  /// Builds the action bar for swipe mode, showing delete and keep counts, and an undo button.
   Widget _buildActionBar(
     BuildContext context,
     WidgetRef ref,
@@ -102,6 +164,7 @@ class CustomNavBar extends ConsumerWidget {
     double dynamicHeight,
     double circleDiameter,
     double gap,
+    double fontSize,
     double iconSize,
   ) {
     final int deleteCount = swipeState.history
@@ -155,12 +218,16 @@ class CustomNavBar extends ConsumerWidget {
                 child: Row(
                   spacing: 8,
                   children: [
-                    Iconify(Ph.x_circle_duotone, color: AppTheme.deleteRed),
+                    Iconify(
+                      Ph.x_circle_duotone,
+                      color: AppTheme.deleteRed,
+                      size: fontSize,
+                    ),
                     Text(
                       '$deleteCount',
                       style: TextStyle(
                         fontFamily: 'Outfit',
-                        fontSize: iconSize - 4,
+                        fontSize: iconSize,
                         fontWeight: FontWeight.w500,
                         color: AppTheme.deleteRed,
                       ),
@@ -187,7 +254,7 @@ class CustomNavBar extends ConsumerWidget {
                       '$keepCount',
                       style: TextStyle(
                         fontFamily: 'Outfit',
-                        fontSize: iconSize - 4,
+                        fontSize: iconSize,
                         fontWeight: FontWeight.w500,
                         color: AppTheme.keepGreen,
                       ),
@@ -195,7 +262,7 @@ class CustomNavBar extends ConsumerWidget {
                     Iconify(
                       Ph.check_circle_duotone,
                       color: AppTheme.keepGreen,
-                      size: iconSize,
+                      size: fontSize,
                     ),
                   ],
                 ),
@@ -244,60 +311,7 @@ class CustomNavBar extends ConsumerWidget {
     );
   }
 
-  void _handleRestore(
-    BuildContext context,
-    WidgetRef ref,
-    List<MediaItem> items,
-  ) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) => ActionBottomSheet(
-        title: 'Restore ${items.length} items?',
-        message:
-            'These items will be removed from the bin and will reappear in your swipe deck.',
-        confirmLabel: 'Restore',
-        confirmIcon: Ph.arrow_u_up_left_bold,
-        confirmColor: AppTheme.keepGreen,
-        onAction: (ref) async {
-          await ref.read(binProvider.notifier).restoreItems(items);
-          ref.read(binSelectionProvider.notifier).clearSelection();
-          ref.read(swipeProvider.notifier).loadNextChunk();
-          return 'Restored ${items.length} items';
-        },
-      ),
-    );
-  }
-
-  void _handleDelete(
-    BuildContext context,
-    WidgetRef ref,
-    List<MediaItem> items,
-  ) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) => ActionBottomSheet(
-        title: 'Permanently delete ${items.length} items?',
-        message:
-            'These files will be permanently removed from your device. This action cannot be undone.',
-        confirmLabel: 'Delete',
-        confirmIcon: Ph.trash_bold,
-        confirmColor: AppTheme.deleteRed,
-        onAction: (ref) async {
-          final result = await ref
-              .read(binProvider.notifier)
-              .permanentlyDeleteLocal(items);
-          ref.read(binSelectionProvider.notifier).clearSelection();
-          ref.read(memorySavedProvider.notifier).addMemorySaved(result.mbFreed);
-          return 'Deleted ${result.deletedCount} items · Freed ${result.mbFreed.toStringAsFixed(1)} MB';
-        },
-      ),
-    );
-  }
-
+  /// Builds the bin selection bar, allowing users to restore or delete selected items.
   Widget _buildBinSelectionBar(
     BuildContext context,
     WidgetRef ref,
@@ -326,7 +340,7 @@ class CustomNavBar extends ConsumerWidget {
           onTap: () => ref.read(binSelectionProvider.notifier).clearSelection(),
           dynamicHeight: dynamicHeight,
           circleDiameter: circleDiameter,
-          iconSize: fontSize + 6,
+          iconSize: iconSize,
           icon: Ph.stack_duotone,
         ),
 
@@ -354,14 +368,14 @@ class CustomNavBar extends ConsumerWidget {
                     fontFamily: 'Outfit',
                     fontSize: fontSize,
                     fontWeight: FontWeight.w500,
-                    color: AppTheme.textWhite,
+                    color: AppTheme.tertiaryLime,
                   ),
                 ),
               ),
 
               // Delete Pill
               _PillButton(
-                position: _PillPosition.middle,
+                position: _PillPosition.right,
                 height: circleDiameter,
                 onTap: () => _handleDelete(context, ref, selectedItems),
                 child: Text(
@@ -377,8 +391,9 @@ class CustomNavBar extends ConsumerWidget {
 
               // Count Pill
               _PillButton(
-                position: _PillPosition.right,
+                position: _PillPosition.standalone,
                 height: circleDiameter,
+                padding: .symmetric(horizontal: circleDiameter / 2),
                 child: Text(
                   '$selectedCount',
                   style: TextStyle(
@@ -467,6 +482,7 @@ class CustomNavBar extends ConsumerWidget {
               dynamicHeight,
               circleDiameter,
               gap,
+              fontSize,
               iconSize,
             ),
     ).animate().slideY(begin: 1.5, end: 0, curve: Curves.easeOutBack);
@@ -687,10 +703,10 @@ class _ActionBottomSheetState extends ConsumerState<ActionBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
       decoration: const BoxDecoration(
-        color: AppTheme.surfaceColor,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        color: AppTheme.darkBackground,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: SafeArea(
         child: AnimatedSwitcher(
@@ -710,23 +726,10 @@ class _ActionBottomSheetState extends ConsumerState<ActionBottomSheet> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          widget.title,
-          style: const TextStyle(
-            fontFamily: 'Outfit',
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        Text(widget.title, style: Theme.of(context).textTheme.headlineSmall),
         const SizedBox(height: 12),
-        Text(
-          widget.message,
-          style: const TextStyle(
-            fontFamily: 'Outfit',
-            color: AppTheme.textSecondary,
-          ),
-        ),
-        const SizedBox(height: 24),
+        Text(widget.message, style: Theme.of(context).textTheme.bodyMedium),
+        const SizedBox(height: 28),
         Column(
           mainAxisSize: MainAxisSize.min,
           spacing: 12,
@@ -741,7 +744,9 @@ class _ActionBottomSheetState extends ConsumerState<ActionBottomSheet> {
               label: widget.confirmLabel,
               iconifyIcon: widget.confirmIcon,
               onPressed: _handleConfirm,
-              variant: ButtonVariant.primary,
+              variant: widget.title.contains('Restore')
+                  ? ButtonVariant.primary
+                  : ButtonVariant.delete,
             ),
           ],
         ),
@@ -753,7 +758,10 @@ class _ActionBottomSheetState extends ConsumerState<ActionBottomSheet> {
     return const SizedBox(
       height: 120,
       child: Center(
-        child: CircularProgressIndicator(color: AppTheme.tertiaryLime),
+        child: CircularProgressIndicator(
+          color: AppTheme.tertiaryLime,
+          strokeCap: .round,
+        ),
       ),
     );
   }
@@ -765,20 +773,16 @@ class _ActionBottomSheetState extends ConsumerState<ActionBottomSheet> {
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              spacing: 12,
               children: [
                 const Iconify(
                   Ph.check_circle_duotone,
-                  color: AppTheme.keepGreen,
-                  size: 40,
+                  color: AppTheme.tertiaryLime,
+                  size: 54,
                 ),
-                const SizedBox(height: 12),
                 Text(
                   _successMessage,
-                  style: const TextStyle(
-                    fontFamily: 'Outfit',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: Theme.of(context).textTheme.bodyLarge,
                   textAlign: TextAlign.center,
                 ),
               ],

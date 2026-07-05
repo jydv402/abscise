@@ -2,7 +2,7 @@ import 'package:abscise/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 
-enum ButtonVariant { primary, secondary, tertiary }
+enum ButtonVariant { primary, secondary, tertiary, delete }
 
 class StackButton extends StatelessWidget {
   final String label;
@@ -20,8 +20,34 @@ class StackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isPrimary = variant == ButtonVariant.primary;
-    final isTertiary = variant == ButtonVariant.tertiary;
+    late final Color backgroundColor;
+    Border? border;
+    late final Color contentColor;
+
+    // Define the style based on the variant
+    switch (variant) {
+      case ButtonVariant.primary:
+        backgroundColor = AppTheme.primaryPurple;
+        border = null;
+        contentColor = AppTheme.darkBackground;
+        break;
+      case ButtonVariant.tertiary:
+        backgroundColor = AppTheme.surfaceColor;
+        border = null;
+        contentColor = AppTheme.tertiaryLime;
+        break;
+      case ButtonVariant.secondary:
+        backgroundColor = AppTheme.darkBackground;
+        border = Border.all(color: AppTheme.tertiaryLime, width: 2);
+        contentColor = AppTheme.tertiaryLime;
+        break;
+      case ButtonVariant.delete:
+        backgroundColor = AppTheme.deleteRed;
+        border = null;
+        contentColor = AppTheme.textWhite;
+        break;
+    }
+
     return InkWell(
       onTap: onPressed,
       borderRadius: BorderRadius.circular(50),
@@ -33,35 +59,21 @@ class StackButton extends StatelessWidget {
             height: 75,
             padding: const EdgeInsets.symmetric(horizontal: 24),
             decoration: BoxDecoration(
-              color: isPrimary
-                  ? AppTheme.primaryPurple
-                  : isTertiary
-                  ? AppTheme.surfaceColor
-                  : AppTheme.darkBackground,
-              border: isPrimary || isTertiary
-                  ? null
-                  : Border.all(color: AppTheme.tertiaryLime, width: 2),
+              color: backgroundColor,
+              border: border,
               borderRadius: BorderRadius.circular(50),
             ),
             child: Text(
               label,
               style: AppTheme.darkTheme.textTheme.bodyLarge!.copyWith(
-                color: isPrimary
-                    ? AppTheme.darkBackground
-                    : AppTheme.tertiaryLime,
+                color: contentColor,
               ),
             ),
           ),
           Positioned(
             left: 28,
             top: 23.5,
-            child: Iconify(
-              iconifyIcon,
-              color: isPrimary
-                  ? AppTheme.darkBackground
-                  : AppTheme.tertiaryLime,
-              size: 28,
-            ),
+            child: Iconify(iconifyIcon, color: contentColor, size: 28),
           ),
         ],
       ),
