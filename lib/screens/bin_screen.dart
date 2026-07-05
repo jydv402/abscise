@@ -131,76 +131,73 @@ class _BinHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      bottom: false,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.baseline,
-          textBaseline: TextBaseline.alphabetic,
-          children: [
-            Text('Bin', style: Theme.of(context).textTheme.headlineSmall),
-            const SizedBox(width: 10),
-            Text(
-              '$itemCount ${itemCount == 1 ? 'item' : 'items'} · ${_formatTotalSize()}',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppTheme.textSecondary.withValues(alpha: 0.6),
-              ),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 70, 16, 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        children: [
+          Text('Bin', style: Theme.of(context).textTheme.headlineSmall),
+          const SizedBox(width: 10),
+          Text(
+            '$itemCount ${itemCount == 1 ? 'item' : 'items'} · ${_formatTotalSize()}',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppTheme.textSecondary.withValues(alpha: 0.6),
             ),
-            const Spacer(),
-            // Select All / Deselect All
-            Consumer(
-              builder: (context, ref, _) {
-                final selection = ref.watch(binSelectionProvider);
-                final binState = ref.watch(binProvider);
-                final allSelected =
-                    selection.length == binState.localBin.length &&
-                    selection.isNotEmpty;
+          ),
+          const Spacer(),
+          // Select All / Deselect All
+          Consumer(
+            builder: (context, ref, _) {
+              final selection = ref.watch(binSelectionProvider);
+              final binState = ref.watch(binProvider);
+              final allSelected =
+                  selection.length == binState.localBin.length &&
+                  selection.isNotEmpty;
 
-                return GestureDetector(
-                  onTap: () {
-                    if (allSelected) {
-                      ref.read(binSelectionProvider.notifier).clearSelection();
-                    } else {
-                      ref
-                          .read(binSelectionProvider.notifier)
-                          .selectAll(binState.localBin);
-                    }
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.fromLTRB(6, 6, 18, 6),
-                    decoration: BoxDecoration(
-                      color: AppTheme.surfaceColor.withValues(alpha: 0.6),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Iconify(
-                          allSelected
-                              ? Ph.check_circle_duotone
-                              : Ph.circle_duotone,
-                          color: AppTheme.tertiaryLime,
-                          size: 18,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          allSelected ? 'Deselect' : 'Select all',
-                          style: const TextStyle(
-                            fontFamily: 'Outfit',
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: AppTheme.tertiaryLime,
-                          ),
-                        ),
-                      ],
-                    ),
+              return GestureDetector(
+                onTap: () {
+                  if (allSelected) {
+                    ref.read(binSelectionProvider.notifier).clearSelection();
+                  } else {
+                    ref
+                        .read(binSelectionProvider.notifier)
+                        .selectAll(binState.localBin);
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(6, 6, 18, 6),
+                  decoration: BoxDecoration(
+                    color: AppTheme.surfaceColor.withValues(alpha: 0.6),
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                );
-              },
-            ),
-          ],
-        ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Iconify(
+                        allSelected
+                            ? Ph.check_circle_duotone
+                            : Ph.circle_duotone,
+                        color: AppTheme.tertiaryLime,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        allSelected ? 'Deselect' : 'Select all',
+                        style: const TextStyle(
+                          fontFamily: 'Outfit',
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: AppTheme.tertiaryLime,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

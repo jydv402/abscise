@@ -88,7 +88,7 @@ class _SectionHeading extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const .only(bottom: 16),
-      child: Text(title, style: Theme.of(context).textTheme.titleLarge),
+      child: Text(title, style: Theme.of(context).textTheme.headlineSmall),
     );
   }
 }

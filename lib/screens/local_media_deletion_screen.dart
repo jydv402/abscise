@@ -22,7 +22,10 @@ class LocalScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Compact Top Header Row
-            Text('Local Photos', style: Theme.of(context).textTheme.titleLarge),
+            Text(
+              'Local Photos',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
 
             // Card Stack Container (Uses LayoutBuilder to dynamically scale aspect ratio)
             Expanded(
