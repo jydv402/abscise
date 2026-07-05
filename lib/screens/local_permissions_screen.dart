@@ -9,7 +9,7 @@ import 'package:iconify_flutter/icons/ph.dart';
 
 import 'package:abscise/providers/shared_prefs_provider.dart';
 import 'package:abscise/themes/app_theme.dart';
-import 'package:abscise/controllers/local_perms_controller.dart';
+import 'package:abscise/controllers/local_permissions_controller.dart';
 import 'package:abscise/models/local_perms_state.dart';
 
 class LocalPermsScreen extends ConsumerStatefulWidget {

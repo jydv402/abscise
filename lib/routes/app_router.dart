@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:photo_manager/photo_manager.dart';
 
-import 'package:abscise/screens/local_perms_screen.dart';
-import 'package:abscise/screens/splash_screen.dart';
-import 'package:abscise/screens/local_privacy_screen.dart';
-import 'package:abscise/screens/local_screen.dart';
+import 'package:abscise/screens/local_permissions_screen.dart';
+import 'package:abscise/screens/app_splash_screen.dart';
+import 'package:abscise/screens/local_privacy_policy_screen.dart';
+import 'package:abscise/screens/local_media_deletion_screen.dart';
 import 'package:abscise/screens/bin_screen.dart';
 import 'package:abscise/screens/stats_screen.dart';
 

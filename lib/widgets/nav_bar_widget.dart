@@ -16,6 +16,8 @@ import 'package:abscise/models/media_model.dart';
 import 'package:abscise/providers/shared_prefs_provider.dart';
 import 'package:abscise/widgets/stack_button_widget.dart';
 
+import 'pill_button_widget.dart';
+
 class CustomNavBar extends ConsumerWidget {
   /// The navigation shell provided by GoRouter's StatefulShellRoute
   final StatefulNavigationShell navigationShell;
@@ -205,8 +207,8 @@ class CustomNavBar extends ConsumerWidget {
             spacing: 3,
             children: [
               // Delete Count Pill
-              _PillButton(
-                position: _PillPosition.left,
+              PillButton(
+                position: PillPosition.left,
                 height: circleDiameter,
                 padding: const EdgeInsets.fromLTRB(14, 0, 18, 0),
                 onTap: swipeState.deck.isNotEmpty
@@ -237,8 +239,8 @@ class CustomNavBar extends ConsumerWidget {
               ),
 
               // Keep Count Pill
-              _PillButton(
-                position: _PillPosition.right,
+              PillButton(
+                position: PillPosition.right,
                 height: circleDiameter,
                 padding: const EdgeInsets.fromLTRB(18, 0, 14, 0),
                 onTap: swipeState.deck.isNotEmpty
@@ -358,8 +360,8 @@ class CustomNavBar extends ConsumerWidget {
             spacing: 3,
             children: [
               // Restore Pill
-              _PillButton(
-                position: _PillPosition.left,
+              PillButton(
+                position: PillPosition.left,
                 height: circleDiameter,
                 onTap: () => _handleRestore(context, ref, selectedItems),
                 child: Text(
@@ -374,8 +376,8 @@ class CustomNavBar extends ConsumerWidget {
               ),
 
               // Delete Pill
-              _PillButton(
-                position: _PillPosition.right,
+              PillButton(
+                position: PillPosition.right,
                 height: circleDiameter,
                 onTap: () => _handleDelete(context, ref, selectedItems),
                 child: Text(
@@ -390,8 +392,8 @@ class CustomNavBar extends ConsumerWidget {
               ),
 
               // Count Pill
-              _PillButton(
-                position: _PillPosition.standalone,
+              PillButton(
+                position: PillPosition.standalone,
                 height: circleDiameter,
                 padding: .symmetric(horizontal: circleDiameter / 2),
                 child: Text(
@@ -581,68 +583,6 @@ class _ActionIconButton extends StatelessWidget {
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-enum _PillPosition { left, middle, right, standalone }
-
-class _PillButton extends StatelessWidget {
-  final Widget child;
-  final VoidCallback? onTap;
-  final double height;
-  final _PillPosition position;
-  final EdgeInsetsGeometry padding;
-
-  const _PillButton({
-    required this.child,
-    this.onTap,
-    required this.height,
-    this.position = _PillPosition.standalone,
-    this.padding = const EdgeInsets.symmetric(horizontal: 16),
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    BorderRadius borderRadius;
-    switch (position) {
-      case _PillPosition.left:
-        borderRadius = const BorderRadius.only(
-          topLeft: Radius.circular(AppTheme.borderRadius),
-          bottomLeft: Radius.circular(AppTheme.borderRadius),
-          topRight: Radius.circular(8),
-          bottomRight: Radius.circular(8),
-        );
-        break;
-      case _PillPosition.middle:
-        borderRadius = BorderRadius.circular(8);
-        break;
-      case _PillPosition.right:
-        borderRadius = const BorderRadius.only(
-          topLeft: Radius.circular(8),
-          bottomLeft: Radius.circular(8),
-          topRight: Radius.circular(AppTheme.borderRadius),
-          bottomRight: Radius.circular(AppTheme.borderRadius),
-        );
-        break;
-      case _PillPosition.standalone:
-        borderRadius = BorderRadius.circular(AppTheme.borderRadius);
-        break;
-    }
-
-    return Material(
-      color: AppTheme.darkBackground,
-      borderRadius: borderRadius,
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          height: height,
-          alignment: Alignment.center,
-          padding: padding,
-          child: child,
         ),
       ),
     );
