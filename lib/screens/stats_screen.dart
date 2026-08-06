@@ -1,6 +1,4 @@
-import 'package:abscise/providers/nav_bar_mode_provider.dart';
 import 'package:abscise/providers/shared_prefs_provider.dart';
-import 'package:abscise/services/check_update_service.dart';
 import 'package:abscise/widgets/button/stack_button_widget.dart';
 import 'package:abscise/widgets/status_card_widget.dart';
 import 'package:flutter/material.dart';

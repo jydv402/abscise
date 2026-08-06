@@ -1,3 +1,4 @@
+import 'package:abscise/controllers/bin_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
@@ -33,9 +34,7 @@ class ActionNavBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final int deleteCount = swipeState.history
-        .where((item) => item.isDeleted)
-        .length;
+    final int deleteCount = ref.watch(binProvider).localBin.length;
     final int keepCount = swipeState.history
         .where((item) => !item.isDeleted)
         .length;

@@ -141,6 +141,28 @@ class SwipeController extends Notifier<SwipeState> {
       ref.read(binProvider.notifier).removeFromBin(lastSwiped.item);
     }
   }
+
+  /// Remove items from the current swipe deck and history when they have
+  /// been permanently deleted outside of the swipe flow.
+  void removeDeletedItemsByIds(List<String> ids) {
+    if (ids.isEmpty) return;
+
+    final updatedDeck = state.deck
+        .where((item) => !ids.contains(item.id))
+        .toList();
+    final updatedHistory = state.history
+        .where((swiped) => !ids.contains(swiped.item.id))
+        .toList();
+
+    final removedFromHistory = state.history.length - updatedHistory.length;
+    final updatedCurrentIndex = (state.currentIndex - removedFromHistory).clamp(0, state.currentIndex);
+
+    state = state.copyWith(
+      deck: updatedDeck,
+      history: updatedHistory,
+      currentIndex: updatedCurrentIndex,
+    );
+  }
 }
 
 // Defining the provider for the SwipeController\\

@@ -14,6 +14,7 @@ class ActionBottomSheet extends ConsumerStatefulWidget {
   final String confirmIcon;
   final Color confirmColor;
   final Future<String> Function(WidgetRef ref) onAction;
+  final VoidCallback onClose;
 
   const ActionBottomSheet({
     super.key,
@@ -23,6 +24,7 @@ class ActionBottomSheet extends ConsumerStatefulWidget {
     required this.confirmIcon,
     required this.confirmColor,
     required this.onAction,
+    required this.onClose,
   });
 
   @override
@@ -34,6 +36,11 @@ class _ActionBottomSheetState extends ConsumerState<ActionBottomSheet> {
   bool _isSuccess = false;
   String _successMessage = '';
 
+  Future<void> _closeSheet() async {
+    if (!mounted) return;
+    widget.onClose();
+  }
+
   Future<void> _handleConfirm() async {
     setState(() {
       _isProcessing = true;
@@ -41,6 +48,8 @@ class _ActionBottomSheetState extends ConsumerState<ActionBottomSheet> {
 
     try {
       final successMsg = await widget.onAction(ref);
+      if (!mounted) return;
+
       setState(() {
         _isProcessing = false;
         _isSuccess = true;
@@ -48,13 +57,9 @@ class _ActionBottomSheetState extends ConsumerState<ActionBottomSheet> {
       });
 
       await Future.delayed(const Duration(milliseconds: 1500));
-      if (mounted) {
-        Navigator.of(context).pop();
-      }
+      await _closeSheet();
     } catch (e) {
-      if (mounted) {
-        Navigator.of(context).pop();
-      }
+      await _closeSheet();
     }
   }
 

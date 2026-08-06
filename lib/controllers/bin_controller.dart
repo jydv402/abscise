@@ -3,6 +3,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:photo_manager/photo_manager.dart';
 
+import 'package:abscise/controllers/swipe_controller.dart';
 import 'package:abscise/models/bin_state.dart';
 import 'package:abscise/models/media_model.dart';
 import 'package:abscise/services/local_bin_service.dart';
@@ -89,12 +90,16 @@ class BinController extends Notifier<BinState> {
     // Remove successfully deleted items from Hive and in-memory state.
     await binService.clearAll(deletedIds);
 
-    // Update the in-memory state to reflect the deletions.
+    // Update the bin state to reflect the deletions.
     state = state.copyWith(
       localBin: state.localBin
           .where((element) => !deletedIds.contains(element.id))
           .toList(),
     );
+
+    // Keep the swipe state in sync so permanently deleted items cannot be
+    // restored through undo.
+    ref.read(swipeProvider.notifier).removeDeletedItemsByIds(deletedIds);
 
     return (deletedCount: deletedCount, mbFreed: mbFreed);
   }

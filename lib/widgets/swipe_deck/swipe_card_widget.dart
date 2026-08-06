@@ -68,11 +68,16 @@ class SwipeCard extends StatelessWidget {
                 thumbnailFormat: ThumbnailFormat.jpeg,
                 fit: .scaleDown,
                 errorBuilder: (context, error, stackTrace) =>
-                    Image.file(File(item.path), fit: .scaleDown),
+                    _buildLoadFailure(context),
               ),
             )
           else
-            Image.file(File(item.path), fit: .scaleDown),
+            Image.file(
+              File(item.path),
+              fit: .scaleDown,
+              errorBuilder: (context, error, stackTrace) =>
+                  _buildLoadFailure(context),
+            ),
 
           // Real-time Solid Full-Card Action Overlays (Keep / Delete color fills)
           if (isTopCard) ...[
@@ -208,6 +213,59 @@ class SwipeCard extends StatelessWidget {
         ..rotateZ(rotationAngle)
         ..scaleByDouble(scaleX, scaleY, 1.0, 1.0),
       child: cardBody,
+    );
+  }
+
+  Widget _buildLoadFailure(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context, rootNavigator: true).push(
+          PageRouteBuilder(
+            opaque: false,
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                MediaFullscreenViewer(item: item),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+          ),
+        );
+      },
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: AppTheme.secondaryPurple,
+                shape: BoxShape.circle,
+              ),
+              padding: const EdgeInsets.all(16),
+              child: const Iconify(
+                Ph.warning_circle_duotone,
+                color: AppTheme.deleteRed,
+                size: 42,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Could not load preview',
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppTheme.textWhite),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Tap to open fullscreen and view the image directly.',
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: AppTheme.textWhite),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

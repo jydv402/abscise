@@ -43,21 +43,29 @@ class BinSelectionBar extends ConsumerWidget {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => ActionBottomSheet(
-        title:
-            'Restore ${items.length} ${items.length == 1 ? 'item' : 'items'}?',
-        message:
-            'These items will be removed from the bin and will reappear in the swipe deck.',
-        confirmLabel: 'Restore',
-        confirmIcon: Ph.arrow_u_up_left_bold,
-        confirmColor: AppTheme.keepGreen,
-        onAction: (ref) async {
-          await ref.read(binProvider.notifier).restoreItems(items);
-          ref.read(binSelectionProvider.notifier).clearSelection();
-          ref.read(swipeProvider.notifier).loadNextChunk();
-          return 'Restored ${items.length} ${items.length == 1 ? 'item' : 'items'}';
-        },
-      ),
+      builder: (context) {
+        final modalNavigator = Navigator.of(context);
+        return ActionBottomSheet(
+          title:
+              'Restore ${items.length} ${items.length == 1 ? 'item' : 'items'}?',
+          message:
+              'These items will be removed from the bin and will reappear in the swipe deck.',
+          confirmLabel: 'Restore',
+          confirmIcon: Ph.arrow_u_up_left_bold,
+          confirmColor: AppTheme.keepGreen,
+          onAction: (ref) async {
+            await ref.read(binProvider.notifier).restoreItems(items);
+            ref.read(binSelectionProvider.notifier).clearSelection();
+            ref.read(swipeProvider.notifier).loadNextChunk();
+            return 'Restored ${items.length} ${items.length == 1 ? 'item' : 'items'}';
+          },
+          onClose: () {
+            if (modalNavigator.mounted && modalNavigator.canPop()) {
+              modalNavigator.pop();
+            }
+          },
+        );
+      },
     );
   }
 
@@ -72,23 +80,31 @@ class BinSelectionBar extends ConsumerWidget {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => ActionBottomSheet(
-        title:
-            'Permanently delete ${items.length} ${items.length == 1 ? 'item' : 'items'}?',
-        message:
-            'These files will be permanently removed from your device. This action cannot be undone.',
-        confirmLabel: 'Delete',
-        confirmIcon: Ph.trash_bold,
-        confirmColor: AppTheme.deleteRed,
-        onAction: (ref) async {
-          final result = await ref
-              .read(binProvider.notifier)
-              .permanentlyDeleteLocal(items);
-          ref.read(binSelectionProvider.notifier).clearSelection();
-          ref.read(memorySavedProvider.notifier).addMemorySaved(result.mbFreed);
-          return 'Deleted ${result.deletedCount} ${result.deletedCount == 1 ? 'item' : 'items'} · Freed ${result.mbFreed.toStringAsFixed(1)} MB';
-        },
-      ),
+      builder: (context) {
+        final modalNavigator = Navigator.of(context);
+        return ActionBottomSheet(
+          title:
+              'Permanently delete ${items.length} ${items.length == 1 ? 'item' : 'items'}?',
+          message:
+              'These files will be permanently removed from your device. This action cannot be undone.',
+          confirmLabel: 'Delete',
+          confirmIcon: Ph.trash_bold,
+          confirmColor: AppTheme.deleteRed,
+          onAction: (ref) async {
+            final result = await ref
+                .read(binProvider.notifier)
+                .permanentlyDeleteLocal(items);
+            ref.read(binSelectionProvider.notifier).clearSelection();
+            ref.read(memorySavedProvider.notifier).addMemorySaved(result.mbFreed);
+            return 'Deleted ${result.deletedCount} ${result.deletedCount == 1 ? 'item' : 'items'} · Freed ${result.mbFreed.toStringAsFixed(1)} MB';
+          },
+          onClose: () {
+            if (modalNavigator.mounted && modalNavigator.canPop()) {
+              modalNavigator.pop();
+            }
+          },
+        );
+      },
     );
   }
 
