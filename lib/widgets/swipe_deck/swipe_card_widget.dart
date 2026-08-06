@@ -40,22 +40,39 @@ class SwipeCard extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
+          // Backdrop blur effect for glassmorphic card appearance
+          BackdropFilter(
+            filter: .blur(sigmaX: 10.0, sigmaY: 10.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppTheme.primaryPurple.withValues(alpha: 0.5),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.15),
+                  width: 1.5,
+                ),
+              ),
+            ),
+          ),
           // Performant downsampled local media loading
           if (item.localAsset != null)
-            AssetEntityImage(
-              item.localAsset!,
-              isOriginal: false,
-              thumbnailSize: const ThumbnailSize(
-                500,
-                800,
-              ), // Downsampled resolution for fast rendering
-              thumbnailFormat: ThumbnailFormat.jpeg,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) =>
-                  Image.file(File(item.path), fit: BoxFit.cover),
+            Padding(
+              padding: const .all(4),
+              child: AssetEntityImage(
+                item.localAsset!,
+                isOriginal: false,
+                thumbnailSize: const ThumbnailSize(
+                  500,
+                  800,
+                ), // Downsampled resolution for fast rendering
+                thumbnailFormat: ThumbnailFormat.jpeg,
+                fit: .scaleDown,
+                errorBuilder: (context, error, stackTrace) =>
+                    Image.file(File(item.path), fit: .scaleDown),
+              ),
             )
           else
-            Image.file(File(item.path), fit: BoxFit.cover),
+            Image.file(File(item.path), fit: .scaleDown),
 
           // Real-time Solid Full-Card Action Overlays (Keep / Delete color fills)
           if (isTopCard) ...[
@@ -180,19 +197,6 @@ class SwipeCard extends StatelessWidget {
               ),
             ),
           ],
-
-          // Clean, crisp edge border drawn on top of the image to maximize contrast
-          IgnorePointer(
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.15),
-                  width: 1.5,
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
