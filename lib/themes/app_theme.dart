@@ -12,7 +12,7 @@ class AppTheme {
   static const Color textBlack = Color(0xFF000000);
   static const Color textSecondary = Color.fromARGB(205, 255, 255, 255);
 
-  static const EdgeInsets paddingL = .fromLTRB(16, 70, 16, 180);
+  static const EdgeInsets paddingL = .fromLTRB(16, 80, 16, 180);
   static const EdgeInsets paddingXL = .fromLTRB(16, 70, 16, 300);
   static const double borderRadius = 32;
 

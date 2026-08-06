@@ -112,21 +112,21 @@ class BinSelectionBar extends ConsumerWidget {
         : '${totalMb.toStringAsFixed(1)} MB';
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const .symmetric(horizontal: 16),
       child: Column(
         key: const ValueKey('binSelectionBar'),
         spacing: 18,
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            margin: EdgeInsets.only(left: dynamicHeight + 12),
+            margin: .only(left: dynamicHeight + 12),
             height: dynamicHeight,
             decoration: BoxDecoration(
               color: AppTheme.primaryPurple,
               borderRadius: BorderRadius.circular(borderRadiusValue),
               boxShadow: CustomNavBar.doubleShadow,
             ),
-            padding: EdgeInsets.all(gap),
+            padding: .all(gap),
             child: Row(
               mainAxisSize: MainAxisSize.max,
               spacing: 3,
@@ -135,9 +135,9 @@ class BinSelectionBar extends ConsumerWidget {
                   child: PillButton(
                     position: PillPosition.left,
                     height: circleDiameter,
-                    padding: EdgeInsets.symmetric(horizontal: 4),
+                    padding: .symmetric(horizontal: 4),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: .center,
                       spacing: 8,
                       children: [
                         Iconify(
@@ -162,9 +162,9 @@ class BinSelectionBar extends ConsumerWidget {
                   child: PillButton(
                     position: PillPosition.right,
                     height: circleDiameter,
-                    padding: EdgeInsets.symmetric(horizontal: 4),
+                    padding: .symmetric(horizontal: 4),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: .center,
                       spacing: 8,
                       children: [
                         Text(
@@ -190,7 +190,7 @@ class BinSelectionBar extends ConsumerWidget {
           ),
           Row(
             spacing: 12,
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: .center,
             mainAxisSize: MainAxisSize.max,
             children: [
               // Left Pill: Deselect All
@@ -212,7 +212,7 @@ class BinSelectionBar extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(borderRadiusValue),
                     boxShadow: CustomNavBar.doubleShadow,
                   ),
-                  padding: EdgeInsets.all(gap),
+                  padding: .all(gap),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     spacing: 3,
@@ -223,11 +223,11 @@ class BinSelectionBar extends ConsumerWidget {
                           tooltipMessage: 'Restore selected items',
                           position: PillPosition.left,
                           height: circleDiameter,
-                          padding: EdgeInsets.symmetric(horizontal: 4),
+                          padding: .symmetric(horizontal: 4),
                           onTap: () =>
                               _handleRestore(context, ref, selectedItems),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: .center,
                             spacing: 8,
                             children: [
                               Iconify(
@@ -255,11 +255,11 @@ class BinSelectionBar extends ConsumerWidget {
                           tooltipMessage: 'Permanently delete items',
                           position: PillPosition.right,
                           height: circleDiameter,
-                          padding: EdgeInsets.symmetric(horizontal: 4),
+                          padding: .symmetric(horizontal: 4),
                           onTap: () =>
                               _handleDelete(context, ref, selectedItems),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: .center,
                             spacing: 8,
                             children: [
                               Iconify(

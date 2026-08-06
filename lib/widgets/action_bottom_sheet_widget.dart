@@ -61,7 +61,7 @@ class _ActionBottomSheetState extends ConsumerState<ActionBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+      padding: const .fromLTRB(24, 32, 24, 24),
       decoration: const BoxDecoration(
         color: AppTheme.darkBackground,
         borderRadius: BorderRadius.vertical(top: Radius.circular(32)),

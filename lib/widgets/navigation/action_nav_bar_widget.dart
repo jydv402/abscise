@@ -42,11 +42,11 @@ class ActionNavBar extends ConsumerWidget {
     final bool hasHistory = swipeState.history.isNotEmpty;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const .symmetric(horizontal: 16),
       child: Row(
         key: const ValueKey('actionBarMode'),
         spacing: 12,
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: .center,
         mainAxisSize: MainAxisSize.max,
         children: [
           // Left Pill: Collapsed Nav Pill
@@ -68,7 +68,7 @@ class ActionNavBar extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(borderRadiusValue),
                 boxShadow: CustomNavBar.doubleShadow,
               ),
-              padding: EdgeInsets.all(gap),
+              padding: .all(gap),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 spacing: 3,
@@ -78,15 +78,18 @@ class ActionNavBar extends ConsumerWidget {
                     child: PillButton(
                       position: PillPosition.left,
                       height: circleDiameter,
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      padding: const .symmetric(horizontal: 4),
                       onTap: swipeState.deck.isNotEmpty
                           ? () {
-                              ref.read(swipeTriggerProvider.notifier).state =
-                                  SwipeTriggerEvent(SwipeTriggerAction.swipeLeft);
+                              ref
+                                  .read(swipeTriggerProvider.notifier)
+                                  .state = SwipeTriggerEvent(
+                                SwipeTriggerAction.swipeLeft,
+                              );
                             }
                           : null,
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: .center,
                         spacing: 8,
                         children: [
                           Iconify(
@@ -113,15 +116,18 @@ class ActionNavBar extends ConsumerWidget {
                     child: PillButton(
                       position: PillPosition.right,
                       height: circleDiameter,
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      padding: const .symmetric(horizontal: 4),
                       onTap: swipeState.deck.isNotEmpty
                           ? () {
-                              ref.read(swipeTriggerProvider.notifier).state =
-                                  SwipeTriggerEvent(SwipeTriggerAction.swipeRight);
+                              ref
+                                  .read(swipeTriggerProvider.notifier)
+                                  .state = SwipeTriggerEvent(
+                                SwipeTriggerAction.swipeRight,
+                              );
                             }
                           : null,
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: .center,
                         spacing: 8,
                         children: [
                           Text(

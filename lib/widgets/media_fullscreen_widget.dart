@@ -255,7 +255,7 @@ class _FullscreenVideoPlayerState extends State<FullscreenVideoPlayer> {
     if (_hasError) {
       return const Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: .center,
           children: [
             Icon(
               Icons.error_outline_rounded,
@@ -312,7 +312,7 @@ class _FullscreenVideoPlayerState extends State<FullscreenVideoPlayer> {
                   // Center Control Buttons
                   Center(
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: .center,
                       spacing: 24,
                       children: [
                         _buildCircleControlButton(
@@ -361,12 +361,12 @@ class _FullscreenVideoPlayerState extends State<FullscreenVideoPlayer> {
                                 bufferedColor: Colors.white30,
                                 backgroundColor: Colors.white12,
                               ),
-                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              padding: const .symmetric(vertical: 8),
                             ),
                           ),
                           // Time duration and Mute toggler
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: .spaceBetween,
                             children: [
                               Text(
                                 "${_formatDuration(_controller.value.position)} / ${_formatDuration(_controller.value.duration)}",

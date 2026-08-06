@@ -25,6 +25,12 @@ Future<void> showBinTutorial(BuildContext context, WidgetRef ref) async {
       title: 'Bin Guide',
       instructions: [
         TutorialInstruction(
+          icon: Ph.trash_duotone,
+          title: 'Add to Bin',
+          description:
+              'Swipe left on any photo or video in the local photos screen to move it to the bin.',
+        ),
+        TutorialInstruction(
           icon: Ph.image_duotone,
           title: 'Select Media',
           description: 'Tap on any photo or video to select it.',
@@ -152,7 +158,7 @@ class _BinMasonryGrid extends ConsumerWidget {
 
         // Masonry grid
         SliverPadding(
-          padding: const EdgeInsets.symmetric(horizontal: 3),
+          padding: const .symmetric(horizontal: 3),
           sliver: SliverMasonryGrid.count(
             crossAxisCount: columns,
             mainAxisSpacing: 3,
@@ -173,7 +179,7 @@ class _BinMasonryGrid extends ConsumerWidget {
         ),
 
         // Bottom padding so last tiles aren't hidden behind floating bar / nav
-        const SliverPadding(padding: EdgeInsets.only(bottom: 200)),
+        const SliverPadding(padding: .only(bottom: 200)),
       ],
     );
   }
@@ -200,25 +206,23 @@ class _BinHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 70, 16, 8),
+      padding: const .fromLTRB(16, 70, 16, 8),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.baseline,
-        textBaseline: TextBaseline.alphabetic,
+        crossAxisAlignment: .center,
         children: [
-          Text('Bin', style: Theme.of(context).textTheme.headlineSmall),
-          const SizedBox(width: 4),
-          IconButton(
-            onPressed: () => showBinTutorial(context, ref),
-            icon: const Iconify(Ph.info_duotone, color: AppTheme.textSecondary),
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
-          ),
-          const SizedBox(width: 10),
-          Text(
-            '$itemCount ${itemCount == 1 ? 'item' : 'items'} · ${_formatTotalSize()}',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AppTheme.textSecondary.withValues(alpha: 0.6),
-            ),
+          Row(
+            crossAxisAlignment: .baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text('Bin', style: Theme.of(context).textTheme.headlineSmall),
+              const SizedBox(width: 10),
+              Text(
+                '$itemCount ${itemCount == 1 ? 'item' : 'items'} · ${_formatTotalSize()}',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppTheme.textSecondary.withValues(alpha: 0.6),
+                ),
+              ),
+            ],
           ),
           const Spacer(),
           // Select All / Deselect All
@@ -241,7 +245,7 @@ class _BinHeader extends ConsumerWidget {
                   }
                 },
                 child: Container(
-                  padding: const EdgeInsets.fromLTRB(6, 6, 18, 6),
+                  padding: const .fromLTRB(6, 6, 18, 6),
                   decoration: BoxDecoration(
                     color: AppTheme.surfaceColor.withValues(alpha: 0.6),
                     borderRadius: BorderRadius.circular(20),
@@ -271,6 +275,13 @@ class _BinHeader extends ConsumerWidget {
                 ),
               );
             },
+          ),
+          const SizedBox(width: 4),
+          IconButton(
+            onPressed: () => showBinTutorial(context, ref),
+            icon: const Iconify(Ph.info_duotone, color: AppTheme.textSecondary),
+            padding: .zero,
+            constraints: const BoxConstraints(),
           ),
         ],
       ),
@@ -383,10 +394,7 @@ class _BinMasonryTile extends StatelessWidget {
                         bottom: 6,
                         right: 6,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
+                          padding: const .symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
                             color: Colors.black.withValues(alpha: 0.6),
                             borderRadius: BorderRadius.circular(6),
@@ -500,50 +508,70 @@ class _BinEmptyState extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(40),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Iconify(
-              Ph.trash_duotone,
-              color: AppTheme.textSecondary.withValues(alpha: 0.4),
-              size: 72,
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Your bin is empty',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: AppTheme.textSecondary,
-                  ),
+    return Padding(
+      padding: const .fromLTRB(16, 70, 16, 8),
+      child: Column(
+        mainAxisAlignment: .start,
+        children: [
+          Row(
+            mainAxisAlignment: .center,
+            children: [
+              Text('Bin', style: Theme.of(context).textTheme.headlineSmall),
+              const Spacer(),
+              IconButton(
+                onPressed: () => showBinTutorial(context, ref),
+                icon: const Iconify(
+                  Ph.info_duotone,
+                  color: AppTheme.textSecondary,
                 ),
-                const SizedBox(width: 8),
-                IconButton(
-                  onPressed: () => showBinTutorial(context, ref),
-                  icon: const Iconify(
-                    Ph.info_duotone,
-                    color: AppTheme.textSecondary,
-                  ),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                ),
-              ],
+                padding: .zero,
+                constraints: const BoxConstraints(),
+              ),
+            ],
+          ),
+          const Spacer(),
+          Iconify(
+            Ph.trash_duotone,
+            color: AppTheme.textSecondary.withValues(alpha: 0.4),
+            size: 72,
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Your bin is empty',
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(color: AppTheme.textSecondary),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Swipe left on photos to add them here.\nReview and confirm before deleting permanently.',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppTheme.textSecondary.withValues(alpha: 0.7),
+              height: 1.5,
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Swipe left on photos to add them here.\nReview and confirm before deleting permanently.',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppTheme.textSecondary.withValues(alpha: 0.7),
-                height: 1.5,
+          ),
+          const SizedBox(height: 24),
+          GestureDetector(
+            onTap: () => showBinTutorial(context, ref),
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppTheme.tertiaryLime.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              padding: const .symmetric(horizontal: 16, vertical: 10),
+              child: Text(
+                'Learn how to use the bin',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppTheme.tertiaryLime,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+          const Spacer(),
+          const Spacer(),
+        ],
       ),
     );
   }

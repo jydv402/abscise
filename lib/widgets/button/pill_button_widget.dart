@@ -18,7 +18,7 @@ class PillButton extends StatelessWidget {
     this.onTap,
     required this.height,
     this.position = PillPosition.standalone,
-    this.padding = const EdgeInsets.symmetric(horizontal: 16),
+    this.padding = const .symmetric(horizontal: 16),
     this.tooltipMessage,
   });
 

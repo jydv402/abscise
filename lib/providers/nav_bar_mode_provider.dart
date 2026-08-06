@@ -22,7 +22,7 @@ class NavBarVisibilityNotifier extends Notifier<bool> {
   void hide() => state = false;
 }
 
-final navBarVisibilityProvider = NotifierProvider<NavBarVisibilityNotifier, bool>(
-  NavBarVisibilityNotifier.new,
-);
-
+final navBarVisibilityProvider =
+    NotifierProvider<NavBarVisibilityNotifier, bool>(
+      NavBarVisibilityNotifier.new,
+    );

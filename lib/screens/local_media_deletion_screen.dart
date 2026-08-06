@@ -49,13 +49,13 @@ class _LocalScreenState extends ConsumerState<LocalScreen> {
         title: 'Local Photos Guide',
         instructions: [
           TutorialInstruction(
-            icon: Ph.arrow_right_duotone,
+            icon: Ph.arrow_fat_lines_right_duotone,
             title: 'Keep Media',
             description:
                 'Swipe right to keep the photo or video in your gallery.',
           ),
           TutorialInstruction(
-            icon: Ph.arrow_left_duotone,
+            icon: Ph.arrow_fat_lines_left_duotone,
             title: 'Move to Bin',
             description: 'Swipe left to move the photo or video to the bin.',
           ),
@@ -70,6 +70,12 @@ class _LocalScreenState extends ConsumerState<LocalScreen> {
             title: 'Undo Swipe',
             description:
                 'Use the curved arrow in the bottom bar to undo your last action.',
+          ),
+          TutorialInstruction(
+            icon: Ph.person_simple_walk_duotone,
+            title: 'Multi-Action Bar',
+            description:
+                'You can use the multi-action bar buttons to keep or remove the current media item without swiping.',
           ),
         ],
       ),
@@ -87,13 +93,13 @@ class _LocalScreenState extends ConsumerState<LocalScreen> {
     return Scaffold(
       backgroundColor: AppTheme.darkBackground,
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 70, 16, 120),
+        padding: const .fromLTRB(16, 70, 16, 120),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Compact Top Header Row
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: .spaceBetween,
               children: [
                 Text(
                   'Local Photos',
@@ -116,7 +122,7 @@ class _LocalScreenState extends ConsumerState<LocalScreen> {
                     ? CircularProgressIndicator(color: AppTheme.primaryPurple)
                     : state.deck.isEmpty
                     ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: .center,
                         children: [
                           Iconify(
                             MaterialSymbols.check_circle_outline_rounded,

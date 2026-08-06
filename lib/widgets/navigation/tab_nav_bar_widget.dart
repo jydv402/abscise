@@ -38,9 +38,9 @@ class TabNavBar extends StatelessWidget {
         borderRadius: BorderRadius.circular(borderRadiusValue),
         boxShadow: CustomNavBar.doubleShadow,
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: const .symmetric(horizontal: 8),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: .center,
         mainAxisSize: MainAxisSize.min,
         spacing: 4,
         children: [

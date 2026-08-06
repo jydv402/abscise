@@ -94,31 +94,31 @@ class CustomNavBar extends ConsumerWidget {
         child: !isVisible
             ? const SizedBox.shrink(key: ValueKey('hidden_nav_bar'))
             : hasBinSelection
-                ? BinSelectionBar(
-                    borderRadiusValue: borderRadiusValue,
-                    dynamicHeight: dynamicHeight,
-                    circleDiameter: circleDiameter,
-                    gap: gap,
-                    fontSize: fontSize,
-                    iconSize: iconSize,
-                  )
-                : mode == NavBarMode.pageSwitch
-                    ? TabNavBar(
-                        navigationShell: navigationShell,
-                        borderRadiusValue: borderRadiusValue,
-                        dynamicHeight: dynamicHeight,
-                        circleDiameter: circleDiameter,
-                        iconSize: iconSize,
-                      )
-                    : ActionNavBar(
-                        swipeState: swipeState,
-                        borderRadiusValue: borderRadiusValue,
-                        dynamicHeight: dynamicHeight,
-                        circleDiameter: circleDiameter,
-                        gap: gap,
-                        fontSize: fontSize,
-                        iconSize: iconSize,
-                      ),
+            ? BinSelectionBar(
+                borderRadiusValue: borderRadiusValue,
+                dynamicHeight: dynamicHeight,
+                circleDiameter: circleDiameter,
+                gap: gap,
+                fontSize: fontSize,
+                iconSize: iconSize,
+              )
+            : mode == NavBarMode.pageSwitch
+            ? TabNavBar(
+                navigationShell: navigationShell,
+                borderRadiusValue: borderRadiusValue,
+                dynamicHeight: dynamicHeight,
+                circleDiameter: circleDiameter,
+                iconSize: iconSize,
+              )
+            : ActionNavBar(
+                swipeState: swipeState,
+                borderRadiusValue: borderRadiusValue,
+                dynamicHeight: dynamicHeight,
+                circleDiameter: circleDiameter,
+                gap: gap,
+                fontSize: fontSize,
+                iconSize: iconSize,
+              ),
       ),
     ).animate().slideY(begin: 1.5, end: 0, curve: Curves.easeOutBack);
   }

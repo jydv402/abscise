@@ -115,7 +115,7 @@ class SwipeCard extends StatelessWidget {
                   );
                 },
                 child: Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const .all(12),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: Colors.black54,
@@ -148,10 +148,7 @@ class SwipeCard extends StatelessWidget {
                 spacing: 8,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
+                    padding: const .symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       color: Colors.black87,
                       borderRadius: BorderRadius.circular(12),
@@ -171,10 +168,7 @@ class SwipeCard extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
+                    padding: const .symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       color: Colors.black87,
                       borderRadius: BorderRadius.circular(12),

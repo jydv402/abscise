@@ -121,7 +121,7 @@ class _SpaceSavedBox extends ConsumerWidget {
             ).textTheme.bodyMedium?.copyWith(color: AppTheme.textSecondary),
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: .center,
             spacing: 8,
             children: [
               const Iconify(
@@ -204,7 +204,7 @@ class _AboutSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const .all(24),
       decoration: BoxDecoration(
         color: AppTheme.secondaryPurple,
         borderRadius: BorderRadius.circular(AppTheme.borderRadius),

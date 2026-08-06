@@ -92,7 +92,8 @@ class AppPreferences {
     return _prefs.setBool(_keyMediaFetchAscending, value);
   }
 
-  static const String _keyTutorialShownLocalScreen = 'tutorial_shown_local_screen';
+  static const String _keyTutorialShownLocalScreen =
+      'tutorial_shown_local_screen';
   static const String _keyTutorialShownBinScreen = 'tutorial_shown_bin_screen';
 
   bool getTutorialShownLocalScreen() {

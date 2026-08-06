@@ -57,7 +57,7 @@ class StackButton extends StatelessWidget {
             alignment: Alignment.center,
             width: MediaQuery.of(context).size.width * 0.85,
             height: 75,
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: const .symmetric(horizontal: 24),
             decoration: BoxDecoration(
               color: backgroundColor,
               border: border,

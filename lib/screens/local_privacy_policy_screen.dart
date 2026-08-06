@@ -58,7 +58,7 @@ class LocalPrivacyScreen extends StatelessWidget {
               GestureDetector(
                 onTap: () => context.pop(),
                 child: Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const .all(12),
                   decoration: const BoxDecoration(
                     color: AppTheme.surfaceColor,
                     shape: BoxShape.circle,
@@ -122,8 +122,8 @@ class LocalPrivacyScreen extends StatelessWidget {
 
           // Section 4: Limitation of Liability (Legal Disclaimers)
           Container(
-            margin: const EdgeInsets.only(top: 16),
-            padding: const EdgeInsets.all(24),
+            margin: const .only(top: 16),
+            padding: const .all(24),
             decoration: BoxDecoration(
               color: AppTheme.surfaceColor,
               border: Border.all(

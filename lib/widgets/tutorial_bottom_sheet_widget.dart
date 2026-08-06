@@ -30,7 +30,7 @@ class TutorialBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+      padding: const .fromLTRB(24, 32, 24, 24),
       decoration: const BoxDecoration(
         color: AppTheme.darkBackground,
         borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
@@ -59,12 +59,12 @@ class TutorialBottomSheet extends StatelessWidget {
             const SizedBox(height: 32),
             ...instructions.map(
               (inst) => Padding(
-                padding: const EdgeInsets.only(bottom: 20),
+                padding: const .only(bottom: 20),
                 child: Row(
                   crossAxisAlignment: .center,
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(10),
+                      padding: const .all(10),
                       decoration: BoxDecoration(
                         color: AppTheme.primaryPurple,
                         borderRadius: BorderRadius.circular(12),
