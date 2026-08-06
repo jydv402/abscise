@@ -1,4 +1,6 @@
+import 'package:abscise/providers/nav_bar_mode_provider.dart';
 import 'package:abscise/providers/shared_prefs_provider.dart';
+import 'package:abscise/services/check_update_service.dart';
 import 'package:abscise/widgets/button/stack_button_widget.dart';
 import 'package:abscise/widgets/status_card_widget.dart';
 import 'package:flutter/material.dart';
@@ -198,55 +200,79 @@ class _PrivacyPolicySection extends StatelessWidget {
 }
 
 /// About Section
-class _AboutSection extends StatelessWidget {
+class _AboutSection extends ConsumerWidget {
   const _AboutSection();
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const .all(24),
-      decoration: BoxDecoration(
-        color: AppTheme.secondaryPurple,
-        borderRadius: BorderRadius.circular(AppTheme.borderRadius),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 16,
-        children: [
-          Row(
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Column(
+      children: [
+        Container(
+          padding: const .all(24),
+          decoration: BoxDecoration(
+            color: AppTheme.secondaryPurple,
+            borderRadius: .only(
+              topLeft: .circular(AppTheme.borderRadius),
+              topRight: .circular(AppTheme.borderRadius),
+              bottomLeft: .circular(4),
+              bottomRight: .circular(4),
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 16,
             children: [
-              const Iconify(
-                Ph.github_logo_bold,
-                color: AppTheme.tertiaryLime,
-                size: 28,
+              Row(
+                children: [
+                  const Iconify(
+                    Ph.github_logo_duotone,
+                    color: AppTheme.tertiaryLime,
+                    size: 32,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Find Abscise on GitHub',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ],
               ),
-              const SizedBox(width: 8),
               Text(
-                'Find Abscise on GitHub',
-                style: Theme.of(context).textTheme.titleLarge,
+                'Abscise is built transparently and open-source. You can view the full source code, report any issues, or show support by starring the repository on GitHub.',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: AppTheme.textSecondary,
+                  fontWeight: .w500,
+                ),
+              ),
+              StackButton(
+                label: 'View Repository',
+                iconifyIcon: Ph.arrow_arc_right,
+                variant: ButtonVariant.tertiary,
+                onPressed: () async {
+                  final Uri url = Uri.parse(
+                    'https://github.com/jydv402/abscise',
+                  );
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  }
+                },
               ),
             ],
           ),
-          Text(
-            'Abscise is built transparently and open-source. You can view the full source code, report any issues, or show support by starring the repository on GitHub.',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: AppTheme.textSecondary,
-              fontWeight: .w500,
-            ),
-          ),
-          StackButton(
-            label: 'View Repository',
-            iconifyIcon: Ph.arrow_arc_right,
-            variant: ButtonVariant.tertiary,
-            onPressed: () async {
-              final Uri url = Uri.parse('https://github.com/jydv402/abscise');
-              if (await canLaunchUrl(url)) {
-                await launchUrl(url, mode: LaunchMode.externalApplication);
-              }
-            },
-          ),
-        ],
-      ),
+        ),
+        StatusCard(
+          title: 'Check for Updates',
+          subtitle: 'Check for the latest version of Abscise',
+          startIcon: Ph.download_duotone,
+          isClickable: true,
+          onTap: () {},
+        ),
+        StatusCard(
+          title: 'v1.0.0',
+          subtitle: 'Current Version',
+          startIcon: Ph.info_duotone,
+          isLast: true,
+        ),
+      ],
     );
   }
 }
