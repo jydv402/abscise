@@ -35,5 +35,3 @@ class AbsciseApp extends StatelessWidget {
     );
   }
 }
-
-// TODO: Add tutorial items inside each page in the header

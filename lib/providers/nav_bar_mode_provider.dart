@@ -13,3 +13,16 @@ class NavBarModeController extends Notifier<NavBarMode> {
 final navBarModeProvider = NotifierProvider<NavBarModeController, NavBarMode>(
   NavBarModeController.new,
 );
+
+class NavBarVisibilityNotifier extends Notifier<bool> {
+  @override
+  bool build() => true;
+
+  void show() => state = true;
+  void hide() => state = false;
+}
+
+final navBarVisibilityProvider = NotifierProvider<NavBarVisibilityNotifier, bool>(
+  NavBarVisibilityNotifier.new,
+);
+

@@ -79,6 +79,7 @@ class _LocalPermsScreenState extends ConsumerState<LocalPermsScreen>
       body: ListView(
         padding: AppTheme.paddingXL,
         children: [
+          const SizedBox(height: 48),
           Text(
             'Grant Permissions',
             style: Theme.of(context).textTheme.headlineLarge,
@@ -160,19 +161,10 @@ class _LocalPermsScreenState extends ConsumerState<LocalPermsScreen>
           ],
 
           // App Features explanation cards
-          Container(
-            margin: .only(top: 16),
-            alignment: .centerStart,
-            padding: const .all(24),
-            decoration: BoxDecoration(
-              color: AppTheme.secondaryPurple,
-              borderRadius: .vertical(
-                top: .circular(AppTheme.borderRadius),
-                bottom: .circular(4),
-              ),
-            ),
+          Padding(
+            padding: const .fromLTRB(0, 32, 0, 16),
             child: Text(
-              'Abscise makes local storage decluttering quick and simple:',
+              'Abscise makes local media decluttering quick and simple:',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
           ),
@@ -181,6 +173,7 @@ class _LocalPermsScreenState extends ConsumerState<LocalPermsScreen>
             subtitle:
                 'Review your local photos in an interactive swipe deck. Swipe right to keep them, swipe left to queue for clean up.',
             startIcon: Ph.file_image_duotone,
+            isFirst: true,
           ),
           StatusCard(
             title: 'Protected Two-Step Deletion',

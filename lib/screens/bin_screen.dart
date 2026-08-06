@@ -10,6 +10,51 @@ import 'package:iconify_flutter/icons/ph.dart';
 import 'package:abscise/models/media_model.dart';
 import 'package:abscise/widgets/media_fullscreen_widget.dart';
 import 'package:abscise/controllers/bin_controller.dart';
+import 'package:abscise/providers/shared_prefs_provider.dart';
+import 'package:abscise/providers/nav_bar_mode_provider.dart';
+import 'package:abscise/widgets/tutorial_bottom_sheet_widget.dart';
+
+Future<void> showBinTutorial(BuildContext context, WidgetRef ref) async {
+  ref.read(navBarVisibilityProvider.notifier).hide();
+
+  await showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.transparent,
+    isScrollControlled: true,
+    builder: (context) => const TutorialBottomSheet(
+      title: 'Bin Guide',
+      instructions: [
+        TutorialInstruction(
+          icon: Ph.image_duotone,
+          title: 'Select Media',
+          description: 'Tap on any photo or video to select it.',
+        ),
+        TutorialInstruction(
+          icon: Ph.magnifying_glass_plus_duotone,
+          title: 'View Fullscreen',
+          description:
+              'Long press on a photo or video to view it in full screen.',
+        ),
+        TutorialInstruction(
+          icon: Ph.check_circle_duotone,
+          title: 'Select All',
+          description:
+              'Quickly select or deselect all items using the button in the header.',
+        ),
+        TutorialInstruction(
+          icon: Ph.stack_duotone,
+          title: 'Manage Items',
+          description:
+              'Use the multi-action bottom bar to restore selected items or permanently delete them.',
+        ),
+      ],
+    ),
+  );
+
+  if (context.mounted) {
+    ref.read(navBarVisibilityProvider.notifier).show();
+  }
+}
 
 // Selection State Provider
 class BinSelectionNotifier extends Notifier<Set<String>> {
@@ -41,11 +86,34 @@ final binSelectionProvider =
     );
 
 // BinScreen — Root widget with full-screen masonry + floating action bar
-class BinScreen extends ConsumerWidget {
+class BinScreen extends ConsumerStatefulWidget {
   const BinScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<BinScreen> createState() => _BinScreenState();
+}
+
+class _BinScreenState extends ConsumerState<BinScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAndShowTutorial();
+    });
+  }
+
+  Future<void> _checkAndShowTutorial() async {
+    final prefs = ref.read(appPreferencesProvider);
+    if (!prefs.getTutorialShownBinScreen()) {
+      await prefs.setTutorialShownBinScreen(true);
+      if (mounted) {
+        showBinTutorial(context, ref);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final binState = ref.watch(binProvider);
     final localBin = binState.localBin;
 
@@ -112,7 +180,7 @@ class _BinMasonryGrid extends ConsumerWidget {
 }
 
 // _BinHeader — Compact header with title + count
-class _BinHeader extends StatelessWidget {
+class _BinHeader extends ConsumerWidget {
   final int itemCount;
   final List<MediaItem> items;
 
@@ -130,7 +198,7 @@ class _BinHeader extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 70, 16, 8),
       child: Row(
@@ -138,6 +206,13 @@ class _BinHeader extends StatelessWidget {
         textBaseline: TextBaseline.alphabetic,
         children: [
           Text('Bin', style: Theme.of(context).textTheme.headlineSmall),
+          const SizedBox(width: 4),
+          IconButton(
+            onPressed: () => showBinTutorial(context, ref),
+            icon: const Iconify(Ph.info_duotone, color: AppTheme.textSecondary),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+          ),
           const SizedBox(width: 10),
           Text(
             '$itemCount ${itemCount == 1 ? 'item' : 'items'} · ${_formatTotalSize()}',
@@ -420,11 +495,11 @@ class _BinMasonryTile extends StatelessWidget {
 }
 
 // _BinEmptyState — Shown when the bin is empty
-class _BinEmptyState extends StatelessWidget {
+class _BinEmptyState extends ConsumerWidget {
   const _BinEmptyState();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(40),
@@ -437,11 +512,26 @@ class _BinEmptyState extends StatelessWidget {
               size: 72,
             ),
             const SizedBox(height: 20),
-            Text(
-              'Your bin is empty',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(color: AppTheme.textSecondary),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Your bin is empty',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: AppTheme.textSecondary,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  onPressed: () => showBinTutorial(context, ref),
+                  icon: const Iconify(
+                    Ph.info_duotone,
+                    color: AppTheme.textSecondary,
+                  ),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
             Text(

@@ -91,6 +91,25 @@ class AppPreferences {
   Future<bool> setMediaFetchAscending(bool value) {
     return _prefs.setBool(_keyMediaFetchAscending, value);
   }
+
+  static const String _keyTutorialShownLocalScreen = 'tutorial_shown_local_screen';
+  static const String _keyTutorialShownBinScreen = 'tutorial_shown_bin_screen';
+
+  bool getTutorialShownLocalScreen() {
+    return _prefs.getBool(_keyTutorialShownLocalScreen) ?? false;
+  }
+
+  Future<bool> setTutorialShownLocalScreen(bool value) {
+    return _prefs.setBool(_keyTutorialShownLocalScreen, value);
+  }
+
+  bool getTutorialShownBinScreen() {
+    return _prefs.getBool(_keyTutorialShownBinScreen) ?? false;
+  }
+
+  Future<bool> setTutorialShownBinScreen(bool value) {
+    return _prefs.setBool(_keyTutorialShownBinScreen, value);
+  }
 }
 
 class MediaFetchAscendingNotifier extends Notifier<bool> {
