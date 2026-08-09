@@ -48,3 +48,8 @@ app.*.map.json
 .env
 *.env
 plan.md
+
+# Android signing
+android/app/*.jks
+android/*.jks
+android/key.properties

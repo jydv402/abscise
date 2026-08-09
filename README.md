@@ -50,7 +50,7 @@ Think of it as a calmer, faster way to sort through the endless gallery backlog 
 
 ## 📦 Installation
 
-- Go to the [releases] page and download a matching `.apk` file
+- Go to the [releases](https://github.com/jydv402/abscise/releases/latest) page and download a matching `.apk` file
 - Install the app and start swiping...
 
 ### Prerequisites
