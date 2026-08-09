@@ -1,4 +1,5 @@
 import 'package:abscise/themes/app_theme.dart';
+import 'package:abscise/widgets/buttons/tutorial_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -277,12 +278,7 @@ class _BinHeader extends ConsumerWidget {
             },
           ),
           const SizedBox(width: 4),
-          IconButton(
-            onPressed: () => showBinTutorial(context, ref),
-            icon: const Iconify(Ph.info_duotone, color: AppTheme.textSecondary),
-            padding: .zero,
-            constraints: const BoxConstraints(),
-          ),
+          TutorialButton(onPressed: () => showBinTutorial(context, ref)),
         ],
       ),
     );
@@ -518,23 +514,11 @@ class _BinEmptyState extends ConsumerWidget {
             children: [
               Text('Bin', style: Theme.of(context).textTheme.headlineSmall),
               const Spacer(),
-              IconButton(
-                onPressed: () => showBinTutorial(context, ref),
-                icon: const Iconify(
-                  Ph.info_duotone,
-                  color: AppTheme.textSecondary,
-                ),
-                padding: .zero,
-                constraints: const BoxConstraints(),
-              ),
+              TutorialButton(onPressed: () => showBinTutorial(context, ref)),
             ],
           ),
           const Spacer(),
-          Iconify(
-            Ph.trash_duotone,
-            color: AppTheme.textSecondary.withValues(alpha: 0.4),
-            size: 72,
-          ),
+          Iconify(Ph.trash_duotone, color: AppTheme.tertiaryLime, size: 72),
           const SizedBox(height: 20),
           Text(
             'Your bin is empty',
@@ -549,24 +533,6 @@ class _BinEmptyState extends ConsumerWidget {
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: AppTheme.textSecondary.withValues(alpha: 0.7),
               height: 1.5,
-            ),
-          ),
-          const SizedBox(height: 24),
-          GestureDetector(
-            onTap: () => showBinTutorial(context, ref),
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppTheme.tertiaryLime.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              padding: const .symmetric(horizontal: 16, vertical: 10),
-              child: Text(
-                'Learn how to use the bin',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppTheme.tertiaryLime,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
             ),
           ),
           const Spacer(),

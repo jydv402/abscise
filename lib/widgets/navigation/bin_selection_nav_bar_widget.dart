@@ -10,8 +10,8 @@ import '../../providers/shared_prefs_provider.dart';
 import '../../screens/bin_screen.dart';
 import '../../themes/app_theme.dart';
 import '../action_bottom_sheet_widget.dart';
-import '../button/action_round_button_widget.dart';
-import '../button/pill_button_widget.dart';
+import '../buttons/action_round_button_widget.dart';
+import '../buttons/pill_button_widget.dart';
 import 'nav_bar_widget.dart';
 
 class BinSelectionBar extends ConsumerWidget {
@@ -88,7 +88,9 @@ class BinSelectionBar extends ConsumerWidget {
                 .read(binProvider.notifier)
                 .permanentlyDeleteLocal(items);
             ref.read(binSelectionProvider.notifier).clearSelection();
-            ref.read(memorySavedProvider.notifier).addMemorySaved(result.mbFreed);
+            ref
+                .read(memorySavedProvider.notifier)
+                .addMemorySaved(result.mbFreed);
             return 'Deleted ${result.deletedCount} ${result.deletedCount == 1 ? 'item' : 'items'} · Freed ${result.mbFreed.toStringAsFixed(1)} MB';
           },
         );

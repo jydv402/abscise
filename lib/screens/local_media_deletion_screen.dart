@@ -1,3 +1,4 @@
+import 'package:abscise/widgets/buttons/tutorial_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
@@ -105,13 +106,7 @@ class _LocalScreenState extends ConsumerState<LocalScreen> {
                   'Local Photos',
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
-                IconButton(
-                  onPressed: _showTutorial,
-                  icon: const Iconify(
-                    Ph.info_duotone,
-                    color: AppTheme.textSecondary,
-                  ),
-                ),
+                TutorialButton(onPressed: _showTutorial),
               ],
             ),
 

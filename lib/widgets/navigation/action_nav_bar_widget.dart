@@ -6,8 +6,8 @@ import 'package:iconify_flutter/icons/ph.dart';
 import '../../controllers/swipe_controller.dart';
 import '../../models/swipe_state.dart';
 import '../../providers/nav_bar_mode_provider.dart';
-import '../button/action_round_button_widget.dart';
-import '../button/pill_button_widget.dart';
+import '../buttons/action_round_button_widget.dart';
+import '../buttons/pill_button_widget.dart';
 import '../../themes/app_theme.dart';
 import 'nav_bar_widget.dart';
 
@@ -190,4 +190,3 @@ class ActionNavBar extends ConsumerWidget {
     );
   }
 }
-
