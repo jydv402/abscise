@@ -103,7 +103,9 @@ Abscise is designed to stay local-first. The app requests local storage permissi
 
 ## 📜 License
 
-This project is licensed under the MIT License.
+Abscise is licensed under the GNU General Public License v3.0.
+
+See [LICENSE](LICENSE.md) for the full license text.
 
 ---
 
