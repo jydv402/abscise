@@ -25,6 +25,8 @@ class SwipeController extends Notifier<SwipeState> {
       currentIndex: 0,
       page: 0,
       hasMore: true,
+      sessionKeepCount: 0,
+      sessionBinCount: 0,
     );
   }
 
@@ -87,6 +89,7 @@ class SwipeController extends Notifier<SwipeState> {
         SwipedItem(item: swipeItem, isDeleted: true),
       ], // Add to history
       currentIndex: state.currentIndex + 1,
+      sessionBinCount: state.sessionBinCount + 1,
     );
     // Add to the bin (persists to Hive automatically)
     ref.read(binProvider.notifier).addToBin(swipeItem);
@@ -110,6 +113,7 @@ class SwipeController extends Notifier<SwipeState> {
         SwipedItem(item: swipeItem, isDeleted: false),
       ], // Add to history
       currentIndex: state.currentIndex + 1,
+      sessionKeepCount: state.sessionKeepCount + 1,
     );
 
     // Load the next chunk based on the length of the deck
@@ -118,28 +122,32 @@ class SwipeController extends Notifier<SwipeState> {
     }
   }
 
-  void undo() {
+  Future<void> undo() async {
     if (state.history.isEmpty) return;
 
-    // Get the last swiped item from history
     final lastSwiped = state.history.last;
+
+    if (lastSwiped.isDeleted) {
+      // Remove the item from the bin before reinserting it into the deck so the
+      // swipe state and persistent bin stay in sync for the undo action.
+      await ref.read(binProvider.notifier).removeFromBin(lastSwiped.item);
+    }
 
     state = state.copyWith(
       deck: [
         lastSwiped.item,
         ...state.deck,
-      ], // Add it back to the top of the deck
-      history: state.history.sublist(
-        0,
-        state.history.length - 1,
-      ), // Remove it from history
+      ],
+      history: state.history.sublist(0, state.history.length - 1),
       currentIndex: state.currentIndex - 1,
+      // Decrement whichever counter was incremented by the undone swipe.
+      sessionBinCount: lastSwiped.isDeleted
+          ? (state.sessionBinCount - 1).clamp(0, state.sessionBinCount)
+          : state.sessionBinCount,
+      sessionKeepCount: !lastSwiped.isDeleted
+          ? (state.sessionKeepCount - 1).clamp(0, state.sessionKeepCount)
+          : state.sessionKeepCount,
     );
-
-    if (lastSwiped.isDeleted) {
-      // Remove the item from the bin (also removes from Hive persistence)
-      ref.read(binProvider.notifier).removeFromBin(lastSwiped.item);
-    }
   }
 
   /// Remove items from the current swipe deck and history when they have

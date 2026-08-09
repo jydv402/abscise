@@ -133,7 +133,7 @@ class _StackedSwipeDeckState extends ConsumerState<StackedSwipeDeck>
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<SwipeTriggerEvent?>(swipeTriggerProvider, (previous, event) {
+    ref.listen<SwipeTriggerEvent?>(swipeTriggerProvider, (previous, event) async {
       if (event == null) return;
 
       switch (event.action) {
@@ -149,7 +149,6 @@ class _StackedSwipeDeckState extends ConsumerState<StackedSwipeDeck>
               ? -screenWidth * 1.5
               : screenWidth * 1.5;
 
-          // Initialize _slideAnimation FIRST
           _slideAnimation =
               Tween<Offset>(begin: Offset(beginX, 0), end: Offset.zero).animate(
                 CurvedAnimation(
@@ -158,27 +157,25 @@ class _StackedSwipeDeckState extends ConsumerState<StackedSwipeDeck>
                 ),
               );
 
-          // Set the state variables
           setState(() {
             _dragOffset = Offset(beginX, 0);
             _isAnimating = true;
           });
 
-          // Perform the actual state update (which triggers parent rebuild)
-          ref.read(swipeProvider.notifier).undo();
+          await ref.read(swipeProvider.notifier).undo();
 
-          // Start the slide-in animation
+          if (!mounted) return;
+
+          setState(() {
+            _dragOffset = Offset.zero;
+            _isAnimating = false;
+          });
           _animController.forward(from: 0.0).then((_) {
-            setState(() {
-              _dragOffset = Offset.zero;
-              _isAnimating = false;
-            });
             _animController.reset();
           });
           break;
       }
 
-      // Reset the trigger so that it can be refired with the same action later
       Future.microtask(() {
         ref.read(swipeTriggerProvider.notifier).state = null;
       });

@@ -1,4 +1,3 @@
-import 'package:abscise/controllers/bin_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
@@ -34,18 +33,16 @@ class ActionNavBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final int deleteCount = ref.watch(binProvider).localBin.length;
-    final int keepCount = swipeState.history
-        .where((item) => !item.isDeleted)
-        .length;
+    final int binCount = swipeState.sessionBinCount;
+    final int keepCount = swipeState.sessionKeepCount;
     final bool hasHistory = swipeState.history.isNotEmpty;
 
     return Padding(
-      padding: const .symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         key: const ValueKey('actionBarMode'),
         spacing: 12,
-        mainAxisAlignment: .center,
+        mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
         children: [
           // Left Pill: Collapsed Nav Pill
@@ -58,7 +55,7 @@ class ActionNavBar extends ConsumerWidget {
             icon: Ph.stack_duotone,
           ),
 
-          // Right Pill: Swipe Stats & Undo Pill
+          // Right Pill: Swipe Action Buttons + Undo
           Expanded(
             child: Container(
               height: dynamicHeight,
@@ -67,17 +64,17 @@ class ActionNavBar extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(borderRadiusValue),
                 boxShadow: CustomNavBar.doubleShadow,
               ),
-              padding: .all(gap),
+              padding: EdgeInsets.all(gap),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 spacing: 3,
                 children: [
-                  // Delete Count Pill
+                  // Bin (swipe left) trigger button
                   Expanded(
                     child: PillButton(
                       position: PillPosition.left,
                       height: circleDiameter,
-                      padding: const .symmetric(horizontal: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
                       onTap: swipeState.deck.isNotEmpty
                           ? () {
                               ref
@@ -88,7 +85,7 @@ class ActionNavBar extends ConsumerWidget {
                             }
                           : null,
                       child: Row(
-                        mainAxisAlignment: .center,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         spacing: 8,
                         children: [
                           Iconify(
@@ -97,7 +94,7 @@ class ActionNavBar extends ConsumerWidget {
                             size: fontSize,
                           ),
                           Text(
-                            '$deleteCount',
+                            '$binCount',
                             style: TextStyle(
                               fontFamily: 'Outfit',
                               fontSize: iconSize,
@@ -110,12 +107,12 @@ class ActionNavBar extends ConsumerWidget {
                     ),
                   ),
 
-                  // Keep Count Pill
+                  // Keep (swipe right) trigger button
                   Expanded(
                     child: PillButton(
                       position: PillPosition.right,
                       height: circleDiameter,
-                      padding: const .symmetric(horizontal: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
                       onTap: swipeState.deck.isNotEmpty
                           ? () {
                               ref
@@ -126,7 +123,7 @@ class ActionNavBar extends ConsumerWidget {
                             }
                           : null,
                       child: Row(
-                        mainAxisAlignment: .center,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         spacing: 8,
                         children: [
                           Text(
@@ -193,3 +190,4 @@ class ActionNavBar extends ConsumerWidget {
     );
   }
 }
+

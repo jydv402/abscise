@@ -9,6 +9,11 @@ class SwipeState {
   final int page;
   final bool hasMore;
 
+  /// Session-scoped counters — reset to 0 on each app launch / sort change.
+  /// These are the single source of truth for displaying swipe counts in the UI.
+  final int sessionKeepCount;
+  final int sessionBinCount;
+
   SwipeState({
     required this.deck,
     required this.history,
@@ -16,6 +21,8 @@ class SwipeState {
     required this.currentIndex,
     required this.page,
     required this.hasMore,
+    this.sessionKeepCount = 0,
+    this.sessionBinCount = 0,
   });
 
   SwipeState copyWith({
@@ -25,6 +32,8 @@ class SwipeState {
     int? currentIndex,
     int? page,
     bool? hasMore,
+    int? sessionKeepCount,
+    int? sessionBinCount,
   }) {
     return SwipeState(
       deck: deck ?? this.deck,
@@ -33,6 +42,8 @@ class SwipeState {
       currentIndex: currentIndex ?? this.currentIndex,
       page: page ?? this.page,
       hasMore: hasMore ?? this.hasMore,
+      sessionKeepCount: sessionKeepCount ?? this.sessionKeepCount,
+      sessionBinCount: sessionBinCount ?? this.sessionBinCount,
     );
   }
 }

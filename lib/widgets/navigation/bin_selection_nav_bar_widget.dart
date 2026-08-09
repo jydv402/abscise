@@ -44,7 +44,6 @@ class BinSelectionBar extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (context) {
-        final modalNavigator = Navigator.of(context);
         return ActionBottomSheet(
           title:
               'Restore ${items.length} ${items.length == 1 ? 'item' : 'items'}?',
@@ -58,11 +57,6 @@ class BinSelectionBar extends ConsumerWidget {
             ref.read(binSelectionProvider.notifier).clearSelection();
             ref.read(swipeProvider.notifier).loadNextChunk();
             return 'Restored ${items.length} ${items.length == 1 ? 'item' : 'items'}';
-          },
-          onClose: () {
-            if (modalNavigator.mounted && modalNavigator.canPop()) {
-              modalNavigator.pop();
-            }
           },
         );
       },
@@ -81,7 +75,6 @@ class BinSelectionBar extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (context) {
-        final modalNavigator = Navigator.of(context);
         return ActionBottomSheet(
           title:
               'Permanently delete ${items.length} ${items.length == 1 ? 'item' : 'items'}?',
@@ -97,11 +90,6 @@ class BinSelectionBar extends ConsumerWidget {
             ref.read(binSelectionProvider.notifier).clearSelection();
             ref.read(memorySavedProvider.notifier).addMemorySaved(result.mbFreed);
             return 'Deleted ${result.deletedCount} ${result.deletedCount == 1 ? 'item' : 'items'} · Freed ${result.mbFreed.toStringAsFixed(1)} MB';
-          },
-          onClose: () {
-            if (modalNavigator.mounted && modalNavigator.canPop()) {
-              modalNavigator.pop();
-            }
           },
         );
       },

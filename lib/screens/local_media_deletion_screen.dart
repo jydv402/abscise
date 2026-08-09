@@ -99,7 +99,7 @@ class _LocalScreenState extends ConsumerState<LocalScreen> {
           children: [
             // Compact Top Header Row
             Row(
-              mainAxisAlignment: .spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'Local Photos',

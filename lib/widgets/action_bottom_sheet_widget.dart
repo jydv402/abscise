@@ -14,7 +14,6 @@ class ActionBottomSheet extends ConsumerStatefulWidget {
   final String confirmIcon;
   final Color confirmColor;
   final Future<String> Function(WidgetRef ref) onAction;
-  final VoidCallback onClose;
 
   const ActionBottomSheet({
     super.key,
@@ -24,7 +23,6 @@ class ActionBottomSheet extends ConsumerStatefulWidget {
     required this.confirmIcon,
     required this.confirmColor,
     required this.onAction,
-    required this.onClose,
   });
 
   @override
@@ -38,7 +36,13 @@ class _ActionBottomSheetState extends ConsumerState<ActionBottomSheet> {
 
   Future<void> _closeSheet() async {
     if (!mounted) return;
-    widget.onClose();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+    });
   }
 
   Future<void> _handleConfirm() async {
@@ -100,7 +104,7 @@ class _ActionBottomSheetState extends ConsumerState<ActionBottomSheet> {
             StackButton(
               label: 'Cancel',
               iconifyIcon: Ph.x_bold,
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.of(context).maybePop(),
               variant: ButtonVariant.tertiary,
             ),
             StackButton(
