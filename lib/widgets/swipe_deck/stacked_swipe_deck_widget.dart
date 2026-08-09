@@ -133,7 +133,10 @@ class _StackedSwipeDeckState extends ConsumerState<StackedSwipeDeck>
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<SwipeTriggerEvent?>(swipeTriggerProvider, (previous, event) async {
+    ref.listen<SwipeTriggerEvent?>(swipeTriggerProvider, (
+      previous,
+      event,
+    ) async {
       if (event == null) return;
 
       switch (event.action) {

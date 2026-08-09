@@ -134,10 +134,7 @@ class SwipeController extends Notifier<SwipeState> {
     }
 
     state = state.copyWith(
-      deck: [
-        lastSwiped.item,
-        ...state.deck,
-      ],
+      deck: [lastSwiped.item, ...state.deck],
       history: state.history.sublist(0, state.history.length - 1),
       currentIndex: state.currentIndex - 1,
       // Decrement whichever counter was incremented by the undone swipe.
@@ -163,7 +160,10 @@ class SwipeController extends Notifier<SwipeState> {
         .toList();
 
     final removedFromHistory = state.history.length - updatedHistory.length;
-    final updatedCurrentIndex = (state.currentIndex - removedFromHistory).clamp(0, state.currentIndex);
+    final updatedCurrentIndex = (state.currentIndex - removedFromHistory).clamp(
+      0,
+      state.currentIndex,
+    );
 
     state = state.copyWith(
       deck: updatedDeck,

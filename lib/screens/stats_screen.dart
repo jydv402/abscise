@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/ph.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import 'package:abscise/themes/app_theme.dart';
 import 'package:abscise/controllers/local_permissions_controller.dart';
 import 'package:abscise/models/local_perms_state.dart';
@@ -259,6 +258,12 @@ class _AboutSection extends ConsumerWidget {
           ),
         ),
         StatusCard(
+          title: 'Star on Github',
+          subtitle:
+              'Consider starring the repository to show support for Abscise and to get notified of updates.',
+          startIcon: Ph.star_duotone,
+        ),
+        StatusCard(
           title: 'Check for Updates',
           subtitle: 'Check for the latest version of Abscise',
           startIcon: Ph.download_duotone,
@@ -266,11 +271,6 @@ class _AboutSection extends ConsumerWidget {
           onTap: () {
             checkForUpdates(context, true);
           },
-        ),
-        StatusCard(
-          title: 'v1.0.0',
-          subtitle: 'Current Version',
-          startIcon: Ph.info_duotone,
           isLast: true,
         ),
       ],
