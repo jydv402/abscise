@@ -1,4 +1,5 @@
 import 'package:abscise/providers/shared_prefs_provider.dart';
+import 'package:abscise/services/check_update_service.dart';
 import 'package:abscise/widgets/buttons/stack_button_widget.dart';
 import 'package:abscise/widgets/status_card_widget.dart';
 import 'package:flutter/material.dart';
@@ -262,7 +263,9 @@ class _AboutSection extends ConsumerWidget {
           subtitle: 'Check for the latest version of Abscise',
           startIcon: Ph.download_duotone,
           isClickable: true,
-          onTap: () {},
+          onTap: () {
+            checkForUpdates(context, true);
+          },
         ),
         StatusCard(
           title: 'v1.0.0',

@@ -1,3 +1,4 @@
+import 'package:abscise/services/check_update_service.dart';
 import 'package:abscise/widgets/buttons/tutorial_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,6 +26,7 @@ class _LocalScreenState extends ConsumerState<LocalScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkForUpdates(context, false);
       _checkAndShowTutorial();
     });
   }
